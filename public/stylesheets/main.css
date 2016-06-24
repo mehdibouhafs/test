@@ -1,0 +1,9 @@
+p {
+    color: red;
+    property: value;
+    font-size: 300%;
+}
+#logo {
+    width: 200px;
+    height: 80px;
+}
