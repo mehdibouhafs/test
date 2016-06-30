@@ -77,7 +77,8 @@ public class UploadController extends Controller {
             }
             jobLauncher.run(job, param);
             destination.delete();
-            return ok("DONE");
+            System.out.println("ok");
+            return ok(views.html.test.render());
 
         } catch (FileExistsException e){
             e.printStackTrace();
