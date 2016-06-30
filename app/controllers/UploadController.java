@@ -51,13 +51,13 @@ public class UploadController extends Controller {
        /* if (!"application/vnd.ms-excel".equalsIgnoreCase(filePart.getContentType())) {
             return badRequest("Invalid request, only CSVs are allowed.");
         }*/
+        boolean c = createDirectory();
         File destination = new File("/home/app/uploads/", body.getFile("file").getFilename());
         if(destination.exists()){
             destination.delete();
         }
         try {
             System.out.println("---------------------------------DEBUT TRY UPLOAD---------------------------------");
-            destination = new File("/home/app/uploads/", body.getFile("file").getFilename());
             FileUtils.moveFile(body.getFile("file").getFile(), destination);
             ApplicationContext context = Global.getApplicationContext();
             String dateParam = new Date().toString();
@@ -114,5 +114,27 @@ public class UploadController extends Controller {
             extension = fileName.substring(i + 1);
         }
         return  extension;
+    }
+
+    public boolean createDirectory(){
+        File theDir = new File("/home/app/uploads/");
+        boolean result = false;
+
+// if the directory does not exist, create it
+        if (!theDir.exists()) {
+             result = false;
+            try{
+                theDir.mkdir();
+                result = true;
+            }
+            catch(SecurityException se){
+                se.printStackTrace();
+            }
+            if(result) {
+                System.out.println("DIR created");
+                result = true;
+            }
+        }
+        return result;
     }
 }
