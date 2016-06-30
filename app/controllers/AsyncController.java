@@ -25,7 +25,6 @@ import scala.concurrent.ExecutionContextExecutor;
  **/
 @Singleton
 public class AsyncController extends Controller {
-
     private final ActorSystem actorSystem;
     private final ExecutionContextExecutor exec;
 

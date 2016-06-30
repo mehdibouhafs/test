@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <title>Mini Ajax File Upload Form</title>
+
+        <!-- Google web fonts -->
+        <link href="http://fonts.googleapis.com/css?family=PT+Sans+Narrow:400,700" rel='stylesheet' />
+
+        <!-- The main CSS file -->
+        <link href=" @routes.Assets.versioned("stylesheets/assets/css/style.css")" rel="stylesheet" />
+
+    </head>
+
+    <body>
+    <Header >
+
+           <h2><a href="#"><img class="img-responsive" src="@routes.Assets.versioned("images/logo.png")" style="width:350px;height:100px;" alt="" >
+            </a></h2>
+    </Header>
+
+    <form class="center-block" id="upload" method="post" action="@routes.UploadController.upload" enctype="multipart/form-data">
+        <div id="drop">
+            Upload Your File HERE
+
+            <a>Parcourir</a>
+            <input type="file" name="file" />
+        </div>
+
+        <ul>
+            <!-- The file uploads will be shown here -->
+        </ul>
+
+    </form>
+    <!-- Progress Bar
+    <div class="progress">
+        <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
+            <span class="sr-only">60% Complete</span>
+        </div>
+    </div> -->
+
+    <!-- Upload Finished
+    <div class="js-upload-finished">
+        <h3>Processed files</h3>
+        <div class="list-group">
+            <a href="#" class="list-group-item list-group-item-success"><span class="badge alert-success pull-right">Success</span>image-01.jpg</a>
+        </div>
+    </div>-->
+
+    <footer>
+        <h2><a href="http://tutorialzine.com/2013/05/mini-ajax-file-upload-form/"><i>ITN</i> ( une société du groupe gfi)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; © Copyright 2016 ITN  - Mentions Légales - Garance "cartoon" avec CLEVA, Solution d' Assurance</a></h2>
+
+
+    </footer>
+
+    <!-- JavaScript Includes -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="@routes.Assets.versioned("stylesheets/assets/js/jquery.knob.js")"></script>
+
+		<!-- jQuery File Upload Dependencies -->
+		<script src="@routes.Assets.versioned("stylesheets/assets/js/jquery.ui.widget.js")"></script>
+    <script src="@routes.Assets.versioned("stylesheets/assets/js/jquery.iframe-transport.js")"></script>
+		<script src="@routes.Assets.versioned("stylesheets/assets/js/jquery.fileupload.js")"></script>
+
+    <!-- Our main JS file -->
+    <script src="@routes.Assets.versioned("stylesheets/assets/js/script.js")"></script>
+	</body>
+</html>

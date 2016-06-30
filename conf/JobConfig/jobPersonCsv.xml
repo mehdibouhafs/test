@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:util="http://www.springframework.org/schema/util"
+	   xmlns:batch="http://www.springframework.org/schema/batch"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xsi:schemaLocation="http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.1.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch-3.0.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.2.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd">
+
+	<context:component-scan base-package="configurations" />
+	<context:component-scan base-package="listeners" />
+	
+	<jdbc:initialize-database data-source="dataSource" enabled="false">
+		<jdbc:script location="classpath:/db/sql/schema-mysql.sql"/>
+	</jdbc:initialize-database>
+	
+	<bean id="dataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://localhost:3306/test3?autoReconnect=true&amp;useSSL=false" />
+		<property name="username" value="root" />
+		<property name="password" value="" />
+	</bean>
+
+	<batch:job-repository id="jobRepository" data-source="dataSource" transaction-manager="transactionManager"/>
+
+	<bean id="transactionManager"
+		  class="org.springframework.batch.support.transaction.ResourcelessTransactionManager" />
+
+	<bean id="jobRepositoryy"
+	class="org.springframework.batch.core.repository.support.JobRepositoryFactoryBean">
+	<property name="dataSource" ref="dataSource" />
+	<property name="transactionManager" ref="transactionManager" />
+	<property name="databaseType" value="mysql" />
+  </bean>
+ 
+  <bean id="jobLauncher"
+	class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
+	<property name="jobRepository" ref="jobRepositoryy" />
+  </bean>
+
+	<bean id="cvsFileItemReader" class="org.springframework.batch.item.file.FlatFileItemReader" scope="step" >
+		<property name="recordSeparatorPolicy" ref="recordSeperatorPolicy "/>
+		<property name="resource" value="file:#{jobParameters['input.file.name']}" />
+		<property name="lineMapper">
+			<bean class="org.springframework.batch.item.file.mapping.DefaultLineMapper">
+				<property name="lineTokenizer">
+					<bean class="org.springframework.batch.item.file.transform.DelimitedLineTokenizer">
+						<property name="names" value="id,firstName,lastName,date" />
+					</bean>
+				</property>
+				<property name="fieldSetMapper">
+					<bean
+							class="org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper">
+						<property name="prototypeBeanName" value="person" />
+					</bean>
+				</property>
+			</bean>
+		</property>
+		<property name="linesToSkip" value="1"/>
+		<property name="strict" value="true" />
+	</bean>
+
+	<bean id="recordSeperatorPolicy " class="handle.BlankLineRecordSeparatorPolicy"/>
+
+
+	<bean id="cvsFileItemProcessor" class="processor.PersonItemProcessor"/>
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<constructor-arg ref ="dataSource"/>
+	</bean>
+
+	<bean id="listener" class="listeners.JobCompletionNotificationListener">
+		<constructor-arg ref="jdbcTemplate"/>
+	</bean>
+
+	<batch:job id="importUserJob">
+		<batch:step id="step1">
+			<tasklet>
+				<chunk
+						reader="cvsFileItemReader"
+						writer="cvsFileItemWriter"
+						processor="cvsFileItemProcessor"
+						commit-interval="5">
+				</chunk>
+			</tasklet>
+		</batch:step>
+
+		<batch:listeners>
+			<batch:listener ref = "listener"/>
+		</batch:listeners>
+
+	</batch:job>
+
+
+	<bean id="cvsFileItemWriter" class="org.springframework.batch.item.database.JdbcBatchItemWriter" scope="step">
+		<property name="dataSource" ref="dataSource" />
+		<property name="sql">
+			<!-- Why CDATA?
+                 because < etc. is not allowed for xml values
+                 when you use &lt; xml parser will work, but
+                 now the sql won't because of the & spring assumes
+                 a placeholder, see
+                 - AbstractSqlPagingQueryProvider.init(...)
+                 - JdbcParameterUtils.countParameterPlaceholders(...)
+                 -->
+			<value>
+				<![CDATA[
+                    INSERT INTO People
+                    (first_name,last_name,date)
+                    VALUES
+                    (?,?,?)
+                ]]>
+			</value>
+		</property>
+		<property name="itemPreparedStatementSetter">
+			<bean class="processor.FieldSetItemPreparedStatementSetter"/>
+		</property>
+	</bean>
+
+
+
+
+
+	<bean id="person" class="model.Person" scope="prototype" />
+
+	<util:properties id="props" location="classpath:/properties/p02.properties"/>
+
+ 
+	
+</beans>
