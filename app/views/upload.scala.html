@@ -6,7 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="description" content="">
         <meta name="author" content="">
-        <title>Mini Ajax File Upload Form</title>
+        <title>ITN</title>
 
         <!-- Google web fonts -->
         <link href="http://fonts.googleapis.com/css?family=PT+Sans+Narrow:400,700" rel='stylesheet' />
@@ -23,18 +23,17 @@
             </a></h2>
     </Header>
 
-    <form class="center-block" id="upload" method="post" action="@routes.UploadController.upload" enctype="multipart/form-data">
+    <form class="center-block" id="upload" action="@routes.HomeController.index" method="get"> <!-- enctype="multipart/form-data"-->
         <div id="drop">
             Upload Your File HERE
 
             <a>Parcourir</a>
-            <input type="file" name="file" />
+            <input type="file"  id="file" name="file" />
         </div>
 
         <ul>
             <!-- The file uploads will be shown here -->
         </ul>
-        <button type="submit">Upload</button>
     </form>
     <!-- Progress Bar
     <div class="progress">

@@ -31,6 +31,8 @@ public class Filters implements HttpFilters {
         this.exampleFilter = exampleFilter;
     }
 
+
+
     @Override
     public EssentialFilter[] filters() {
       // Use the example filter if we're running development mode. If

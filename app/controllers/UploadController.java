@@ -51,14 +51,21 @@ public class UploadController extends Controller {
        /* if (!"application/vnd.ms-excel".equalsIgnoreCase(filePart.getContentType())) {
             return badRequest("Invalid request, only CSVs are allowed.");
         }*/
-        boolean c = createDirectory();
-        File destination = new File("/home/app/uploads/", body.getFile("file").getFilename());
-        if(destination.exists()){
-            destination.delete();
+
+        File f = new File("/home/app/uploads/");
+        if(!f.exists()) {
+            try {
+                f.mkdir();
+            } catch (SecurityException se) {
+                System.out.println("SSSSSSSSSSSSSSSSSSSSSSSSSSSSS");
+                se.printStackTrace();
+            }
         }
         try {
+            File destination = new File("/home/app/uploads/", body.getFile("file").getFilename());
             System.out.println("---------------------------------DEBUT TRY UPLOAD---------------------------------");
             FileUtils.moveFile(body.getFile("file").getFile(), destination);
+            System.out.println("FILE UPLOAD : "+destination.getPath());
             ApplicationContext context = Global.getApplicationContext();
             String dateParam = new Date().toString();
             System.out.printf("-----------------------------"+destination.getPath()+"-------------------------------------------");
@@ -68,6 +75,7 @@ public class UploadController extends Controller {
 
             JobLauncher jobLauncher = (JobLauncher) context.getBean("jobLauncher");
             String ext = getExtension(destination.getPath());
+            System.out.println("EXTENSIONS : "+ext);
             Job job = null;
             if(ext.equals("csv")) {
                job = (Job) context.getBean("importUserJob");
@@ -77,8 +85,8 @@ public class UploadController extends Controller {
             }
             jobLauncher.run(job, param);
             destination.delete();
-            System.out.println("ok");
-            return ok(views.html.test.render());
+            //System.out.println("ok");
+            return redirect("/home");
 
         } catch (FileExistsException e){
             e.printStackTrace();
@@ -116,25 +124,20 @@ public class UploadController extends Controller {
         return  extension;
     }
 
-    public boolean createDirectory(){
-        File theDir = new File("/home/app/uploads/");
-        boolean result = false;
 
-// if the directory does not exist, create it
-        if (!theDir.exists()) {
-             result = false;
-            try{
-                theDir.mkdir();
-                result = true;
-            }
-            catch(SecurityException se){
-                se.printStackTrace();
-            }
-            if(result) {
-                System.out.println("DIR created");
-                result = true;
-            }
+
+
+    public Result upload3() {
+        Http.MultipartFormData<File> body = request().body().asMultipartFormData();
+        Http.MultipartFormData.FilePart<File> picture = body.getFile("picture");
+        if (picture != null) {
+            String fileName = picture.getFilename();
+            String contentType = picture.getContentType();
+            File file = picture.getFile();
+            return ok("File uploaded");
+        } else {
+            flash("error", "Missing file");
+            return badRequest();
         }
-        return result;
     }
 }

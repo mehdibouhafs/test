@@ -93,3 +93,34 @@ $(function(){
     }
 
 });
+
+    /*$('#submit').click(function (event) {
+           event.preventDefault();
+           var file = $('#file').get(0).files[0];
+            console.log(file);
+
+           var formData = new FormData();
+
+           console.log(formData);
+           $.ajax({
+               url: 'http://localhost:9000/upload3',
+               data: formData,
+               type: 'POST',
+               contentType: false,
+               processData: false,
+               beforeSend: function (data) {
+
+               },
+               success: function (data) {
+                 //call your jQuery action here
+                 alert('Upload completed: ');
+               },
+               error: function (jqXHR, textStatus, errorThrown) {
+                 alert(textStatus + ': ' + errorThrown);
+               }
+            });
+            return false;
+        });*/
+
+
+

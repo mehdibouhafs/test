@@ -2,12 +2,14 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-GET     /                           @controllers.Application.home
+
+
+GET     /              @controllers.Application.home
 
 GET     /home                       controllers.HomeController.index
 
 # An example controller showing a sample home page
-POST     /upload                    controllers.UploadController.upload
+GET     /upload                   controllers.UploadController.upload
 
 # An example controller showing how to use dependency injection
 GET     /count                      controllers.CountController.count

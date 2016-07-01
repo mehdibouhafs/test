@@ -31,6 +31,7 @@ public class ExampleFilter extends Filter {
         this.exec = exec;
     }
 
+
     @Override
     public CompletionStage<Result> apply(
         Function<RequestHeader, CompletionStage<Result>> next,
