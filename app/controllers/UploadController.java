@@ -12,6 +12,7 @@ import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteExcep
 import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import play.Routes;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
@@ -29,13 +30,8 @@ import java.util.Date;
  */
 public class UploadController extends Controller {
 
+
     public UploadController() {
-    }
-
-    public Result test(){
-        //return render("/persons")
-        return ok(index.render(5));
-
 
     }
 
@@ -47,11 +43,9 @@ public class UploadController extends Controller {
         if (body == null) {
             return badRequest("Invalid request, required is POST with enctype=multipart/form-data.");
         }
-
         if (picture == null) {
             return badRequest("Invalid request, no file has been sent.");
         }
-
         if (picture != null) {
             System.out.println("NOT NULL");
             File f = new File(System.getProperty("user.home") + "/app/uploads/");
@@ -62,19 +56,18 @@ public class UploadController extends Controller {
                     se.printStackTrace();
                 }
             }
-
             try {
                 UploadResult uploadResult = new UploadResult();
                 uploadResult.setName(picture.getFilename());
-                System.out.println("FILE NAME = " + uploadResult.getName());
                 uploadResult.setType(picture.getContentType());
                 File destination = new File(System.getProperty("user.home") + "/app/uploads/", uploadResult.getName());
                 FileUtils.moveFile(picture.getFile(), destination);
                 uploadResult.setUrl(destination.getPath());
-                System.out.println(destination.getPath());
                 uploadResult.setFile(destination);
-                int id = uploadResult.getId();
+                uploadResult.setSize(FileUtils.sizeOf(destination));
                 uploadResult.save();
+                session("idFile", ""+uploadResult.getId());
+                System.out.println("id========="+uploadResult.getId());
                 ApplicationContext context = Global.getApplicationContext();
                 String dateParam = new Date().toString();
                 System.out.printf("-----------------------------" + uploadResult.getFile().getPath() + "-------------------------------------------");
@@ -84,43 +77,47 @@ public class UploadController extends Controller {
 
                 JobLauncher jobLauncher = (JobLauncher) context.getBean("jobLauncher");
                 String ext = getExtension(uploadResult.getFile().getPath());
-                System.out.println("EXTENSIONS : " + ext);
+
                 Job job = null;
 
                 if (ext.equals("csv")) {
                     job = (Job) context.getBean("importUserJob");
+                    jobLauncher.run(job, param);
                 }
 
                 if (ext.equals("xml")) {
                     job = (Job) context.getBean("importXML");
+                    jobLauncher.run(job, param);
                 }
 
-                jobLauncher.run(job, param);
                 destination.delete();
-                views.html.index.render(uploadResult.getId());
-                //System.out.println("ok");
-                return ok();
+
+                return ok(uploadResult.getId()+"");
 
             } catch (FileExistsException e) {
                 e.printStackTrace();
+                return ok(e.getMessage());
             } catch (IOException e) {
                 e.printStackTrace();
-                flash("File not UPLOAD");
-                return ok("not upload");
+                return ok(e.getMessage());
             } catch (JobInstanceAlreadyCompleteException e) {
                 e.printStackTrace();
+                return ok(e.getMessage());
             } catch (JobExecutionAlreadyRunningException e) {
                 e.printStackTrace();
+                return ok(e.getMessage());
             } catch (JobParametersInvalidException e) {
                 e.printStackTrace();
+                return ok(e.getMessage());
             } catch (JobRestartException e) {
                 e.printStackTrace();
+                return ok(e.getMessage());
             } catch (Exception e) {
                 e.printStackTrace();
+                return ok(e.getMessage());
             }
-
         }
-        return ok("False");
+        return ok("File NULL");
     }
 
 

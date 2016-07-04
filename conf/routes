@@ -23,4 +23,7 @@ GET     /assets/*file               controllers.Assets.versioned(path="/public",
 GET     /params                     controllers.ParamsController.parameters(id : Integer)
 
 
+# An Client controller showing a sample uploadResults page
+GET     /files                         controllers.HomeController.getFiles()
+
 

@@ -1,6 +1,6 @@
 $(function() {
 
-    console.log("Demarage SCript");
+    console.log("Demarage Script");
     var ul = $('#upload ul');
 
     $('#drop a').click(function () {
@@ -33,8 +33,6 @@ $(function() {
         // Create a formdata object and add the files
 
         $('#upload').fileupload({
-
-
             // This function is called when a file is added to the queue;
             // either via the browse button, or via drag/drop:
             add: function (e, data) {
@@ -66,6 +64,7 @@ $(function() {
 
                 // Automatically upload the file once it is added to the queue
                 var jqXHR = data.submit();
+
             },
 
             progress: function (e, data) {
@@ -78,15 +77,13 @@ $(function() {
                 data.context.find('input').val(progress).change();
 
                 if (progress == 100) {
-                    var span = $('#upload p1');
                     data.context.removeClass('working');
 
-                    var id = $('#id').val();
 
-
-                    var tpl1 = $('<br/><br/><a href="/params?id='+id+'class="btn btn-primary" role="button">GO TO PARAMETRAGE</a>');
-
+                    var span = $('#upload p1');
+                    var tpl1 = $('<br/><br/><a href="/params?id='+parseInt(id)+'"class="btn btn-primary" role="button">GO TO PARAMETRAGE</a>');
                     span.append(tpl1);
+
 
                 }
             },
@@ -120,9 +117,26 @@ $(function() {
             return (bytes / 1000).toFixed(2) + ' KB';
         }
 
+        //var msg = $.ajax({type: "GET", url: "my_script.php", async: false}).responseText;
 
+         /*function ok(){
+         console.log("CALL ok");
+         $.ajax({
+                url: '/ajax',
+                  success: function(data, textStatus, jqXHR) {
+                     //window.alert(data);
+                     var id = parseInt(data);
+                     console.log("data"+data);
+                     console.log("id"+id);
 
+                  },
+                  error: function(jqXHR, textStatus, errorThrown) {
+                    window.alert(textStatus);
+                  }
+                 });
+                            //var idInt = parseInt(id)
+                            }
 
-
+                */
 });
 
