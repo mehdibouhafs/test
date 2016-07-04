@@ -1,8 +1,10 @@
+import play.ebean.sbt.PlayEbean
+
 name := """test"""
 
 version := "1.0-SNAPSHOT"
 
-lazy val root = (project in file(".")).enablePlugins(PlayJava)
+lazy val root = (project in file(".")).enablePlugins(PlayJava,PlayEbean)
 
 scalaVersion := "2.11.7"
 resolvers += "Typesafe Repo" at "http://repo.typesafe.com/typesafe/releases/"

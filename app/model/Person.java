@@ -1,24 +1,24 @@
 package model;
-
-
-
-
-
-
-
+import com.avaje.ebean.Model;
 import model.adapter.LocalDateAdapter;
+import play.data.format.Formats;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.util.Date;
 
-
+@Entity
 @XmlRootElement(name = "Person")
-public class Person {
+public class Person extends Model{
+    @Id
     private int id;
     private String lastName;
     private String firstName;
+
+    @Formats.DateTime(pattern="dd/MM/yyyy")
     private Date date;
 
     public Person() {

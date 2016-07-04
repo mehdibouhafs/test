@@ -4,12 +4,12 @@
 
 
 
-GET     /              @controllers.Application.home
+GET     /home              @controllers.Application.home
 
-GET     /home                       controllers.HomeController.index
+GET     /                       controllers.HomeController.index()
 
 # An example controller showing a sample home page
-GET     /upload                   controllers.UploadController.upload
+POST     /upload                   controllers.UploadController.upload()
 
 # An example controller showing how to use dependency injection
 GET     /count                      controllers.CountController.count
@@ -18,6 +18,9 @@ GET     /message                    controllers.AsyncController.message
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
+
+
+GET     /params                     controllers.ParamsController.parameters(id : Integer)
 
 
 
