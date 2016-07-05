@@ -27,6 +27,8 @@ public class UploadResult extends Model {
 
     public static Finder<Integer, UploadResult> find = new Finder<Integer, UploadResult>(UploadResult.class);
 
+
+
     @Transient
     public File file;
 
@@ -114,4 +116,7 @@ public class UploadResult extends Model {
     public void setFile(File file) {
         this.file = file;
     }
+
+
+
 }

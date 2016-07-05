@@ -21,7 +21,9 @@ public class Person extends Model{
     @Formats.DateTime(pattern="dd/MM/yyyy")
     private Date date;
 
+
     public Person() {
+
     }
 
 
@@ -52,6 +54,7 @@ public class Person extends Model{
 
     @XmlElement(name = "date")
     @XmlJavaTypeAdapter(type = LocalDateAdapter.class, value = model.adapter.LocalDateAdapter.class)
+
     public Date getDate() {
         return date;
     }

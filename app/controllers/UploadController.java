@@ -1,4 +1,5 @@
 package controllers;
+import model.ReaderGenerique;
 import model.UploadResult;
 import org.apache.commons.io.FileExistsException;
 import org.apache.commons.io.FileUtils;
@@ -19,10 +20,14 @@ import play.mvc.Result;
 import running.Global;
 import views.html.index;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.sql.BatchUpdateException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -35,7 +40,120 @@ public class UploadController extends Controller {
 
     }
 
-    public Result upload() {
+
+    public Result upload() throws IOException, JobParametersInvalidException, JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException {
+
+
+        System.out.println("UPLOAD --------------£££££££££££££");
+
+        Http.MultipartFormData<File> body = request().body().asMultipartFormData();
+        Http.MultipartFormData.FilePart<File> picture = body.getFile("picture");
+
+        if (body == null) {
+            return badRequest("Invalid request, required is POST with enctype=multipart/form-data.");
+        }
+
+        if (picture == null) {
+            return badRequest("Invalid request, no file has been sent.");
+        }
+
+        if (picture != null) {
+            System.out.println("NOT NULL");
+            File f = new File(System.getProperty("user.home") +"/app/uploads/");
+            if(!f.exists()) {
+                try {
+                    f.mkdir();
+                } catch (SecurityException se) {
+                    se.printStackTrace();
+                }
+            }
+
+            String fileName = picture.getFilename();
+            System.out.println("FILE NAME = "+fileName);
+            String contentType = picture.getContentType();
+            File file = picture.getFile();
+
+            UploadResult uploadResult = new UploadResult();
+            uploadResult.setName(fileName);
+            uploadResult.setType(contentType);
+            uploadResult.setFile(file);
+
+
+            System.out.println(f.getPath());
+            File destination = new File(System.getProperty("user.home") +"/app/uploads/",fileName);
+            uploadResult.setUrl(destination.getPath());
+            uploadResult.save();
+            if(destination.exists()){
+                destination.delete();
+            }
+            FileUtils.moveFile(file, destination);
+            if(session("idFile")!= null){
+                session().remove("idFile");
+            }else {
+
+                session("idFile", uploadResult.getId() + "");
+            }
+            ApplicationContext context = Global.getApplicationContext();
+            List<String> line = firstLine(new File(uploadResult.getUrl()));
+
+            ReaderGenerique readerGenerique = context.getBean("readerGenerique",ReaderGenerique.class);
+            readerGenerique.setFirstLine(line);
+
+            String dateParam = new Date().toString();
+            System.out.printf("-----------------------------" + destination.getPath() + "-------------------------------------------");
+            JobParameters param = new JobParametersBuilder()
+                    .addString("input.file.name", destination.getPath())
+                    .addString("date", dateParam).toJobParameters();
+
+            JobLauncher jobLauncher = (JobLauncher) context.getBean("jobLauncher");
+            String ext = getExtension(destination.getPath());
+
+            Job job = null;
+
+            if (ext.equals("csv")) {
+                job = (Job) context.getBean("importUserJob");
+                jobLauncher.run(job, param);
+                return ok(views.html.parameter.render(uploadResult,line));
+            }
+
+            if (ext.equals("xml")) {
+                job = (Job) context.getBean("importXML");
+                jobLauncher.run(job, param);
+                return ok(views.html.parameter.render(uploadResult,null));
+            }
+            //destination.delete();
+            return ok("ok");
+
+        } else {
+            System.out.println(" NULL");
+            flash("error", "Missing file");
+            return badRequest();
+        }
+    }
+
+
+    public List<String> firstLine (File f) throws IOException {
+        List<String> result = new ArrayList<>(); // !!!
+        FileReader fr = new FileReader(f);
+        BufferedReader br = new BufferedReader(fr);
+
+        /*for (String line = br.readLine(); line != null; line = br.readLine()) {
+            result.add(line);
+        }
+
+        br.close();
+        fr.close();*/
+        String line = br.readLine();
+        String[] cols =  line.split(",");
+        for (String col: cols
+             ) {
+            result.add(col);
+        }
+        return result;
+    }
+
+
+   /* public Result upload() {
 
         Http.MultipartFormData<File> body = request().body().asMultipartFormData();
         Http.MultipartFormData.FilePart<File> picture = body.getFile("picture");
@@ -47,7 +165,6 @@ public class UploadController extends Controller {
             return badRequest("Invalid request, no file has been sent.");
         }
         if (picture != null) {
-            System.out.println("NOT NULL");
             File f = new File(System.getProperty("user.home") + "/app/uploads/");
             if (!f.exists()) {
                 try {
@@ -58,14 +175,14 @@ public class UploadController extends Controller {
             }
             try {
                 UploadResult uploadResult = new UploadResult();
-                uploadResult.setName(picture.getFilename());
+                uploadResult.save();
                 uploadResult.setType(picture.getContentType());
-                File destination = new File(System.getProperty("user.home") + "/app/uploads/", uploadResult.getName());
+                File destination = new File(System.getProperty("user.home") + "/app/uploads/",uploadResult.getName());
                 FileUtils.moveFile(picture.getFile(), destination);
                 uploadResult.setUrl(destination.getPath());
                 uploadResult.setFile(destination);
                 uploadResult.setSize(FileUtils.sizeOf(destination));
-                uploadResult.save();
+                uploadResult.update();
                 session("idFile", ""+uploadResult.getId());
                 System.out.println("id========="+uploadResult.getId());
                 ApplicationContext context = Global.getApplicationContext();
@@ -96,29 +213,29 @@ public class UploadController extends Controller {
 
             } catch (FileExistsException e) {
                 e.printStackTrace();
-                return ok(e.getMessage());
+
             } catch (IOException e) {
                 e.printStackTrace();
-                return ok(e.getMessage());
+
             } catch (JobInstanceAlreadyCompleteException e) {
                 e.printStackTrace();
-                return ok(e.getMessage());
+
             } catch (JobExecutionAlreadyRunningException e) {
                 e.printStackTrace();
-                return ok(e.getMessage());
+
             } catch (JobParametersInvalidException e) {
                 e.printStackTrace();
-                return ok(e.getMessage());
+
             } catch (JobRestartException e) {
                 e.printStackTrace();
-                return ok(e.getMessage());
+
             } catch (Exception e) {
                 e.printStackTrace();
-                return ok(e.getMessage());
+
             }
         }
         return ok("File NULL");
-    }
+    } */
 
 
 
