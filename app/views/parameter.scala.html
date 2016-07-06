@@ -3,7 +3,8 @@
 * argument is a `String` with the title of the page, the second
 * argument is an `Html` object containing the body of the page.
 *@
-@(message: model.UploadResult,columns : List[String])
+
+@(message: model.UploadResult,columns : model.Rows)
 
 @main("TITLE") {
 @*
@@ -21,7 +22,10 @@
                 <hr class="star-primary">
             </div>
         </div>
-        <div class="row"> &nbsp;Nom de la table * : <input type="text"  name = "tableName" /> </div>
+
+        <form id="upload" method="POST" action="@routes.ParamsController.addParameters()">
+        <div class="row"> &nbsp;Nom de la table * : <input type="text" name="@columns.table" /> </div>
+
         <div>
             <input type="text" maxlength="10" hidden="Table name" />
             <table class="table">
@@ -34,26 +38,27 @@
                 </tr>
                 </thead>
                 <tbody>
-                @for(column <- columns){
+                @for(row <- columns.row){
+
                 <tr>
-                    <th scope="row">@column</th>
+                    <th scope="row">@row.getName</th>
                     <td><div class="btn-group">
-                        <select class="btn btn-default dropdown-toggle btn-select">
-                            <option value="Integer">INT</option>
-                            <option value="String">VARCHAR</option>
-                            <option value="Date">DATE</option>
+                        <select class="btn btn-default dropdown-toggle btn-select" name="type">
+                            <option value="INTEGER" >INTEGER</option>
+                            <option value="VARCHAR" >VARCHAR</option>
+                            <option value="DATE" >DATE</option>
                         </select>
-                    <td><input type="text" maxlength="3" /></td>
-                    <td><label class="checkbox-inline"><input type="checkbox" value="">ADD</label></td>
+                    <td><input type="text" maxlength="3" size="3" name="size"/></td>
+                    <td><label class="checkbox-inline"><input type="checkbox" name="selected" ></label></td>
                 </tr>
                 }
-
                 </tbody>
             </table>
-
+        </div>
+            <button type="submit">Envoyer </button>
+        </form>
         </div>
 
-        </div>
     </section>
 }
 

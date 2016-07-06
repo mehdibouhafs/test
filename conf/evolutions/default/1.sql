@@ -19,11 +19,6 @@ create table person (
 );
 create sequence person_seq;
 
-create table reader_generique (
-  id                            integer,
-  line_to_skip                  integer
-);
-
 create table upload_result (
   id                            integer auto_increment not null,
   url                           varchar(255),
@@ -45,8 +40,6 @@ drop sequence if exists client_seq;
 
 drop table if exists person;
 drop sequence if exists person_seq;
-
-drop table if exists reader_generique;
 
 drop table if exists upload_result;
 

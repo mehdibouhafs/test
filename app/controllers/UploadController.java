@@ -1,5 +1,7 @@
 package controllers;
 import model.ReaderGenerique;
+import model.Row;
+import model.Rows;
 import model.UploadResult;
 import org.apache.commons.io.FileExistsException;
 import org.apache.commons.io.FileUtils;
@@ -25,9 +27,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.BatchUpdateException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 
 /**
@@ -86,7 +86,9 @@ public class UploadController extends Controller {
             if(destination.exists()){
                 destination.delete();
             }
-            FileUtils.moveFile(file, destination);
+            if(!destination.exists()) {
+                FileUtils.moveFile(file, destination);
+            }
             if(session("idFile")!= null){
                 session().remove("idFile");
             }else {
@@ -94,10 +96,10 @@ public class UploadController extends Controller {
                 session("idFile", uploadResult.getId() + "");
             }
             ApplicationContext context = Global.getApplicationContext();
-            List<String> line = firstLine(new File(uploadResult.getUrl()));
+            Rows rows = firstLine(new File(uploadResult.getUrl()));
 
-            ReaderGenerique readerGenerique = context.getBean("readerGenerique",ReaderGenerique.class);
-            readerGenerique.setFirstLine(line);
+            /*ReaderGenerique readerGenerique = context.getBean("readerGenerique",ReaderGenerique.class);
+            readerGenerique.setFirstLine(rows);
 
             String dateParam = new Date().toString();
             System.out.printf("-----------------------------" + destination.getPath() + "-------------------------------------------");
@@ -113,7 +115,7 @@ public class UploadController extends Controller {
             if (ext.equals("csv")) {
                 job = (Job) context.getBean("importUserJob");
                 jobLauncher.run(job, param);
-                return ok(views.html.parameter.render(uploadResult,line));
+                return ok(views.html.parameter.render(uploadResult,rows));
             }
 
             if (ext.equals("xml")) {
@@ -121,8 +123,9 @@ public class UploadController extends Controller {
                 jobLauncher.run(job, param);
                 return ok(views.html.parameter.render(uploadResult,null));
             }
-            //destination.delete();
-            return ok("ok");
+            //destination.delete();*/
+            //return ok("ok");
+            return ok(views.html.parameter.render(uploadResult,rows));
 
         } else {
             System.out.println(" NULL");
@@ -132,24 +135,38 @@ public class UploadController extends Controller {
     }
 
 
-    public List<String> firstLine (File f) throws IOException {
-        List<String> result = new ArrayList<>(); // !!!
+    public Rows firstLine (File f) throws IOException {
+        //List<String> result = new ArrayList<>(); // !!!
+
+        Rows rows = new Rows();
+        //LinkedHashMap<String,Row> columns = new LinkedHashMap<>();
+
+        List<Row> row = new ArrayList<>();
+
         FileReader fr = new FileReader(f);
         BufferedReader br = new BufferedReader(fr);
 
         /*for (String line = br.readLine(); line != null; line = br.readLine()) {
             result.add(line);
         }
-
         br.close();
         fr.close();*/
+
         String line = br.readLine();
         String[] cols =  line.split(",");
         for (String col: cols
              ) {
-            result.add(col);
+
+            Row w = new Row();
+            //w.setSelected(false);
+            //w.setType(new Object());
+            //w.setSize(0);
+            w.setName(col);
+            row.add(w);
         }
-        return result;
+
+        rows.setRow(row);
+        return rows;
     }
 
 

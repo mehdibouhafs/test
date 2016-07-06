@@ -42,7 +42,6 @@ public class HomeController extends Controller {
     }
 
 
-
     public Result getFiles(){
         List<UploadResult> uploadResults = new Model.Finder(String.class,UploadResult.class).all();
         return  ok(toJson(uploadResults));

@@ -1,13 +1,5 @@
 package util;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.lang.reflect.Field;
-
-import org.springframework.core.io.ClassPathResource;
-
 import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
@@ -15,6 +7,12 @@ import javassist.CtField;
 import javassist.NotFoundException;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.ConstPool;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.lang.reflect.Field;
 
 public class test {
 	public static void main(String[] args) throws Exception {
@@ -42,8 +40,6 @@ public class test {
 	                    f.set(rowObject, values[i]);
 	                }
 	                System.out.println(reflectToString(rowObject));
-	                
-	               
 	            }
 	        }
 	    }

@@ -1,13 +1,15 @@
 package controllers;
 
 
+import model.Row;
+import model.Rows;
 import model.UploadResult;
+import play.data.Form;
 import play.mvc.Controller;
 import play.mvc.Result;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 
 /**
@@ -15,14 +17,11 @@ import java.util.List;
  */
 public class ParamsController extends Controller {
 
-    public Result parameters() throws IOException {
-        String id = session("idFile");
-        UploadResult uploadResult = UploadResult.find.byId(Integer.parseInt(id));
 
 
-        return ok("ok");
-    }
+    public Result addParameters() throws IOException {
+        Rows rows = Form.form(Rows.class).bindFromRequest().get();
 
-
-
+        return ok(rows.toString());
+}
 }

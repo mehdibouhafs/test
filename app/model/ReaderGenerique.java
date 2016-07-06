@@ -10,18 +10,16 @@ import java.util.List;
  * Created by MBS on 05/07/2016.
  */
 
-@Entity
 public class ReaderGenerique extends Model {
 
     private int id;
 
-    private List<String> firstLine;//separe par , id,firstName,lastName,date
+    private Rows firstLine;//separe par , id,firstName,lastName,date
 
     //private Object person;
 
     private int lineToSkip;
 
-    private HashMap<String,Object> values = new HashMap<>();
 
     public ReaderGenerique() {
     }
@@ -34,11 +32,11 @@ public class ReaderGenerique extends Model {
         this.id = id;
     }
 
-    public List<String> getFirstLine() {
+    public Rows getFirstLine() {
         return firstLine;
     }
 
-    public void setFirstLine(List<String> firstLine) {
+    public void setFirstLine(Rows firstLine) {
         this.firstLine = firstLine;
     }
 
