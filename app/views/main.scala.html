@@ -14,6 +14,13 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="description" content="">
         <meta name="author" content="">
+
+            <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+            <!--[if lt IE 9]>
+          <script src="http://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.js"></script>
+          <script src="http://cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.js"></script>
+        <![endif]-->
+
         @* Here's where we render the page title `String`. *@
         <title>@title</title>
         <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/freelancer.css")">
@@ -275,7 +282,12 @@ OSEO et d’autres organismes publics soutiennent l’expansion internationale d
 
         <!-- Our main JS file -->
         <script src="@routes.Assets.versioned("stylesheets/assets/js/script.js")"></script>
-
+            <!-- Enable tooltips. Used primarily to validate that JQuery + Bootstrap JS are loaded. Remove this script if you don't want tooltips. -->
+        <script type="text/javascript">
+                jQuery(function ($) {
+                    $("[rel='tooltip']").tooltip()
+                });
+        </script>
 
 
 

@@ -1,8 +1,5 @@
 package controllers;
-import model.ReaderGenerique;
-import model.Row;
-import model.Rows;
-import model.UploadResult;
+import model.*;
 import org.apache.commons.io.FileExistsException;
 import org.apache.commons.io.FileUtils;
 import org.springframework.batch.core.Job;
@@ -124,8 +121,8 @@ public class UploadController extends Controller {
                 return ok(views.html.parameter.render(uploadResult,null));
             }
             //destination.delete();*/
-            //return ok("ok");
-            return ok(views.html.parameter.render(uploadResult,rows));
+            return ok("ok");
+            //return ok(views.html.parameter.render(uploadResult,rows));
 
         } else {
             System.out.println(" NULL");
@@ -161,7 +158,8 @@ public class UploadController extends Controller {
             //w.setSelected(false);
             //w.setType(new Object());
             //w.setSize(0);
-            w.setName(col);
+            //w.setName(col);
+            w.setName(new Columns(col));
             row.add(w);
         }
 

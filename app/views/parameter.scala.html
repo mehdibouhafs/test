@@ -3,62 +3,44 @@
 * argument is a `String` with the title of the page, the second
 * argument is an `Html` object containing the body of the page.
 *@
-
-@(message: model.UploadResult,columns : model.Rows)
+    @(rowForm: Form[views.formdata.ParamFormData],
+            types :Map[String,Boolean],
+            names :Map[String,Boolean]
+            )
+    @import helper._
 
 @main("TITLE") {
-@*
-* Get an `Html` object by calling the built-in Play welcome
-* template and passing a `String` message.
-*@
+        @*
+        * Get an `Html` object by calling the built-in Play welcome
+        * template and passing a `String` message.
+        *@
 
+        <section id="portfolio">
+            <div class="container">
 
-<!-- Portfolio Grid Section -->
-<section id="portfolio">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12 text-center">
-                <h2>Parametrages for the File NAME =( @message.getName()) uploaded</h2>
-                <hr class="star-primary">
+            <div class="well">
+
+            @form(routes.HomeController.postIndex(), 'class -> "form-horizontal") {
+                @fieldset(rowForm, types,names)
+            }
             </div>
+
+            @if(flash.containsKey("success")) {
+                <div class="well">
+                    <div id="success-message" class="text-success">
+                    @flash.get("success")
+                    </div>
+                </div>
+            }
+            @if(flash.containsKey("error")) {
+                <div class="well">
+                    <div id="error-message" class="text-danger">
+                    @flash.get("error")
+                    </div>
+                </div>
+            }
         </div>
+        </section>
 
-        <form id="upload" method="POST" action="@routes.ParamsController.addParameters()">
-        <div class="row"> &nbsp;Nom de la table * : <input type="text" name="@columns.table" /> </div>
-
-        <div>
-            <input type="text" maxlength="10" hidden="Table name" />
-            <table class="table">
-                <thead class="thead-inverse">
-                <tr>
-                    <th>Colomun Name</th>
-                    <th>Colomun Type *</th>
-                    <th>Colomun Size *</th>
-                    <th>Colomun Selected *</th>
-                </tr>
-                </thead>
-                <tbody>
-                @for(row <- columns.row){
-
-                <tr>
-                    <th scope="row">@row.getName</th>
-                    <td><div class="btn-group">
-                        <select class="btn btn-default dropdown-toggle btn-select" name="type">
-                            <option value="INTEGER" >INTEGER</option>
-                            <option value="VARCHAR" >VARCHAR</option>
-                            <option value="DATE" >DATE</option>
-                        </select>
-                    <td><input type="text" maxlength="3" size="3" name="size"/></td>
-                    <td><label class="checkbox-inline"><input type="checkbox" name="selected" ></label></td>
-                </tr>
-                }
-                </tbody>
-            </table>
-        </div>
-            <button type="submit">Envoyer </button>
-        </form>
-        </div>
-
-    </section>
-}
+    }
 

@@ -15,15 +15,23 @@ public class Rows extends Model {
 
     public String table;
 
-    public List<Row> row = new ArrayList<>();
+    public List<Row> rows = new ArrayList<>();
 
+
+    public Rows(List<Row> rows, String table) {
+        this.rows = rows;
+        this.table = table;
+    }
+
+    public Rows() {
+    }
 
     public List<Row> getRow() {
-        return row;
+        return rows;
     }
 
     public void setRow(List<Row> row) {
-        this.row = row;
+        this.rows = row;
     }
 
     public String getTable() {
@@ -35,10 +43,9 @@ public class Rows extends Model {
     }
 
 
-
     public String afficher(){
         String s = "";
-        for (Row r:row
+        for (Row r:rows
              ) {
             s = s+r.toString();
         }

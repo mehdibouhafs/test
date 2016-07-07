@@ -1,0 +1,75 @@
+@(paramForm: Form[views.formdata.ParamFormData],
+        types:     Map[String,Boolean],
+        names:     Map[String,Boolean]
+)
+@import views.html.bootstrap3._
+
+<fieldset>
+  <!-- Header -->
+
+    <div class="row">
+        <div class="col-lg-12 text-center">
+            <h2>Parameters Data</h2>
+            <hr class="star-primary">
+        </div>
+    </div>
+
+    <div id="legend">
+        @text(paramForm("tableName"),
+            placeholder = "TABLE Name",
+            label="Table Name",
+            help = " TABLE NAME Please enter your first and last name. (required)")
+    </div>
+
+    <table class="table">
+        <thead class="thead-inverse">
+            <tr>
+                <th>id</th>
+                <th>Colomun Name</th>
+                <th>Colomun Type *</th>
+                <th>Colomun Size *</th>
+                <th>Colomun Selected *</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+
+            <td>
+                0
+            </td>
+
+            <td>
+  <!-- name -->
+                @select(paramForm("name"),
+                    optionMap = names,
+                    isMultiple = false,
+                    help = "Select the Column name. (required)")
+   <!-- name -->
+            </td>
+            <td>
+  <!-- type -->
+  @select(paramForm("type"),
+  optionMap = types,
+  isMultiple = false,
+  help = "Select the type. (required)")
+            </td>
+            <td>
+@number(paramForm("size"),
+placeholder = "Size",
+label ="",
+help = "Size if VARCHAR must be five or more characters.")
+            </td>
+             <td>
+@checkboxe(paramForm("bools"),
+ help = "Select if you want to persist. (optional)")
+             </td>
+            </tr>
+            </tbody>
+        </table>
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <button id="submit" type="submit" value="Submit" class="btn btn-primary">Submit</button>
+      <button id="cancel" class="btn cancel">Cancel</button>
+    </div>
+  </div>
+</fieldset>
