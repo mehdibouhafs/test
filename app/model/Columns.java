@@ -2,10 +2,7 @@ package model;
 
 import views.formdata.ParamFormData;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by MBS on 07/07/2016.
@@ -51,22 +48,6 @@ public class Columns {
 
 
 
-    /**
-     * Create a map of hobby name -> boolean including all known hobbies
-     * and setting the boolean to true if a given hobby is associated with the passed student.
-     * @param paramFormData A student who may have zero or more hobbies, or null to create a hobby list
-     * with all unchecked boxes.
-     * @return A map of type names to booleans indicating the hobbies associated with the paramFormData.
-     */
-    public static Map<String, Boolean> makeTypeMap(ParamFormData paramFormData) {
-        Map<String, Boolean> typeMap = new HashMap<String, Boolean>();
-        for (Columns column  : allColumns) {
-            typeMap.put(column.getName(), (paramFormData == null) ? false : (paramFormData.type !=null && paramFormData.type.equals(column.getName())));
-        }
-        return typeMap;
-    }
-
-
     public static Columns findType(String columnName) {
         System.out.println("********************typeName :" +  columnName);
         for (Columns column : allColumns) {
@@ -99,6 +80,36 @@ public class Columns {
         allColumns.add(new Columns(2L, "firstName"));
         allColumns.add(new Columns(3L, "lastName"));
         allColumns.add(new Columns(4L, "date"));
+    }
+
+
+    public static Map<String, Boolean> makeColumnMap(ParamFormData paramFormData) {
+        Map<String, Boolean> columnMap = new LinkedHashMap<>();
+        for (Columns col : allColumns) {
+            columnMap.put(col.getName(), (paramFormData != null && find(paramFormData.getRows(),col.getName()) ));
+        }
+        return columnMap;
+    }
+
+
+    public static boolean find(List<Row> rows,String col){
+        if(rows != null) {
+            for (Row r : rows
+                    ) {
+                if (r.getName().equals(col)) {
+                    return true;
+                }
+
+            }
+        }
+        return  false;
+    }
+
+
+
+    public static List<String> getNameList() {
+        String[] nameArray = {"String", "Integer", "Date", "VARCHAR", "BOOLEAN"};
+        return Arrays.asList(nameArray);
     }
 }
 

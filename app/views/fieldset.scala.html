@@ -1,6 +1,6 @@
 @(paramForm: Form[views.formdata.ParamFormData],
-        types:     Map[String,Boolean],
-        names:     Map[String,Boolean]
+        columns:    Map[String,Boolean],
+        types :     Map[String,Boolean]
 )
 @import views.html.bootstrap3._
 
@@ -16,58 +16,73 @@
 
     <div id="legend">
         @text(paramForm("tableName"),
-            placeholder = "TABLE Name",
+            placeholder = "Name of table",
             label="Table Name",
-            help = " TABLE NAME Please enter your first and last name. (required)")
+            help = " TABLE NAME Please enter the table Name . (required)",
+            isID=false
+        )
     </div>
 
     <table class="table">
-        <thead class="thead-inverse">
+        <thead>
             <tr>
-                <th>id</th>
-                <th>Colomun Name</th>
-                <th>Colomun Type *</th>
-                <th>Colomun Size *</th>
-                <th>Colomun Selected *</th>
+
+                <th >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Id</th>
+
+                <th >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Colomun Name</th>
+
+                <th >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Colomun Type *</th>
+
+
+                <th >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Colomun Selected *</th>
+
+
             </tr>
         </thead>
         <tbody>
+
+        @helper.repeat(paramForm("rows"),min = columns.size()) { row =>
             <tr>
+                <td>
 
-            <td>
-                0
-            </td>
+                    @text(row,
+                        label = "",
+                        placeholder = "",
+                        help = "",
+                        isID=true,
+                        champForm = ".id"
+                    )
+                </td>
 
-            <td>
-  <!-- name -->
-                @select(paramForm("name"),
-                    optionMap = names,
-                    isMultiple = false,
-                    help = "Select the Column name. (required)")
-   <!-- name -->
-            </td>
-            <td>
-  <!-- type -->
-  @select(paramForm("type"),
-  optionMap = types,
-  isMultiple = false,
-  help = "Select the type. (required)")
-            </td>
-            <td>
-@number(paramForm("size"),
-placeholder = "Size",
-label ="",
-help = "Size if VARCHAR must be five or more characters.")
-            </td>
-             <td>
-@checkboxe(paramForm("bools"),
- help = "Select if you want to persist. (optional)")
-             </td>
+                <td>
+                    @select(row,
+                        optionMap = columns,
+                        isMultiple = false,
+                        help = "Select the Column name. (required)",
+                        champForm = ".name")
+                        <!-- name -->
+                </td>
+
+                <td>
+                    @select(row,
+                        optionMap = types,
+                        isMultiple = false,
+                        help = "Select the type name. (required)",
+                        champForm =".type")
+                        <!-- name -->
+                </td>
+
+                <td>
+                @checkboxe(row,
+                    help = "Select if you want to persist. (optional)",
+                    champForm = ".selected")
+                </td>
             </tr>
+        }
             </tbody>
         </table>
   <div class="form-group">
-    <div class="col-sm-offset-2 col-sm-10">
+    <div class="col-sm-offset-2 col-sm-10" style="margin: 0 0 0 0;">
       <button id="submit" type="submit" value="Submit" class="btn btn-primary">Submit</button>
       <button id="cancel" class="btn cancel">Cancel</button>
     </div>

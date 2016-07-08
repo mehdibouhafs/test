@@ -6,6 +6,8 @@ import views.formdata.ParamFormData;
 import javax.persistence.Entity;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Created by MBS on 06/07/2016.
@@ -15,9 +17,9 @@ public class Row extends Model {
 
     public Long id;
 
-    public Columns name;
+    public String name;
 
-    public Type type;
+    public String type;
 
 
     public boolean selected;
@@ -26,35 +28,21 @@ public class Row extends Model {
     public Row() {
     }
 
-    public Row(Long id, Columns name, Type type, boolean selected) {
+    public Row(Long id, String name, String type, boolean selected) {
         this.id = id;
         this.name = name;
         this.type = type;
         this.selected = selected;
     }
 
-    @Override
-    public String toString() {
-        return String.format("[Row name: '%s' type: '%s' selected: %s]", this.getName(),
-                this.getType(), this.isSelected());
-    }
-
-    public Columns getName() {
-        return name;
-    }
-
-    public void setName(Columns name) {
+    public Row(String name) {
         this.name = name;
     }
+
 
     public Object getType() {
         return type;
     }
-
-    public void setType(Type type) {
-        this.type = type;
-    }
-
 
     public boolean isSelected() {
         return selected;
@@ -70,29 +58,35 @@ public class Row extends Model {
     }
 
 
-    public static Rows makeInstance(ParamFormData formData) {
-        Rows rows = new Rows();
-        Row row = new Row();
-        row.name =  Columns.findType(formData.name);
-        row.type = Type.findType(formData.type);
-        row.selected = Boolean.valueOf(formData.bools);
-        rows.setTable(formData.tableName);
-        rows.getRow().add(row);
+    public static List<Row> makeInstance(ParamFormData formData) {
+        List<Row> rows =  formData.getRows();
+        for (Row r : rows) {
+            allRowss.add(r);
+        }
         return rows;
     }
 
 
     public static ParamFormData makeRowFormData(long id) {
+        List<Row> list = new ArrayList<>();
         for (Row row : allRowss) {
             if (row.getId() == id) {
-                return new ParamFormData(row.name, row.type, row.selected);
+                list.add(row);
+                return new ParamFormData(list);
             }
         }
-        throw new RuntimeException("Couldn't find student");
+        throw new RuntimeException("Couldn't find Row");
     }
 
-
-
+    @Override
+    public String toString() {
+        return "Row{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", type='" + type + '\'' +
+                ", selected=" + selected +
+                '}';
+    }
 
     /** Fake a database of students. */
     private static List<Row> allRowss = new ArrayList<>();
@@ -100,9 +94,8 @@ public class Row extends Model {
     /** Populate the fake database with both valid and invalid students, just for tutorial purposes.*/
     static {
         // Valid student. No optional data supplied.
-        allRowss.add(new Row(1L,Columns.findType("id"),Type.findType("Integer") ,true));
-        allRowss.add(new Row(2L,Columns.findType("firstName"),Type.findType("String"),true));
-        allRowss.add(new Row(3L,Columns.findType("lastName"),Type.findType("String"),true));
+        allRowss.add(new Row(1L,"id","Integer" ,true));
+        allRowss.add(new Row(2L,"name","String" ,true));
         // Valid student with optional data.
         //getById(2L).addHobby(Hobby.findHobby("Biking"));
         //getById(2L).addHobby(Hobby.findHobby("Surfing"));
@@ -126,5 +119,28 @@ public class Row extends Model {
         throw new RuntimeException("Couldn't find student");
     }
 
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public static List<Row> getAllRowss() {
+        return allRowss;
+    }
+
+    public static void setAllRowss(List<Row> allRowss) {
+        Row.allRowss = allRowss;
+    }
 
 }

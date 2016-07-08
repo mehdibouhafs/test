@@ -2,10 +2,7 @@ package model;
 
 import views.formdata.ParamFormData;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by MBS on 07/07/2016.
@@ -42,21 +39,25 @@ public class Type {
 
 
 
-    /**
-     * Create a map of hobby name -> boolean including all known hobbies
-     * and setting the boolean to true if a given hobby is associated with the passed student.
-     * @param paramFormData A student who may have zero or more hobbies, or null to create a hobby list
-     * with all unchecked boxes.
-     * @return A map of type names to booleans indicating the hobbies associated with the paramFormData.
-     */
-    public static Map<String, Boolean> makeTypeMap(ParamFormData paramFormData) {
-        Map<String, Boolean> typeMap = new HashMap<String, Boolean>();
+   public static Map<String, Boolean> makeTypeMap(ParamFormData paramFormData) {
+        Map<String, Boolean> typeMap = new LinkedHashMap<>();
         for (Type type  : allTypes) {
-            typeMap.put(type.getName(), (paramFormData == null) ? false : (paramFormData.type !=null && paramFormData.type.equals(type.getName())));
+            typeMap.put(type.getName(), (paramFormData != null &&  find(paramFormData.getRows(),type.getName())));
         }
         return typeMap;
     }
 
+    public static boolean find(List<Row> rows,String type){
+        if(rows != null) {
+            for (Row r : rows
+                    ) {
+                if (r.getType().equals(type)) {
+                    return true;
+                }
+            }
+        }
+        return  false;
+    }
 
     public static Type findType(String typeName) {
         System.out.println("********************typeName :" +  typeName);

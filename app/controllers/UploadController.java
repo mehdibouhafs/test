@@ -93,7 +93,7 @@ public class UploadController extends Controller {
                 session("idFile", uploadResult.getId() + "");
             }
             ApplicationContext context = Global.getApplicationContext();
-            Rows rows = firstLine(new File(uploadResult.getUrl()));
+            List<Columns> cols= firstLine(new File(uploadResult.getUrl()));
 
             /*ReaderGenerique readerGenerique = context.getBean("readerGenerique",ReaderGenerique.class);
             readerGenerique.setFirstLine(rows);
@@ -132,10 +132,10 @@ public class UploadController extends Controller {
     }
 
 
-    public Rows firstLine (File f) throws IOException {
+    public List<Columns> firstLine (File f) throws IOException {
         //List<String> result = new ArrayList<>(); // !!!
 
-        Rows rows = new Rows();
+        //Rows rows = new Rows();
         //LinkedHashMap<String,Row> columns = new LinkedHashMap<>();
 
         List<Row> row = new ArrayList<>();
@@ -159,12 +159,12 @@ public class UploadController extends Controller {
             //w.setType(new Object());
             //w.setSize(0);
             //w.setName(col);
-            w.setName(new Columns(col));
+           // w.setName(new Columns(col));
             row.add(w);
         }
 
-        rows.setRow(row);
-        return rows;
+        //rows.setRow(row);
+        return null;
     }
 
 

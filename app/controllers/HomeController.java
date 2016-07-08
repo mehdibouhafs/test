@@ -32,27 +32,36 @@ public class HomeController extends Controller {
     public Result postIndex() {
         // Get the submitted form data from the request object, and run validation.
         Form<ParamFormData> formData = Form.form(ParamFormData.class).bindFromRequest();
-        System.out.println(formData.get().toString());
+        //system.out.println(formData.get().toString());
         if (formData.hasErrors()) {
             System.out.println("ERROR POST");
             // Don't call formData.get() when there are errors, pass 'null' to helpers instead.
             flash("error", "Please correct errors above.");
             return badRequest( parameter.render(formData,
-                    Type.makeTypeMap(null),
-                    Columns.makeTypeMap(null)
+                    Columns.makeColumnMap(null),
+                    Type.makeTypeMap(null)
+
             ));
         }
         else {
             // Convert the formData into a Student model instance.
             System.out.println("NO ERROR POST");
-            String bools = formData.get().getBools();
-            System.out.println(bools);
-            Rows rows = Row.makeInstance(formData.get()); //maket
-            System.out.println(rows );
+            //String tableName = formData.get().getTableName();
+            List<Row> rows1 = formData.get().getRows();
+
+            //System.out.println(tableName);
+            for (Row r: rows1
+                 ) {
+                System.out.println(r);
+
+            }
+
+            List<Row> rows = Row.makeInstance(formData.get()); //maket
+            System.out.println(rows);
             flash("success", "Column instance created/edited: " + rows);
             return ok(parameter.render(formData,
-                    Type.makeTypeMap(formData.get()),
-                    Columns.makeTypeMap(formData.get())
+                    Columns.makeColumnMap(formData.get()),
+                    Type.makeTypeMap(formData.get())
 
             ));
         }
@@ -63,8 +72,8 @@ public class HomeController extends Controller {
         Form<ParamFormData> formData = Form.form(ParamFormData.class).fill(paramData);
         return ok(parameter.render(
                 formData,
-                Type.makeTypeMap(paramData),
-                Columns.makeTypeMap(paramData)
+                Columns.makeColumnMap(paramData),
+                Type.makeTypeMap(paramData)
         ));
     }
 

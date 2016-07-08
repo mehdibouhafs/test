@@ -1,0 +1,45 @@
+@*
+* Call the `main` template with two arguments. The first
+* argument is a `String` with the title of the page, the second
+* argument is an `Html` object containing the body of the page.
+*@
+@(rowForm: Form[views.formdata.ParamFormData],
+        types :Map[String,Boolean],
+        names :Map[String,Boolean]
+)
+@import helper._
+
+@main("TITLE") {
+    @*
+    * Get an `Html` object by calling the built-in Play welcome
+    * template and passing a `String` message.
+    *@
+
+    <section id="portfolio">
+        <div class="container">
+
+            <div class="well">
+
+            @form(routes.HomeController.postIndex(), 'class -> "form-horizontal") {
+                @fieldset(rowForm, types,names)
+            }
+            </div>
+
+            @if(flash.containsKey("success")) {
+                <div class="well">
+                    <div id="success-message" class="text-success">
+                    @flash.get("success")
+                    </div>
+                </div>
+            }
+            @if(flash.containsKey("error")) {
+                <div class="well">
+                    <div id="error-message" class="text-danger">
+                    @flash.get("error")
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+
+}

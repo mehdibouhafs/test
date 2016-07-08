@@ -14,7 +14,7 @@ public class ReaderGenerique extends Model {
 
     private int id;
 
-    private Rows firstLine;//separe par , id,firstName,lastName,date
+    private List<Columns> columns;//separe par , id,firstName,lastName,date
 
     //private Object person;
 
@@ -32,12 +32,13 @@ public class ReaderGenerique extends Model {
         this.id = id;
     }
 
-    public Rows getFirstLine() {
-        return firstLine;
+
+    public List<Columns> getColumns() {
+        return columns;
     }
 
-    public void setFirstLine(Rows firstLine) {
-        this.firstLine = firstLine;
+    public void setColumns(List<Columns> columns) {
+        this.columns = columns;
     }
 
     public int getLineToSkip() {
