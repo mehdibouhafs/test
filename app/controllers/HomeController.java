@@ -1,8 +1,10 @@
 package controllers;
 import com.avaje.ebean.Model;
 import model.*;
+import org.springframework.context.ApplicationContext;
 import play.data.Form;
 import play.mvc.*;
+import running.Global;
 import views.formdata.ParamFormData;
 import views.html.*;
 import java.util.List;
@@ -13,8 +15,13 @@ import static play.libs.Json.toJson;
  * to the application's home page.
  */
 public class HomeController extends Controller {
+
+    ApplicationContext context;
     public HomeController() {
+        context = Global.getApplicationContext();
     }
+
+
 
     /**
      * An action that renders an HTML page with a welcome message.
@@ -26,7 +33,12 @@ public class HomeController extends Controller {
      */
 
     public Result index() {
-        return ok(index.render(1993));
+
+        ParamFormData paramData =  new ParamFormData();
+        Form<ParamFormData> formData = Form.form(ParamFormData.class).fill(paramData);
+        return ok(index.render(formData,
+                Separator.makeSeparatorMap(paramData)
+        ));
     }
 
     public Result postIndex() {
@@ -37,9 +49,11 @@ public class HomeController extends Controller {
             System.out.println("ERROR POST");
             // Don't call formData.get() when there are errors, pass 'null' to helpers instead.
             flash("error", "Please correct errors above.");
+            Columns columns = context.getBean("columns",Columns.class);
             return badRequest( parameter.render(formData,
-                    Columns.makeColumnMap(null),
-                    Type.makeTypeMap(null)
+                    columns.makeColumnMap(null),
+                    Type.makeTypeMap(null),
+                    Separator.makeSeparatorMap(null)
 
             ));
         }
@@ -55,14 +69,14 @@ public class HomeController extends Controller {
                 System.out.println(r);
 
             }
-
             List<Row> rows = Row.makeInstance(formData.get()); //maket
             System.out.println(rows);
             flash("success", "Column instance created/edited: " + rows);
+            Columns columns = context.getBean("columns",Columns.class);
             return ok(parameter.render(formData,
-                    Columns.makeColumnMap(formData.get()),
-                    Type.makeTypeMap(formData.get())
-
+                    columns.makeColumnMap(formData.get()),
+                    Type.makeTypeMap(formData.get()),
+                    Separator.makeSeparatorMap(formData.get())
             ));
         }
     }
@@ -70,19 +84,19 @@ public class HomeController extends Controller {
     public Result getIndex(long id) {
         ParamFormData paramData = (id == 0) ? new ParamFormData() : model.Row.makeRowFormData(id);
         Form<ParamFormData> formData = Form.form(ParamFormData.class).fill(paramData);
+        Columns columns = context.getBean("columns",Columns.class);
         return ok(parameter.render(
                 formData,
-                Columns.makeColumnMap(paramData),
-                Type.makeTypeMap(paramData)
+                columns.makeColumnMap(paramData),
+                Type.makeTypeMap(paramData),
+                Separator.makeSeparatorMap(paramData)
         ));
     }
-
 
     public Result addClient() {
         Client client = Form.form(Client.class).bindFromRequest().get();
         client.save();
         return redirect(routes.HomeController.getIndex(client.getId()));
-
     }
 
     public Result getClients(){
@@ -90,10 +104,16 @@ public class HomeController extends Controller {
         return  ok(toJson(clients));
     }
 
-
     public Result getFiles(){
         List<UploadResult> uploadResults = new Model.Finder(String.class,UploadResult.class).all();
         return  ok(toJson(uploadResults));
     }
 
+    public ApplicationContext getContext() {
+        return context;
+    }
+
+    public void setContext(ApplicationContext context) {
+        this.context = context;
+    }
 }

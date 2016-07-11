@@ -51,7 +51,7 @@
 			<bean class="org.springframework.batch.item.file.mapping.DefaultLineMapper">
 				<property name="lineTokenizer">
 					<bean class="org.springframework.batch.item.file.transform.DelimitedLineTokenizer">
-						<property name="names" value="#{readerGenerique.getFirstLine()}" />
+						<property name="names" value="#readerGenerique.getColumns" />
 					</bean>
 				</property>
 				<property name="fieldSetMapper">
@@ -70,6 +70,7 @@
 
 	<bean id="readerGenerique" class="model.ReaderGenerique" />
 
+	<bean id="columns" class="model.Columns"/>
 
 
 	<bean id="recordSeperatorPolicy " class="handle.BlankLineRecordSeparatorPolicy"/>

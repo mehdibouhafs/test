@@ -14,7 +14,7 @@ public class ReaderGenerique extends Model {
 
     private int id;
 
-    private List<Columns> columns;//separe par , id,firstName,lastName,date
+    private String columns;//separe par , id,firstName,lastName,date
 
     //private Object person;
 
@@ -33,11 +33,11 @@ public class ReaderGenerique extends Model {
     }
 
 
-    public List<Columns> getColumns() {
+    public String getColumns() {
         return columns;
     }
 
-    public void setColumns(List<Columns> columns) {
+    public void setColumns(String columns) {
         this.columns = columns;
     }
 

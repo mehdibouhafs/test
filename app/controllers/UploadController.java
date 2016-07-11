@@ -13,11 +13,14 @@ import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import play.Routes;
+import play.data.Form;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import running.Global;
+import views.formdata.ParamFormData;
 import views.html.index;
+import views.html.parameter;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -41,65 +44,24 @@ public class UploadController extends Controller {
     public Result upload() throws IOException, JobParametersInvalidException, JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException {
 
 
-        System.out.println("UPLOAD --------------£££££££££££££");
-
-        Http.MultipartFormData<File> body = request().body().asMultipartFormData();
-        Http.MultipartFormData.FilePart<File> picture = body.getFile("picture");
-
-        if (body == null) {
-            return badRequest("Invalid request, required is POST with enctype=multipart/form-data.");
-        }
-
-        if (picture == null) {
-            return badRequest("Invalid request, no file has been sent.");
-        }
-
-        if (picture != null) {
-            System.out.println("NOT NULL");
-            File f = new File(System.getProperty("user.home") +"/app/uploads/");
-            if(!f.exists()) {
-                try {
-                    f.mkdir();
-                } catch (SecurityException se) {
-                    se.printStackTrace();
-                }
-            }
-
-            String fileName = picture.getFilename();
+            File destination = new File(System.getProperty("user.home") +"/app/uploads/sample-data.csv");
+            String fileName = destination.getName();
             System.out.println("FILE NAME = "+fileName);
-            String contentType = picture.getContentType();
-            File file = picture.getFile();
-
-            UploadResult uploadResult = new UploadResult();
-            uploadResult.setName(fileName);
-            uploadResult.setType(contentType);
-            uploadResult.setFile(file);
-
-
-            System.out.println(f.getPath());
-            File destination = new File(System.getProperty("user.home") +"/app/uploads/",fileName);
-            uploadResult.setUrl(destination.getPath());
-            uploadResult.save();
-            if(destination.exists()){
-                destination.delete();
-            }
-            if(!destination.exists()) {
-                FileUtils.moveFile(file, destination);
-            }
-            if(session("idFile")!= null){
-                session().remove("idFile");
-            }else {
-
-                session("idFile", uploadResult.getId() + "");
-            }
+             ParamFormData paramData = new ParamFormData();
+             Form<ParamFormData> formData = Form.form(ParamFormData.class).fill(paramData);
             ApplicationContext context = Global.getApplicationContext();
-            List<Columns> cols= firstLine(new File(uploadResult.getUrl()));
-
-            /*ReaderGenerique readerGenerique = context.getBean("readerGenerique",ReaderGenerique.class);
-            readerGenerique.setFirstLine(rows);
+            String cols= firstLine(destination);
+            System.out.println("COLUMNS = "+cols);
+            ReaderGenerique readerGenerique = context.getBean("readerGenerique",ReaderGenerique.class);
+            readerGenerique.setColumns(cols);
+            System.out.println("CHAR"+formData.get().getSeparator());
+            List<Columns> list = columns(cols,',');
+            Columns columns = context.getBean("columns",Columns.class);
+        System.out.println(list);
+            columns.setAllColumns(list);
 
             String dateParam = new Date().toString();
-            System.out.printf("-----------------------------" + destination.getPath() + "-------------------------------------------");
+            System.out.printf("-----------------------------" + destination.getPath());
             JobParameters param = new JobParametersBuilder()
                     .addString("input.file.name", destination.getPath())
                     .addString("date", dateParam).toJobParameters();
@@ -107,33 +69,32 @@ public class UploadController extends Controller {
             JobLauncher jobLauncher = (JobLauncher) context.getBean("jobLauncher");
             String ext = getExtension(destination.getPath());
 
+
             Job job = null;
 
+
             if (ext.equals("csv")) {
+                System.out.println("CSV");
                 job = (Job) context.getBean("importUserJob");
                 jobLauncher.run(job, param);
-                return ok(views.html.parameter.render(uploadResult,rows));
+                return ok(views.html.parameter.render(formData,columns.makeColumnMap(paramData),Type.makeTypeMap(paramData),Separator.makeSeparatorMap(paramData)));
             }
 
             if (ext.equals("xml")) {
+                System.out.println("XML");
                 job = (Job) context.getBean("importXML");
                 jobLauncher.run(job, param);
-                return ok(views.html.parameter.render(uploadResult,null));
+                return ok(views.html.parameter.render(formData,columns.makeColumnMap(paramData),Type.makeTypeMap(paramData),Separator.makeSeparatorMap(paramData)));
             }
             //destination.delete();*/
             return ok("ok");
             //return ok(views.html.parameter.render(uploadResult,rows));
 
-        } else {
-            System.out.println(" NULL");
-            flash("error", "Missing file");
-            return badRequest();
-        }
     }
 
 
-    public List<Columns> firstLine (File f) throws IOException {
-        //List<String> result = new ArrayList<>(); // !!!
+    public String firstLine (File f) throws IOException {
+        //String result = new ArrayList<>(); // !!!
 
         //Rows rows = new Rows();
         //LinkedHashMap<String,Row> columns = new LinkedHashMap<>();
@@ -143,28 +104,25 @@ public class UploadController extends Controller {
         FileReader fr = new FileReader(f);
         BufferedReader br = new BufferedReader(fr);
 
-        /*for (String line = br.readLine(); line != null; line = br.readLine()) {
-            result.add(line);
-        }
-        br.close();
-        fr.close();*/
-
         String line = br.readLine();
-        String[] cols =  line.split(",");
-        for (String col: cols
-             ) {
-
-            Row w = new Row();
-            //w.setSelected(false);
-            //w.setType(new Object());
-            //w.setSize(0);
-            //w.setName(col);
-           // w.setName(new Columns(col));
-            row.add(w);
-        }
-
+        //System.out.println(line);
         //rows.setRow(row);
-        return null;
+        return line;
+    }
+
+    public List<Columns> columns (String s,char sep){
+
+        List<Columns> listColumns = new ArrayList<>();
+        int i = 0;
+        String[] cols =  s.split(new Character(sep).toString());
+        for (String col: cols
+                ) {
+
+            Columns c = new Columns(i,col);
+            listColumns.add(c);
+            i++;
+        }
+        return  listColumns;
     }
 
 

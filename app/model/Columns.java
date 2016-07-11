@@ -9,8 +9,9 @@ import java.util.*;
  */
 public class Columns {
 
-    public Long id;
+    public int id;
     public String name;
+    private List<Columns> allColumns = new ArrayList<>();
 
 
     public Columns() {
@@ -20,16 +21,16 @@ public class Columns {
         this.name = name;
     }
 
-    public Columns(String name, Long id) {
-        this.name = name;
+    public Columns(int id, String name) {
         this.id = id;
+        this.name = name;
     }
 
-    public Long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -41,16 +42,12 @@ public class Columns {
         this.name = name;
     }
 
-    public Columns (Long id, String name) {
-        this.id = id;
-        this.name = name;
-    }
 
 
 
-    public static Columns findType(String columnName) {
+    public Columns findType(String columnName) {
         System.out.println("********************typeName :" +  columnName);
-        for (Columns column : allColumns) {
+        for (Columns column : getAllColumns()) {
             if (columnName.equals(column.getName())) {
                 return column;
             }
@@ -58,12 +55,12 @@ public class Columns {
         return null;
     }
 
-    public static List<Columns> getAllColumns() {
+    public List<Columns> getAllColumns() {
         return allColumns;
     }
 
-    public static void setAllColumns(List<Columns> allColumns) {
-        Columns.allColumns = allColumns;
+    public void setAllColumns(List<Columns> allColumns) {
+        this.allColumns = allColumns;
     }
 
     @Override
@@ -72,20 +69,15 @@ public class Columns {
     }
 
     /** Fake a database of hobbies. */
-    private static List<Columns> allColumns = new ArrayList<>();
+
 
     /** Instantiate the fake database of hobbies. */
-    static {
-        allColumns.add(new Columns(1L, "id"));
-        allColumns.add(new Columns(2L, "firstName"));
-        allColumns.add(new Columns(3L, "lastName"));
-        allColumns.add(new Columns(4L, "date"));
-    }
 
 
-    public static Map<String, Boolean> makeColumnMap(ParamFormData paramFormData) {
+
+    public Map<String, Boolean> makeColumnMap(ParamFormData paramFormData) {
         Map<String, Boolean> columnMap = new LinkedHashMap<>();
-        for (Columns col : allColumns) {
+        for (Columns col : getAllColumns()) {
             columnMap.put(col.getName(), (paramFormData != null && find(paramFormData.getRows(),col.getName()) ));
         }
         return columnMap;

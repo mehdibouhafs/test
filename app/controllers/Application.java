@@ -1,14 +1,19 @@
 package controllers;
 import com.google.inject.Inject;
 import model.Client;
+import model.Columns;
+import model.Separator;
+import model.Type;
 import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Qualifier;
+import play.data.Form;
 import play.mvc.*;
 import play.mvc.Controller;
+import views.formdata.ParamFormData;
 
 
 /**
@@ -29,6 +34,9 @@ public class Application extends Controller {
         //String s = app.encadrant.getName();
         //encadrant.setName("ok");
         //this.encadrant = Global.getBean(encadrant.getClass());
+
+        ParamFormData paramData =  new ParamFormData();
+        Form<ParamFormData> formData = Form.form(ParamFormData.class).fill(paramData);
 
 
         return ok(views.html.upload.render());

@@ -5,7 +5,8 @@
 *@
 @(rowForm: Form[views.formdata.ParamFormData],
         types :Map[String,Boolean],
-        names :Map[String,Boolean]
+        names :Map[String,Boolean],
+        separators:Map[Character,Boolean]
 )
 @import helper._
 
@@ -18,12 +19,16 @@
     <section id="portfolio">
         <div class="container">
 
-            <div class="well">
+            @form(routes.UploadController.upload(), 'class -> "form-horizontal") {
+                @fieldset2(rowForm,separators)
+            }
 
             @form(routes.HomeController.postIndex(), 'class -> "form-horizontal") {
-                @fieldset(rowForm, types,names)
+                @fieldset(rowForm, types,names,separators)
             }
-            </div>
+
+
+
 
             @if(flash.containsKey("success")) {
                 <div class="well">

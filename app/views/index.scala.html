@@ -3,7 +3,10 @@
  * argument is a `String` with the title of the page, the second
  * argument is an `Html` object containing the body of the page.
  *@
-@(id : Integer)
+@(paramForm: Form[views.formdata.ParamFormData],
+        separators:    Map[Character,Boolean]
+        )
+@import views.html.bootstrap3._
 
 
 
@@ -23,24 +26,52 @@
                         <hr class="star-primary">
                     </div>
                 </div>
-                <div>
-        <form id="upload" method="POST" action="@routes.UploadController.upload()" enctype="multipart/form-data">
-            <div id="drop">
-                Drop Here
-                <a>Parcourir</a>
-                <input type="file" id="picture" name="picture"/>
-            </div>
+                <div class="row setup-content" id="step-1">
+                    <div class="col-xs-12">
+                        <div class="col-md-12 well text-center">
+                            <h1> Paremeter File</h1>
+                            <div class="panel panel-default">
+                                <div class="panel-body">
+                                    <form action="@routes.UploadController.upload()" method="POST">
+                                    Separators :
+                                    @select(paramForm("separator"),
+                                        optionMap = null,
+                                        isMultiple = false,
+                                        help = "Select the Separator for your file. (required)",
+                                        champForm = "",
+                                        optionMap1 = separators
+                                    )
+                                    @text(paramForm("numberLine"),
+                                        placeholder = "Number Line to switch",
+                                        label="Nombre de line",
+                                        help = " Please enter the number of line to switch . (required)",
+                                        isID=false,
+                                        champForm="number"
+                                    )
+                                       <!-- <input id="activate-step-2" type="submit" class="btn btn-primary btn-lg"/>-->
+                                        <input type="submit" id="activate-step-2" class="btn btn-primary btn-lg"  >
+                                        </form>
+                                </div>
+                            </div>
 
-            <ul>
-                <!-- The file uploads will be shown here -->
-            </ul>
 
-
-        </form>
+                        </div>
+                    </div>
                 </div>
 
+
                 </div>
+
+
             </section>
+
+
+
+
+
+
+                        <!-- name -->
+
 
 
         <!--<div class="row">

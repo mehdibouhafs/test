@@ -14,6 +14,8 @@ import java.util.List;
  */
 public class ParamFormData {
 
+    public char separator;
+
     public String tableName;
 
     public List<Row> rows;
@@ -36,6 +38,7 @@ public class ParamFormData {
         this.rows = rows;
     }
 
+
     /**
      * Validates Form<StudentFormData>.
      * Called automatically in the controller by bindFromRequest().
@@ -56,7 +59,7 @@ public class ParamFormData {
         /*if(tableName == null || tableName.equals("")){
             errors.add(new ValidationError("tableName", "No table name was given."));
         }*/
-        for(int i=0;i<rows.size();i++) {
+       /* for(int i=0;i<rows.size();i++) {
             //System.out.println("rows["+i+"].name="+rows.get(i).name);
             if (rows.get(i).name.equals("")) {
                 errors.add(new ValidationError("rows["+i+"]", "No column name was given for the row number ("+i+")"));
@@ -69,12 +72,18 @@ public class ParamFormData {
         if(errors.size() > 0) {
             System.out.println(errors);
             return errors;
-        }
+        }*/
 
         return null;
     }
 
+    public char getSeparator() {
+        return separator;
+    }
 
+    public void setSeparator(char separator) {
+        this.separator = separator;
+    }
 
     public String getTableName() {
         return tableName;

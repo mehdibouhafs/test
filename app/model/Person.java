@@ -26,7 +26,6 @@ public class Person extends Model{
 
     }
 
-
     public Person(int id, String firstName, String lastName, Date date) {
         this.id = id;
         this.firstName = firstName;

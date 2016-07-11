@@ -3,9 +3,11 @@
 * argument is a `String` with the title of the page, the second
 * argument is an `Html` object containing the body of the page.
 *@
+    @import javax.swing.JPopupMenu.Separator
     @(rowForm: Form[views.formdata.ParamFormData],
             types :Map[String,Boolean],
-            names :Map[String,Boolean]
+            names :Map[String,Boolean],
+            separators : Map[Character,Boolean]
             )
     @import helper._
 
@@ -18,12 +20,9 @@
         <section id="portfolio">
             <div class="container">
 
-            <div class="well">
-
             @form(routes.HomeController.postIndex(), 'class -> "form-horizontal") {
-                @fieldset(rowForm, types,names)
+                @fieldset(rowForm, types,names,separators)
             }
-            </div>
 
             @if(flash.containsKey("success")) {
                 <div class="well">
