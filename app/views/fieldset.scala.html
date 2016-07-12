@@ -1,7 +1,6 @@
 @(paramForm: Form[views.formdata.ParamFormData],
-        columns:    Map[String,Boolean],
-        types :     Map[String,Boolean],
-        separators:    Map[Character,Boolean]
+        cols :List[String],
+        types :List[String]
 )
 @import views.html.bootstrap3._
 <fieldset>
@@ -13,7 +12,7 @@
         </div>
     </div>
 
-        <div class="row setup-content" id="step-2">
+        <div class="row setup-content" id="step-5">
             <div class="col-xs-12">
                 <div class="col-md-12 well">
                     <h1 class="text-center">Paremeter DATA</h1>
@@ -47,7 +46,7 @@
                                 </thead>
                                 <tbody>
 
-                                @helper.repeat(paramForm("rows"),min = columns.size()) { row =>
+                                @helper.repeat(paramForm("rows"),min = cols.size()) { row =>
                                     <tr>
                                         <td>
 
@@ -62,11 +61,11 @@
 
                                         <td>
                                             @select(row,
-                                                optionMap = columns,
+                                                optionMap = cols,
                                                 isMultiple = false,
                                                 help = "Select the Column name. (required)",
-                                                champForm = ".name",
-                                                optionMap1= null
+                                                champForm = ".name"
+
                                             )
                                                 <!-- name -->
                                         </td>
@@ -75,9 +74,9 @@
                                             @select(row,
                                                 optionMap = types,
                                                 isMultiple = false,
-                                                help = "Select the type name. (required)",
-                                                champForm =".type",
-                                                optionMap1= null
+                                                help = "Select the type . (required)",
+                                                champForm =".type"
+
                                             )
                                                 <!-- name -->
                                         </td>
@@ -110,13 +109,5 @@
                 </div>
             </div>
         </div>
-    </div>
-
-
-
-
-
-
-
 
 </fieldset>

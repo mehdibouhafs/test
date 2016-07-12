@@ -9,18 +9,23 @@ import java.util.*;
  */
 public class Separator  {
     public Long id;
-    public char name;
+    public String name;
 
     public Separator() {
+
     }
 
-    public Separator(char name) {
-        this.name = name;
-    }
-
-    public Separator(char name, Long id) {
-        this.name = name;
+    public Separator(Long id, String name) {
         this.id = id;
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Long getId() {
@@ -31,25 +36,11 @@ public class Separator  {
         this.id = id;
     }
 
-    public char getName() {
-        return name;
-    }
-
-    public void setName(char name) {
-        this.name = name;
-    }
-
-    public Separator (Long id, char name) {
-        this.id = id;
-        this.name = name;
-    }
-
-
 
     public static Separator findType(char separator) {
         System.out.println("********************Type Separator :" +  separator);
         for (Separator separator1 : allSeparators) {
-            if (separator1.getName() == separator) {
+            if (separator1.getName().equals(separator)) {
                 return separator1;
             }
         }
@@ -74,17 +65,17 @@ public class Separator  {
 
     /** Instantiate the fake database of hobbies. */
     static {
-        allSeparators.add(new Separator(1L, ','));
-        allSeparators.add(new Separator(2L, ';'));
-        allSeparators.add(new Separator(3L, '|'));
-        allSeparators.add(new Separator(4L, '?'));
+        allSeparators.add(new Separator(1L, ","));
+        allSeparators.add(new Separator(2L, ";"));
+        allSeparators.add(new Separator(3L, "|"));
+        allSeparators.add(new Separator(4L, "?"));
     }
 
 
-    public static Map<Character, Boolean> makeSeparatorMap(ParamFormData paramFormData) {
-        Map<Character, Boolean> columnMap = new LinkedHashMap<>();
+    public static Map<String, Boolean> makeSeparatorMap(ParamFormData paramFormData) {
+        Map<String, Boolean> columnMap = new LinkedHashMap<>();
         for (Separator sep : allSeparators) {
-            columnMap.put(sep.getName(), (paramFormData != null && paramFormData.getSeparator()== sep.getName()));
+            columnMap.put(sep.getName(), (paramFormData != null && paramFormData.getSeparator().equals(sep)));
         }
         return columnMap;
     }

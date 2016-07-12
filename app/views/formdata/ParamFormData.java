@@ -14,7 +14,9 @@ import java.util.List;
  */
 public class ParamFormData {
 
-    public char separator;
+    public String separator;
+
+    public int numberLine;
 
     public String tableName;
 
@@ -22,6 +24,15 @@ public class ParamFormData {
 
     public ParamFormData() {
     }
+
+    public int getNumberLine() {
+        return numberLine;
+    }
+
+    public void setNumberLine(int numberLine) {
+        this.numberLine = numberLine;
+    }
+
     public ParamFormData(List<Row> rows) {
         this.rows = rows;
     }
@@ -38,7 +49,6 @@ public class ParamFormData {
         this.rows = rows;
     }
 
-
     /**
      * Validates Form<StudentFormData>.
      * Called automatically in the controller by bindFromRequest().
@@ -52,9 +62,14 @@ public class ParamFormData {
      * </ul>
      *
      * @return Null if valid, or a List[ValidationError] if problems found.
-     */public List<ValidationError> validate() {
+     */
+    public List<ValidationError> validate() {
 
         List<ValidationError> errors = new ArrayList<>();
+
+        if(separator == null){
+            errors.add(new ValidationError("separator", "No Separator was given."));
+        }
 
         /*if(tableName == null || tableName.equals("")){
             errors.add(new ValidationError("tableName", "No table name was given."));
@@ -68,20 +83,20 @@ public class ParamFormData {
                 errors.add(new ValidationError("rows["+i+"]", "No type was given for the row number ("+i+")"));
             }
         }
-
+*/
         if(errors.size() > 0) {
             System.out.println(errors);
             return errors;
-        }*/
+        }
 
         return null;
     }
 
-    public char getSeparator() {
+    public String getSeparator() {
         return separator;
     }
 
-    public void setSeparator(char separator) {
+    public void setSeparator(String separator) {
         this.separator = separator;
     }
 

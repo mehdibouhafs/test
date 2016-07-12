@@ -1,7 +1,6 @@
 package controllers;
 import com.google.inject.Inject;
 import model.Client;
-import model.Columns;
 import model.Separator;
 import model.Type;
 import org.springframework.batch.core.JobParametersInvalidException;

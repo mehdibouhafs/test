@@ -6,6 +6,7 @@
 
 body {
     overflow-x: hidden;
+    style:"margin-top: 100px";
 }
 
 p {
@@ -316,7 +317,7 @@ section.success a.active {
     transition: top .3s ease,opacity .3s ease;
 }
 
-.floating-label-form-group::not(:first-child) {
+.floating-label-form-group:not(:first-child) {
     padding-left: 14px;
     border-left: 1px solid #eee;
 }
@@ -336,6 +337,7 @@ form .row:first-child .floating-label-form-group {
 
 footer {
     color: #fff;
+    margin-top: 180px;
 }
 
 footer h3 {

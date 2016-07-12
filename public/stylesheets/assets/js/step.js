@@ -22,15 +22,12 @@ $(document).ready(function() {
     $('ul.setup-panel li.active a').trigger('click');
 
     // DEMO ONLY //
-    $('#activate-step-2').on('submit', function(e) {
+    $('#activate-step-2').on('click', function(e) {
+        $.post("/upload");
         $('ul.setup-panel li:eq(1)').removeClass('disabled');
         $('ul.setup-panel li a[href="#step-2"]').trigger('click');
         $(this).remove();
-    })
 
-    $('#activate-step-3').on('submit', function(e) {
-        $('ul.setup-panel li:eq(2)').removeClass('disabled');
-        $('ul.setup-panel li a[href="#step-3"]').trigger('click');
-        $(this).remove();
     })
 });
+

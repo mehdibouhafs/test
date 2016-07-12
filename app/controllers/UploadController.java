@@ -10,6 +10,7 @@ import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
+import org.springframework.batch.item.file.FlatFileParseException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import play.Routes;
@@ -26,6 +27,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.sql.Array;
 import java.sql.BatchUpdateException;
 import java.util.*;
 
@@ -42,45 +44,64 @@ public class UploadController extends Controller {
 
 
     public Result upload() throws IOException, JobParametersInvalidException, JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException {
+            File destination = new File("C:/Users/MBS/Desktop/complete/src/main/resources/sample-data.csv");
+            if(destination!=null) {
+
+                Form<ParamFormData> formData = Form.form(ParamFormData.class).bindFromRequest();
+                ApplicationContext context = Global.getApplicationContext();
+
+                String[] seps = {";", ",", ".", "|", ":"};
+                List<String> sep = new ArrayList<>(Arrays.asList(seps));
+                String[] cols;
+                if(formData.get().getSeparator()!=null) {
+                    cols = firstLine(destination, formData.get().getSeparator());
+                }else{
+                    cols=firstLine(destination,null);
+                }
+                List<String> list = new ArrayList<String>(Arrays.asList(cols));
+                String[] types = {"INTEGER", "STRING", "CHAR", "DOUBLE", "FLOAT", "DATE"};
+                List<String> type = new ArrayList<String>(Arrays.asList(types));
+
+                if (formData.hasErrors()) {
+                    System.out.println("ERROR POST");
+                    // Don't call formData.get() when there are errors, pass 'null' to helpers instead.
+                    flash("error", "Please correct errors above.");
+                    return badRequest(index.render(formData,
+                            list,
+                            type,
+                            sep
+                    ));
+                } else {
+
+                    int nbLineToEscape = formData.get().getNumberLine();
+                    ReaderGenerique readerGenerique = context.getBean("readerGenerique", ReaderGenerique.class);
+                    readerGenerique.setColumns(cols);
+                    readerGenerique.setLineToSkip(nbLineToEscape);
 
 
-            File destination = new File(System.getProperty("user.home") +"/app/uploads/sample-data.csv");
-            String fileName = destination.getName();
-            System.out.println("FILE NAME = "+fileName);
-             ParamFormData paramData = new ParamFormData();
-             Form<ParamFormData> formData = Form.form(ParamFormData.class).fill(paramData);
-            ApplicationContext context = Global.getApplicationContext();
-            String cols= firstLine(destination);
-            System.out.println("COLUMNS = "+cols);
-            ReaderGenerique readerGenerique = context.getBean("readerGenerique",ReaderGenerique.class);
-            readerGenerique.setColumns(cols);
-            System.out.println("CHAR"+formData.get().getSeparator());
-            List<Columns> list = columns(cols,',');
-            Columns columns = context.getBean("columns",Columns.class);
-        System.out.println(list);
-            columns.setAllColumns(list);
 
-            String dateParam = new Date().toString();
-            System.out.printf("-----------------------------" + destination.getPath());
-            JobParameters param = new JobParametersBuilder()
-                    .addString("input.file.name", destination.getPath())
-                    .addString("date", dateParam).toJobParameters();
-
-            JobLauncher jobLauncher = (JobLauncher) context.getBean("jobLauncher");
-            String ext = getExtension(destination.getPath());
-
-
-            Job job = null;
-
-
-            if (ext.equals("csv")) {
-                System.out.println("CSV");
-                job = (Job) context.getBean("importUserJob");
-                jobLauncher.run(job, param);
-                return ok(views.html.parameter.render(formData,columns.makeColumnMap(paramData),Type.makeTypeMap(paramData),Separator.makeSeparatorMap(paramData)));
+                    String dateParam = new Date().toString();
+                    JobParameters param = new JobParametersBuilder()
+                            .addString("input.file.name", destination.getPath())
+                            .addString("date", dateParam).toJobParameters();
+                    JobLauncher jobLauncher = (JobLauncher) context.getBean("jobLauncher");
+                    String ext = getExtension(destination.getPath());
+                    Job job = (Job) context.getBean("importUserJob");
+                    try {
+                        jobLauncher.run(job, param);
+                    } catch (FlatFileParseException e) {
+                        System.out.println(e.getMessage());
+                    }
+                    if (ext.equals("csv")) {
+                        return ok(views.html.index.render(formData, list, type,sep));
+                        //return ok("ok");
+                    } else {
+                        System.out.println("NULLL");
+                    }
+                }
             }
 
-            if (ext.equals("xml")) {
+            /*if (ext.equals("xml")) {
                 System.out.println("XML");
                 job = (Job) context.getBean("importXML");
                 jobLauncher.run(job, param);
@@ -92,130 +113,52 @@ public class UploadController extends Controller {
 
     }
 
+    public Result index() {
+        String[] types = {";",",",".","|",":"};
+        List<String> type = new ArrayList<>(Arrays.asList(types));
 
-    public String firstLine (File f) throws IOException {
+        String[] seps = {";", ",", ".", "|", ":"};
+        List<String> sep = new ArrayList<>(Arrays.asList(seps));
+
+       List<String> cols = new ArrayList<>();
+
+
+        ParamFormData paramData =  new ParamFormData();
+        Form<ParamFormData> formData = Form.form(ParamFormData.class).fill(paramData);
+        return ok(index.render(formData,
+                cols,
+                type,
+                sep
+        ));
+    }
+
+
+    public String[] firstLine (File f,String delimiter) throws IOException {
         //String result = new ArrayList<>(); // !!!
-
         //Rows rows = new Rows();
         //LinkedHashMap<String,Row> columns = new LinkedHashMap<>();
-
-        List<Row> row = new ArrayList<>();
-
+        //List<Row> row = new ArrayList<>();
         FileReader fr = new FileReader(f);
         BufferedReader br = new BufferedReader(fr);
-
-        String line = br.readLine();
+        String quotes ="\"";
+        if(delimiter!=null) {
+            String line0 = br.readLine().replaceAll(quotes, "");
+            String[] line = line0.split(delimiter);
+            System.out.println("Delimiter not null"+br.readLine());
+            br.close();
+            return line;
+        }
+        else {
+            String[] s = br.readLine().split(",");
+            br.close();
+            return s ;
+        }
         //System.out.println(line);
         //rows.setRow(row);
-        return line;
-    }
 
-    public List<Columns> columns (String s,char sep){
-
-        List<Columns> listColumns = new ArrayList<>();
-        int i = 0;
-        String[] cols =  s.split(new Character(sep).toString());
-        for (String col: cols
-                ) {
-
-            Columns c = new Columns(i,col);
-            listColumns.add(c);
-            i++;
-        }
-        return  listColumns;
     }
 
 
-   /* public Result upload() {
-
-        Http.MultipartFormData<File> body = request().body().asMultipartFormData();
-        Http.MultipartFormData.FilePart<File> picture = body.getFile("picture");
-
-        if (body == null) {
-            return badRequest("Invalid request, required is POST with enctype=multipart/form-data.");
-        }
-        if (picture == null) {
-            return badRequest("Invalid request, no file has been sent.");
-        }
-        if (picture != null) {
-            File f = new File(System.getProperty("user.home") + "/app/uploads/");
-            if (!f.exists()) {
-                try {
-                    f.mkdir();
-                } catch (SecurityException se) {
-                    se.printStackTrace();
-                }
-            }
-            try {
-                UploadResult uploadResult = new UploadResult();
-                uploadResult.save();
-                uploadResult.setType(picture.getContentType());
-                File destination = new File(System.getProperty("user.home") + "/app/uploads/",uploadResult.getName());
-                FileUtils.moveFile(picture.getFile(), destination);
-                uploadResult.setUrl(destination.getPath());
-                uploadResult.setFile(destination);
-                uploadResult.setSize(FileUtils.sizeOf(destination));
-                uploadResult.update();
-                session("idFile", ""+uploadResult.getId());
-                System.out.println("id========="+uploadResult.getId());
-                ApplicationContext context = Global.getApplicationContext();
-                String dateParam = new Date().toString();
-                System.out.printf("-----------------------------" + uploadResult.getFile().getPath() + "-------------------------------------------");
-                JobParameters param = new JobParametersBuilder()
-                        .addString("input.file.name", uploadResult.getFile().getPath())
-                        .addString("date", dateParam).toJobParameters();
-
-                JobLauncher jobLauncher = (JobLauncher) context.getBean("jobLauncher");
-                String ext = getExtension(uploadResult.getFile().getPath());
-
-                Job job = null;
-
-                if (ext.equals("csv")) {
-                    job = (Job) context.getBean("importUserJob");
-                    jobLauncher.run(job, param);
-                }
-
-                if (ext.equals("xml")) {
-                    job = (Job) context.getBean("importXML");
-                    jobLauncher.run(job, param);
-                }
-
-                destination.delete();
-
-                return ok(uploadResult.getId()+"");
-
-            } catch (FileExistsException e) {
-                e.printStackTrace();
-
-            } catch (IOException e) {
-                e.printStackTrace();
-
-            } catch (JobInstanceAlreadyCompleteException e) {
-                e.printStackTrace();
-
-            } catch (JobExecutionAlreadyRunningException e) {
-                e.printStackTrace();
-
-            } catch (JobParametersInvalidException e) {
-                e.printStackTrace();
-
-            } catch (JobRestartException e) {
-                e.printStackTrace();
-
-            } catch (Exception e) {
-                e.printStackTrace();
-
-            }
-        }
-        return ok("File NULL");
-    } */
-
-
-
-    public Result upload2() {
-        File file = request().body().asRaw().asFile();
-        return ok("File uploaded");
-    }
     public String getExtension(String fileName) {
         String extension = "";
 
@@ -228,18 +171,4 @@ public class UploadController extends Controller {
 
 
 
-
-    public Result upload3() {
-        Http.MultipartFormData<File> body = request().body().asMultipartFormData();
-        Http.MultipartFormData.FilePart<File> picture = body.getFile("picture");
-        if (picture != null) {
-            String fileName = picture.getFilename();
-            String contentType = picture.getContentType();
-            File file = picture.getFile();
-            return ok("File uploaded");
-        } else {
-            flash("error", "Missing file");
-            return badRequest();
-        }
-    }
 }

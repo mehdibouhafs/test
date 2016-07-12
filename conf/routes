@@ -6,7 +6,7 @@
 
 GET     /home              @controllers.Application.home
 
-GET     /                       controllers.HomeController.index()
+GET     /                       controllers.UploadController.index()
 
 # An example controller showing a sample home page
 POST     /upload                   controllers.UploadController.upload()
@@ -20,7 +20,7 @@ GET     /files                         controllers.HomeController.getFiles()
 
 # Home page
 
-GET     /index                          controllers.HomeController.getIndex(id: Long ?= 0)
-POST    /index                          controllers.HomeController.postIndex()
+#GET     /index                          controllers.HomeController.getIndex(id: Long ?= 0)
+#POST    /index                          controllers.HomeController.postIndex()
 
 

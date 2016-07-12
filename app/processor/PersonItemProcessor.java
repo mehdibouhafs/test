@@ -34,6 +34,7 @@ public class PersonItemProcessor implements ItemProcessor<Person, Person> {
                 p.setFirstName(rs.getString(2));
                 p.setLastName(rs.getString(3));
                 p.setDate(rs.getDate(4));
+                System.out.println("ProcessITEM"+p);
                 return p;
             }
         });

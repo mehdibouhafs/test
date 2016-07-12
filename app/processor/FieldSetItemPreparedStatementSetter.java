@@ -20,5 +20,6 @@ public class FieldSetItemPreparedStatementSetter implements ItemPreparedStatemen
         ps.setString(1,item.getFirstName());
         ps.setString(2,item.getLastName());
         ps.setDate(3, new java.sql.Date(item.getDate().getTime()));
+        System.out.println("ItemPREPARED"+item.getId()+"firstName :"+item.getFirstName());
     }
 }

@@ -7,6 +7,9 @@ import play.mvc.*;
 import running.Global;
 import views.formdata.ParamFormData;
 import views.html.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import static play.libs.Json.toJson;
 
@@ -17,11 +20,10 @@ import static play.libs.Json.toJson;
 public class HomeController extends Controller {
 
     ApplicationContext context;
+
     public HomeController() {
         context = Global.getApplicationContext();
     }
-
-
 
     /**
      * An action that renders an HTML page with a welcome message.
@@ -31,21 +33,31 @@ public class HomeController extends Controller {
      *
      *
      */
-
     public Result index() {
+        String[] types = {";",",",".","|",":"};
+        List<String> type = new ArrayList<>(Arrays.asList(types));
+
+        String[] seps = {";", ",", ".", "|", ":"};
+        List<String> sep = new ArrayList<>(Arrays.asList(seps));
+
+
 
         ParamFormData paramData =  new ParamFormData();
         Form<ParamFormData> formData = Form.form(ParamFormData.class).fill(paramData);
         return ok(index.render(formData,
-                Separator.makeSeparatorMap(paramData)
+                null,
+                type,
+                sep
         ));
     }
 
     public Result postIndex() {
+        String[] types = {";", ",", ".", "|", ":"};
+        List<String> type = new ArrayList<>(Arrays.asList(types));
         // Get the submitted form data from the request object, and run validation.
         Form<ParamFormData> formData = Form.form(ParamFormData.class).bindFromRequest();
         //system.out.println(formData.get().toString());
-        if (formData.hasErrors()) {
+        /*if (formData.hasErrors()) {
             System.out.println("ERROR POST");
             // Don't call formData.get() when there are errors, pass 'null' to helpers instead.
             flash("error", "Please correct errors above.");
@@ -79,9 +91,11 @@ public class HomeController extends Controller {
                     Separator.makeSeparatorMap(formData.get())
             ));
         }
+    }*/
+        return null;
     }
 
-    public Result getIndex(long id) {
+    /*public Result getIndex(long id) {
         ParamFormData paramData = (id == 0) ? new ParamFormData() : model.Row.makeRowFormData(id);
         Form<ParamFormData> formData = Form.form(ParamFormData.class).fill(paramData);
         Columns columns = context.getBean("columns",Columns.class);
@@ -91,9 +105,9 @@ public class HomeController extends Controller {
                 Type.makeTypeMap(paramData),
                 Separator.makeSeparatorMap(paramData)
         ));
-    }
+    }*/
 
-    public Result addClient() {
+    /*public Result addClient() {
         Client client = Form.form(Client.class).bindFromRequest().get();
         client.save();
         return redirect(routes.HomeController.getIndex(client.getId()));
@@ -102,7 +116,7 @@ public class HomeController extends Controller {
     public Result getClients(){
         List<Client> clients = new Model.Finder(String.class,Client.class).all();
         return  ok(toJson(clients));
-    }
+    }*/
 
     public Result getFiles(){
         List<UploadResult> uploadResults = new Model.Finder(String.class,UploadResult.class).all();

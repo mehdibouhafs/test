@@ -83,7 +83,6 @@ public class Columns {
         return columnMap;
     }
 
-
     public static boolean find(List<Row> rows,String col){
         if(rows != null) {
             for (Row r : rows
@@ -98,11 +97,11 @@ public class Columns {
     }
 
 
-
     public static List<String> getNameList() {
         String[] nameArray = {"String", "Integer", "Date", "VARCHAR", "BOOLEAN"};
         return Arrays.asList(nameArray);
     }
+
 }
 
 

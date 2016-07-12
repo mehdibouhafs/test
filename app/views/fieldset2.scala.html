@@ -1,5 +1,5 @@
 @(paramForm: Form[views.formdata.ParamFormData],
-        separators:    Map[Character,Boolean]
+        separators:    List[String]
 )
 @import views.html.bootstrap3._
 
@@ -15,10 +15,10 @@
     <form action="@routes.UploadController.upload()" method="POST">
                                     Separators :
       @select(paramForm("separator"),
-        optionMap = null,
+        optionMap = separators,
         isMultiple = false,
-        help = "Select the Separator for your file. (required)",
-        optionMap1 = separators
+        help = "Select the Separator for your file. (required)"
+
       )
       @text(paramForm("numberLine"),
         placeholder = "Number Line to switch",

@@ -41,7 +41,6 @@ public class JobCompletionNotificationListener extends JobExecutionListenerSuppo
 
 		stopTime = new DateTime();
 
-
 		if(jobExecution.getStatus() == BatchStatus.COMPLETED) {
 			//log.info("!!! JOB FINISHED! Time to verify the results");
 			System.out.println("ExamResult Job stops at :"+stopTime);

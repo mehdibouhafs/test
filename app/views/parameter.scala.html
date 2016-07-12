@@ -5,9 +5,8 @@
 *@
     @import javax.swing.JPopupMenu.Separator
     @(rowForm: Form[views.formdata.ParamFormData],
-            types :Map[String,Boolean],
-            names :Map[String,Boolean],
-            separators : Map[Character,Boolean]
+            cols :List[String],
+            types :List[String]
             )
     @import helper._
 
@@ -20,8 +19,8 @@
         <section id="portfolio">
             <div class="container">
 
-            @form(routes.HomeController.postIndex(), 'class -> "form-horizontal") {
-                @fieldset(rowForm, types,names,separators)
+            @form(routes.UploadController.index(), 'class -> "form-horizontal") {
+                @fieldset(rowForm, cols,types)
             }
 
             @if(flash.containsKey("success")) {
