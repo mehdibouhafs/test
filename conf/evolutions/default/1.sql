@@ -19,19 +19,6 @@ create table person (
 );
 create sequence person_seq;
 
-create table upload_result (
-  id                            integer auto_increment not null,
-  url                           varchar(255),
-  thumbnail_url                 varchar(255),
-  name                          varchar(255),
-  type                          varchar(255),
-  size                          bigint,
-  delete_url                    varchar(255),
-  delete_type                   varchar(255),
-  ref                           varchar(255),
-  constraint pk_upload_result primary key (id)
-);
-
 
 # --- !Downs
 
@@ -40,6 +27,4 @@ drop sequence if exists client_seq;
 
 drop table if exists person;
 drop sequence if exists person_seq;
-
-drop table if exists upload_result;
 

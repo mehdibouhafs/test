@@ -1,12 +1,9 @@
 package views.formdata;
 
-import model.Columns;
-import model.Row;
-import model.Type;
 import play.data.validation.ValidationError;
 
+import java.io.*;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
 
 /**
@@ -18,9 +15,6 @@ public class ParamFormData {
 
     public int numberLine;
 
-    public String tableName;
-
-    public List<Row> rows;
 
     public ParamFormData() {
     }
@@ -31,22 +25,6 @@ public class ParamFormData {
 
     public void setNumberLine(int numberLine) {
         this.numberLine = numberLine;
-    }
-
-    public ParamFormData(List<Row> rows) {
-        this.rows = rows;
-    }
-
-    public ParamFormData(String tableName, List<Row> rows) {
-        this.tableName = tableName;
-        this.rows = rows;
-    }
-
-    public List<Row> getRows() {
-        return rows;
-    }
-    public void setRows(List<Row> rows) {
-        this.rows = rows;
     }
 
     /**
@@ -64,10 +42,25 @@ public class ParamFormData {
      * @return Null if valid, or a List[ValidationError] if problems found.
      */
     public List<ValidationError> validate() {
-
         List<ValidationError> errors = new ArrayList<>();
+        String cheminMac = "/Users/bouhafs/Documents/sample-data.csv";
+        File destination = new File("C:/Users/MBS/Desktop/complete/src/main/resources/sample-data.csv");
+        FileReader fr = null;
+        String s = "";
+        try {
+            fr = new FileReader(destination);
+            BufferedReader br = new BufferedReader(fr);
+            s = br.readLine();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         if(separator.equals("")){
             errors.add(new ValidationError("separator", "No Separator was given."));
+        }
+        if(s.contains(separator)== false){
+            errors.add(new ValidationError("separator", "Veuillez choisir le bon séparateur."));
         }
 
         /*if(tableName == null || tableName.equals("")){
@@ -99,19 +92,11 @@ public class ParamFormData {
         this.separator = separator;
     }
 
-    public String getTableName() {
-        return tableName;
-    }
-
-    public void setTableName(String tableName) {
-        this.tableName = tableName;
-    }
-
     @Override
     public String toString() {
         return "ParamFormData{" +
-                "tableName='" + tableName + '\'' +
-                ", rows=" + rows +
+                "separator='" + separator + '\'' +
+                ", numberLine=" + numberLine +
                 '}';
     }
 }

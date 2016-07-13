@@ -118,10 +118,7 @@ public class HomeController extends Controller {
         return  ok(toJson(clients));
     }*/
 
-    public Result getFiles(){
-        List<UploadResult> uploadResults = new Model.Finder(String.class,UploadResult.class).all();
-        return  ok(toJson(uploadResults));
-    }
+
 
     public ApplicationContext getContext() {
         return context;
