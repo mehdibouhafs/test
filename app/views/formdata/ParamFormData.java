@@ -66,8 +66,7 @@ public class ParamFormData {
     public List<ValidationError> validate() {
 
         List<ValidationError> errors = new ArrayList<>();
-
-        if(separator == null){
+        if(separator.equals("")){
             errors.add(new ValidationError("separator", "No Separator was given."));
         }
 

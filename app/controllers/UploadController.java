@@ -44,35 +44,32 @@ public class UploadController extends Controller {
 
 
     public Result upload() throws IOException, JobParametersInvalidException, JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException {
-            File destination = new File("C:/Users/MBS/Desktop/complete/src/main/resources/sample-data.csv");
-            if(destination!=null) {
+            File destination = new File("/Users/bouhafs/Documents/sample-data.csv");
 
                 Form<ParamFormData> formData = Form.form(ParamFormData.class).bindFromRequest();
                 ApplicationContext context = Global.getApplicationContext();
 
-                String[] seps = {";", ",", ".", "|", ":"};
-                List<String> sep = new ArrayList<>(Arrays.asList(seps));
+        String[] types = {"INTEGER", "STRING", "CHAR", "DOUBLE", "FLOAT", "DATE"};
+        List<String> type = new ArrayList<String>(Arrays.asList(types));
+        String[] seps = {";", ",", ".", "|", ":"};
+        List<String> sep = new ArrayList<>(Arrays.asList(seps));
+        if (formData.hasErrors()) {
+            System.out.println("ERROR POST");
+            // Don't call formData.get() when there are errors, pass 'null' to helpers instead.
+            flash("error", "Please correct errors above.");
+            return badRequest(index.render(formData,
+                    null,
+                    type,
+                    sep
+            ));
+        }else {
                 String[] cols;
                 if(formData.get().getSeparator()!=null) {
                     cols = firstLine(destination, formData.get().getSeparator());
                 }else{
                     cols=firstLine(destination,null);
                 }
-                List<String> list = new ArrayList<String>(Arrays.asList(cols));
-                String[] types = {"INTEGER", "STRING", "CHAR", "DOUBLE", "FLOAT", "DATE"};
-                List<String> type = new ArrayList<String>(Arrays.asList(types));
-
-                if (formData.hasErrors()) {
-                    System.out.println("ERROR POST");
-                    // Don't call formData.get() when there are errors, pass 'null' to helpers instead.
-                    flash("error", "Please correct errors above.");
-                    return badRequest(index.render(formData,
-                            list,
-                            type,
-                            sep
-                    ));
-                } else {
-
+                 List<String> list = new ArrayList<String>(Arrays.asList(cols));
                     int nbLineToEscape = formData.get().getNumberLine();
                     ReaderGenerique readerGenerique = context.getBean("readerGenerique", ReaderGenerique.class);
                     readerGenerique.setColumns(cols);
@@ -99,7 +96,6 @@ public class UploadController extends Controller {
                         System.out.println("NULLL");
                     }
                 }
-            }
 
             /*if (ext.equals("xml")) {
                 System.out.println("XML");

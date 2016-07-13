@@ -1,5 +1,2 @@
-Jill,Doe
-Joe,Doe
-Justin,Doe
-Jane,Doe
-John,Doe
+id;firstName;lastName;date
+1;mehdi;bouhafs;01/03/1993

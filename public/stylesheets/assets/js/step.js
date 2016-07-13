@@ -22,12 +22,32 @@ $(document).ready(function() {
     $('ul.setup-panel li.active a').trigger('click');
 
     // DEMO ONLY //
-    $('#activate-step-2').on('click', function(e) {
+    /*$('#activate-step-2').on('click', function(e) {
         $.post("/upload");
         $('ul.setup-panel li:eq(1)').removeClass('disabled');
-        $('ul.setup-panel li a[href="#step-2"]').trigger('click');
+        //$('ul.setup-panel li a[href="#step-2"]').trigger('click');
         $(this).remove();
 
-    })
+    })*/
+
+    $("#activate-step-2").click(
+        function() {
+            //envoyer les donnees avec ajax
+            $.ajax({
+                type : "POST",//la method à utiliser soit POST ou GET
+                url : "/upload", //lien de la servlet qui exerce le traitement sur les données
+                data : $('#form').serialize(),// sign_in c'est l'id du form qui contient le bouton submit et toutes les champs à envoyer
+                success : function(data) {// le cas ou la requete est bien execute en reçoi les données serialiser par JSON dans la variable msg
+                    //recuperation de la valeur stock dans l'attribut desactive
+                    $('ul.setup-panel li:eq(1)').removeClass('disabled');
+                    $('ul.setup-panel li a[href="#step-2"]').trigger('click');
+                    $(this).remove();
+                },
+                error : function() { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
+                    console.log("error");
+                }
+            });
+
+        });
 });
 
