@@ -4,6 +4,7 @@ import play.data.validation.ValidationError;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -15,14 +16,12 @@ public class ParamFormData {
 
     public int numberLine;
 
-
     public ParamFormData() {
     }
 
     public int getNumberLine() {
         return numberLine;
     }
-
     public void setNumberLine(int numberLine) {
         this.numberLine = numberLine;
     }

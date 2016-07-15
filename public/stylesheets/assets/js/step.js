@@ -1,16 +1,12 @@
 $(document).ready(function() {
-
     var navListItems = $('ul.setup-panel li a'),
         allWells = $('.setup-content');
-
     allWells.hide();
-
     navListItems.click(function(e)
     {
         e.preventDefault();
         var $target = $($(this).attr('href')),
             $item = $(this).closest('li');
-
         if (!$item.hasClass('disabled')) {
             navListItems.closest('li').removeClass('active');
             $item.addClass('active');
@@ -18,9 +14,7 @@ $(document).ready(function() {
             $target.show();
         }
     });
-
     $('ul.setup-panel li.active a').trigger('click');
-
     // DEMO ONLY //
     /*$('#activate-step-2').on('click', function(e) {
         $.post("/upload");
@@ -30,6 +24,44 @@ $(document).ready(function() {
 
     })*/
 
+    $("form").submit(
+        function(e) {
+            //envoyer les donnees avec ajax
+            e.preventDefault();
+            $.ajax({
+                type : "POST",//la method à utiliser soit POST ou GET
+                url : "/cols", //lien de la servlet qui exerce le traitement sur les données
+                data : $('#form').serialize(),// sign_in c'est l'id du form qui contient le bouton submit et toutes les champs à envoyer
+                success : function(data) {// le cas ou la requete est bien execute en reçoi les données serialiser par JSON dans la variable msg
+                    //recuperation de la valeur stock dans l'attribut desactive
+                    for(i=0;data.length;i++) {
+                        //$("#cols").append($('<option>', {value:"ok"}).text("ok"));
+                        //$("#cols").append("<option value='" + data[i].name + "'>" + data[i].name + "</option>");
+                        $('#cols').show();
+                        $('#all').show();
+                        $('#none').show();
+                        $('#cols').multiSelect({
+                            selectableHeader: "<div class='custom-header'>Columns</div>",
+                            selectionHeader: "<div class='custom-header'>Columns Selected</div>",
+                            selectableFooter: "<div class='custom-header'>Columns</div>",
+                            selectionFooter: "<div class='custom-header'>Columns Selected footer</div>"
+                        });
+                        $('#cols').multiSelect('addOption', {
+                            value: data[i].name,
+                            text: data[i].name,
+                            index: 0,
+                            selected: 'true'
+                        });
+                        $('#cols').multiSelect('refresh');
+                    }
+                },
+                error : function() { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
+                    console.log("error");
+                }
+            });
+
+        });
+
     $("#activate-step-2").click(
         function(e) {
             //envoyer les donnees avec ajax
@@ -37,7 +69,7 @@ $(document).ready(function() {
             $.ajax({
                 type : "POST",//la method à utiliser soit POST ou GET
                 url : "/upload", //lien de la servlet qui exerce le traitement sur les données
-                data : $('#form').serialize(),// sign_in c'est l'id du form qui contient le bouton submit et toutes les champs à envoyer
+                data : $('#form2').serialize(),// sign_in c'est l'id du form qui contient le bouton submit et toutes les champs à envoyer
                 success : function(data) {// le cas ou la requete est bien execute en reçoi les données serialiser par JSON dans la variable msg
                     //recuperation de la valeur stock dans l'attribut desactive
                     $('ul.setup-panel li:eq(1)').removeClass('disabled');
@@ -45,7 +77,6 @@ $(document).ready(function() {
                     $(this).remove();
                     for(i=0;data.length;i++) {
                         var type = 'type['+data[i].id+']';
-                        var selected = 'selected['+data[i].id+']';
                         var size = 'size['+data[i].id+']';
                         $("#tableaucontenus1").append("<tr><td>" + data[i].id + "</td><td>" + data[i].name + "</td>" +
                             "<td><select class='form-control' id='type' name='"+type+"'>" +
@@ -62,11 +93,7 @@ $(document).ready(function() {
                         "<option title='Un nombre entier de 8 octets. La fourchette des nombres avec signe est de -9 223 372 036 854 775 808 à 9 223 372 036 854 775 807. Pour les nombres sans signe, c est de 0 à 18 446 744 073 709 551 615'>BIGINT</option>"+
                         "</optgroup></select>"+
                         "</td>"+
-                            "<td><input type='text' name='"+size+"' size='4'/> </td>"+
-                            "<td>"+
-                        "<input type='checkbox'"+
-                        "name='"+selected+"'"+
-                        "id='selected'></td></tr>"
+                            "<td><input type='text' name='"+size+"' size='4'/> </td></tr>"
                         )
                     }
                 },
@@ -84,7 +111,7 @@ $(document).ready(function() {
             e.preventDefault();
             $.ajax({
                 type : "POST",//la method à utiliser soit POST ou GET
-                url : "/getCols", //lien de la servlet qui exerce le traitement sur les données
+                url : "/getTypes", //lien de la servlet qui exerce le traitement sur les données
                 data : $('#form1').serialize(),// sign_in c'est l'id du form qui contient le bouton submit et toutes les champs à envoyer
                 success : function(data) {// le cas ou la requete est bien execute en reçoi les données serialiser par JSON dans la variable msg
                     //recuperation de la valeur stock dans l'attribut desactive
@@ -92,7 +119,7 @@ $(document).ready(function() {
                     $('ul.setup-panel li a[href="#step-3"]').trigger('click');
                     $(this).remove();
                     for(i=0;data.length;i++) {
-                        $("#tableaucontenus2").append("<tr><td>" + data[i].id + "</td><td>" + data[i].name + "</td><td>" + data[i].type + "</td></tr>")
+                        $("#tableaucontenus2").append("<tr><td>" + data[i].id + "</td><td>" + data[i].name + "</td><td>" + data[i].type + "</td><td>"+data[i].size+"</td></tr>")
                     }
 
                 },
@@ -113,7 +140,7 @@ $(document).ready(function() {
                 data : $('#form2').serialize(),// sign_in c'est l'id du form qui contient le bouton submit et toutes les champs à envoyer
                 success : function(data) {// le cas ou la requete est bien execute en reçoi les données serialiser par JSON dans la variable msg
                     //recuperation de la valeur stock dans l'attribut desactive
-                   
+                    $('#modal-success').modal('show');
                 },
                 error : function() { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
                     console.log("error");
@@ -122,5 +149,28 @@ $(document).ready(function() {
         });
 
 
+
+
+    $("#cols").change(function(){
+        if($("#cols").val()!=null) {
+            $('#activate-step-2').show();
+            $('#validate').hide();
+        }else {
+            $('#activate-step-2').hide();
+        }
+    });
+
+    $("#cols").hide();
+    $("#all").hide();
+    $("#none").hide();
+    $('#activate-step-2').hide();
+
+    $("#all").click(function () {
+        $("#cols").multiSelect('select_all');
+    });
+
+    $("#none").click(function(){
+        $("#cols").multiSelect('deselect_all');
+    });
 });
 

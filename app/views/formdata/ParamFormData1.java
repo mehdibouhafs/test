@@ -12,13 +12,11 @@ public class ParamFormData1 {
 
     public List<String> size;
 
-    public List<String> selected;
 
     public ParamFormData1() {
     }
 
-    public ParamFormData1(List<String> selected, List<String> type, String tableName) {
-        this.selected = selected;
+    public ParamFormData1(List<String> type, String tableName) {
         this.type = type;
         this.tableName = tableName;
     }
@@ -45,14 +43,6 @@ public class ParamFormData1 {
 
     public void setType(List<String> type) {
         this.type = type;
-    }
-
-    public List<String> getSelected() {
-        return selected;
-    }
-
-    public void setSelected(List<String> selected) {
-        this.selected = selected;
     }
 
     public ParamFormData1(String tableName) {

@@ -20,17 +20,17 @@ import play.data.DynamicForm;
 import play.data.Form;
 import play.data.FormFactory;
 import play.data.validation.ValidationError;
+import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import running.Global;
 import views.formdata.ParamFormData;
 import views.formdata.ParamFormData1;
+import views.formdata.ParamFormData2;
 import views.html.index;
 import views.html.parameter;
 
-import javax.json.Json;
-import javax.json.JsonArrayBuilder;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -47,6 +47,8 @@ public class UploadController extends Controller {
 
     public String[] cols;
 
+    public String[] colsSelected;
+
     public UploadController() {
 
     }
@@ -54,8 +56,78 @@ public class UploadController extends Controller {
     public Result upload() throws IOException {
             String cheminMac = "/Users/bouhafs/Documents/sample-data.csv";
             File destination = new File("C:/Users/MBS/Desktop/complete/src/main/resources/sample-data.csv");
-                Form<ParamFormData> formData = Form.form(ParamFormData.class).bindFromRequest();
+                Form<ParamFormData2> formData = Form.form(ParamFormData2.class).bindFromRequest();
                 ApplicationContext context = Global.getApplicationContext();
+
+                 List<String> list = new ArrayList<String>(Arrays.asList(cols));
+                    String dateParam = new Date().toString();
+            List<String> ss = formData.get().getCols();
+                    //if (ext.equals("csv")) {
+
+            ObjectNode result;
+            //JsonArrayBuilder jsa =  Json.createArrayBuilder();
+        for (String s:ss
+             ) {
+            System.out.println(s);
+
+        }
+            ArrayNode resuls = Json.newArray();
+            colsSelected = new String[ss.size()];
+            int i=0;
+            for (String s:ss) {
+                result = Json.newObject();
+                result.put("id",i);
+                result.put("name",s);
+                colsSelected[i]=s;
+                i++;
+                resuls.add(result);
+
+                             }
+                        return ok(resuls);
+    }
+
+    public Result getTypes(){
+        Attribute attribute ;
+        List<Attribute> attributes = new ArrayList<>();
+        Form<ParamFormData1> formData = Form.form(ParamFormData1.class).bindFromRequest();
+
+        for (String s:colsSelected
+             ) {
+            System.out.println("Colselected"+s);
+        }
+        String tableName = formData.get().getTableName();
+        for(int i = 0 ; i<colsSelected.length;i++) {
+            attribute = new Attribute();
+            String type = formData.get().getType().get(i);
+            attribute.setType(type);
+            String size = formData.get().getSize().get(i);
+            attribute.setSize(size);
+            attribute.setName(cols[i]);
+            attributes.add(attribute);
+        }
+        ObjectNode result;
+        //JsonArrayBuilder jsa =  Json.createArrayBuilder();
+        ArrayNode resuls = play.libs.Json.newArray();
+        int i = 0;
+        for (Attribute s:attributes
+             ) {
+
+            result = new play.libs.Json().newObject();
+            result.put("id",i);
+            result.put("name",s.getName());
+            result.put("size",s.getSize());
+            result.put("type",s.getType());
+            result.put("size",s.getSize());
+            i++;
+            resuls.add(result);
+        }
+        return  ok(resuls);
+    }
+
+    public Result cols() throws IOException {
+        ApplicationContext context = Global.getApplicationContext();
+        File destination = new File("C:/Users/MBS/Desktop/complete/src/main/resources/sample-data.csv");
+        Form<ParamFormData> formData = Form.form(ParamFormData.class).bindFromRequest();
         String[] types = {"INTEGER", "STRING", "CHAR", "DOUBLE", "FLOAT", "DATE"};
         List<String> type = new ArrayList<String>(Arrays.asList(types));
         String[] seps = {";", ",", ".", "|", ":"};
@@ -69,57 +141,54 @@ public class UploadController extends Controller {
                     type,
                     sep
             ));
-        }else {
-                if(formData.get().getSeparator()!=null) {
-                    cols = firstLine(destination, formData.get().getSeparator());
-                }else{
-                    cols=firstLine(destination,null);
-                }
-                 List<String> list = new ArrayList<String>(Arrays.asList(cols));
-                    int nbLineToEscape = formData.get().getNumberLine();
-                    ReaderGenerique readerGenerique = context.getBean("readerGenerique", ReaderGenerique.class);
-                    readerGenerique.setColumns(cols);
-                    readerGenerique.setLineToSkip(nbLineToEscape);
-                    String dateParam = new Date().toString();
-                    //if (ext.equals("csv")) {
+        }
+            if (formData.get().getSeparator() != null) {
+                cols = firstLine(destination, formData.get().getSeparator());
+            } else {
+                cols = firstLine(destination, null);
+            }
+            int nbLineToEscape = formData.get().getNumberLine();
+            ReaderGenerique readerGenerique = context.getBean("readerGenerique", ReaderGenerique.class);
+            readerGenerique.setColumns(cols);
+            readerGenerique.setLineToSkip(nbLineToEscape);
             ObjectNode result;
             //JsonArrayBuilder jsa =  Json.createArrayBuilder();
             ArrayNode resuls = play.libs.Json.newArray();
-            int i=0;
-            for (String s:cols) {
+            int i = 0;
+            for (String s1 : cols) {
                 result = play.libs.Json.newObject();
                 result.put("id", i);
-                result.put("name",s);
+                result.put("name", s1);
                 i++;
                 resuls.add(result);
             }
-                        return ok(resuls);
-                    }
-                }
-
-    public Result getCols(){
-
-        for (String s:cols
-             ) {
-            System.out.println(s);
-        }
-        Form<ParamFormData1> formData = Form.form(ParamFormData1.class).bindFromRequest();
-
-        ArrayNode resuls = play.libs.Json.newArray();
-        ObjectNode result;
-        List<Integer> poss = getPositons(formData.get().selected);
-
-        for(int i : poss){
-            result = play.libs.Json.newObject();
-            result.put("id",i);
-            result.put("name",cols[i]);
-            result.put("type",formData.get().getType().get(i));
-            resuls.add(result);
-        }
-
             return ok(resuls);
-
     }
+
+    public String[] firstLine (File f,String delimiter) throws IOException {
+        //String result = new ArrayList<>(); // !!!
+        //Rows rows = new Rows();
+        //LinkedHashMap<String,Row> columns = new LinkedHashMap<>();
+        //List<Row> row = new ArrayList<>();
+        FileReader fr = new FileReader(f);
+        BufferedReader br = new BufferedReader(fr);
+        String quotes ="\"";
+        if(delimiter!=null) {
+            String line0 = br.readLine().replaceAll(quotes, "");
+            String[] line = line0.split(delimiter);
+            System.out.println("Delimiter not null"+br.readLine());
+            br.close();
+            return line;
+        }
+        else {
+            String[] s = br.readLine().split(",");
+            br.close();
+            return s ;
+        }
+        //System.out.println(line);
+        //rows.setRow(row);
+    }
+
 
     public Result validate(){
         ApplicationContext context = Global.getApplicationContext();
@@ -127,11 +196,9 @@ public class UploadController extends Controller {
         JobParameters param = new JobParametersBuilder()
                 .addString("input.file.name", destination.getPath())
                 .addLong("time",System.currentTimeMillis()).toJobParameters();
-
         JobLauncher jobLauncher = (JobLauncher) context.getBean("jobLauncher");
         String ext = getExtension(destination.getPath());
         Job job = (Job) context.getBean("importUserJob");
-
         try {
             jobLauncher.run(job, param);
         } catch (JobExecutionAlreadyRunningException e) {
@@ -159,13 +226,9 @@ public class UploadController extends Controller {
     public Result index() {
         String[] types = {";",",",".","|",":"};
         List<String> type = new ArrayList<>(Arrays.asList(types));
-
         String[] seps = {";", ",", ".", "|", ":"};
         List<String> sep = new ArrayList<>(Arrays.asList(seps));
-
-       List<String> cols = new ArrayList<>();
-
-
+        List<String> cols = new ArrayList<>();
         ParamFormData paramData =  new ParamFormData();
         Form<ParamFormData> formData = Form.form(ParamFormData.class).fill(paramData);
         return ok(index.render(formData,
@@ -173,32 +236,6 @@ public class UploadController extends Controller {
                 null,
                 sep
         ));
-    }
-
-
-    public String[] firstLine (File f,String delimiter) throws IOException {
-        //String result = new ArrayList<>(); // !!!
-        //Rows rows = new Rows();
-        //LinkedHashMap<String,Row> columns = new LinkedHashMap<>();
-        //List<Row> row = new ArrayList<>();
-        FileReader fr = new FileReader(f);
-        BufferedReader br = new BufferedReader(fr);
-        String quotes ="\"";
-        if(delimiter!=null) {
-            String line0 = br.readLine().replaceAll(quotes, "");
-            String[] line = line0.split(delimiter);
-            System.out.println("Delimiter not null"+br.readLine());
-            br.close();
-            return line;
-        }
-        else {
-            String[] s = br.readLine().split(",");
-            br.close();
-            return s ;
-        }
-        //System.out.println(line);
-        //rows.setRow(row);
-
     }
 
 
@@ -212,6 +249,19 @@ public class UploadController extends Controller {
         return  extension;
     }
 
+    public String[] getCols() {
+        return cols;
+    }
 
+    public void setCols(String[] cols) {
+        this.cols = cols;
+    }
 
+    public String[] getColsSelected() {
+        return colsSelected;
+    }
+
+    public void setColsSelected(String[] colsSelected) {
+        this.colsSelected = colsSelected;
+    }
 }
