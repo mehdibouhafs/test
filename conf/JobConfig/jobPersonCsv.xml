@@ -24,7 +24,7 @@
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
 		<property name="url" value="jdbc:mysql://localhost:3306/test3?autoReconnect=true&amp;useSSL=false" />
 		<property name="username" value="root" />
-		<property name="password" value="root" />
+		<property name="password" value="" />
 	</bean>
 
 	<batch:job-repository id="jobRepository" data-source="dataSource" transaction-manager="transactionManager"/>
@@ -69,15 +69,13 @@
 
 	<bean id="readerGenerique" class="model.ReaderGenerique" />
 
-
 	<bean id="person" class="model.Person"/>
 
-	<bean id="app" class="model.App" scope="prototype"/>
-	<bean id="generator" class="#{app.getClasss()}" />
+	<bean id="app" class="model.App" lazy-init="true"/>
 
+	<bean id="generator" class="#{readerGenerique.classs}" />
 
 	<bean id="recordSeperatorPolicy " class="handle.BlankLineRecordSeparatorPolicy"/>
-
 
 	<bean id="cvsFileItemProcessor" class="processor.PersonItemProcessor"/>
 	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
@@ -92,10 +90,9 @@
 		<batch:step id="step1">
 			<tasklet>
 				<chunk
-						reader="cvsFileItemReader"
-						writer="cvsFileItemWriter"
-
-						commit-interval="1">
+				reader="cvsFileItemReader"
+				writer="cvsFileItemWriter"
+				commit-interval="1">
 				</chunk>
 			</tasklet>
 		</batch:step>
@@ -105,7 +102,6 @@
 		</batch:listeners>
 
 	</batch:job>
-
 
 	<bean id="cvsFileItemWriter" class="org.springframework.batch.item.database.JdbcBatchItemWriter" scope="step">
 		<property name="dataSource" ref="dataSource" />
@@ -131,12 +127,6 @@
 			<bean class="processor.FieldSetItemPreparedStatementSetter"/>
 		</property>
 	</bean>
-
-
-
-
-
-
 
 	<util:properties id="props" location="classpath:/properties/p02.properties"/>
 

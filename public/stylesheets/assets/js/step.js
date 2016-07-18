@@ -49,7 +49,6 @@ $(document).ready(function() {
                         $('#cols').multiSelect('addOption', {
                             value: data[i].name,
                             text: data[i].name,
-                            index: 0,
                             selected: 'true'
                         });
                         $('#cols').multiSelect('refresh');

@@ -2,8 +2,6 @@ package controllers;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import model.*;
-import org.apache.commons.io.FileExistsException;
-import org.apache.commons.io.FileUtils;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
@@ -12,33 +10,21 @@ import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
-import org.springframework.batch.item.file.FlatFileParseException;
-import org.springframework.cglib.beans.BeanMap;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import play.Routes;
-import play.data.DynamicForm;
 import play.data.Form;
-import play.data.FormFactory;
-import play.data.validation.ValidationError;
 import play.libs.Json;
 import play.mvc.Controller;
-import play.mvc.Http;
 import play.mvc.Result;
 import running.Global;
 import views.formdata.ParamFormData;
 import views.formdata.ParamFormData1;
 import views.formdata.ParamFormData2;
 import views.html.index;
-import views.html.parameter;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.lang.reflect.Method;
-import java.sql.Array;
-import java.sql.BatchUpdateException;
 import java.util.*;
 
 
@@ -57,8 +43,8 @@ public class UploadController extends Controller {
 
     public Result upload() throws IOException {
             String cheminMac = "/Users/bouhafs/Documents/sample-data.csv";
-            //String cheminWin = "C:/Users/MBS/Desktop/complete/src/main/resources/sample-data.csv";
-            File destination = new File(cheminMac);
+            String cheminWin = "C:/Users/MBS/Desktop/complete/src/main/resources/sample-data.csv";
+            File destination = new File(cheminWin);
                 Form<ParamFormData2> formData = Form.form(ParamFormData2.class).bindFromRequest();
                 ApplicationContext context = Global.getApplicationContext();
 
@@ -89,7 +75,7 @@ public class UploadController extends Controller {
                         return ok(resuls);
     }
 
-    public Result getTypes() throws NoSuchMethodException {
+    public Result getTypes() throws NoSuchMethodException, IllegalAccessException, ClassNotFoundException, InstantiationException {
         Attribute attribute ;
         List<Attribute> attributes = new ArrayList<>();
         Form<ParamFormData1> formData = Form.form(ParamFormData1.class).bindFromRequest();
@@ -101,29 +87,32 @@ public class UploadController extends Controller {
         final Map<String, Class<?>> properties =
                 new HashMap<String, Class<?>>();
         String tableName = formData.get().getTableName();
+        App app = context.getBean("app",App.class);
         for(int i = 0 ; i<colsSelected.length;i++) {
             attribute = new Attribute();
             String type = formData.get().getType().get(i);
-
             attribute.setType(type);
-            Class<?> o;
-            switch(formData.get().getType().get(i)){
+            Object o;
+            switch(type){
                 case "INT":
-                    o = Integer.class;
+                    int c=0;
+                    o = c;
                     break;
                 case "VARCHAR":
-                    o = String.class;
+                    String c1="";
+                    o = c1;
                     break;
                 case "DATE":
-                    o = Date.class;
+                    Date d = new Date();
+                    o = d;
                     break;
                 default:
-                    o = String.class;
+                    String k="";
+                    o = k;
                     break;
             }
             properties.put(cols[i],o.getClass());
             //String colCap = cols[i].substring(0, 1).toUpperCase() + cols[i].substring(1);
-
            /* beanGenerator.getClass().getMethod("set"+colCap,o.getClass());
             System.out.println("set"+colCap);
             beanGenerator.getClass().getMethod("get"+colCap);*/
@@ -132,6 +121,13 @@ public class UploadController extends Controller {
             attribute.setName(cols[i]);
             attributes.add(attribute);
         }
+        System.out.println(properties);
+        String classeName = app.randomIdentifier();
+        Object e = app.createBeanClass(classeName,properties);
+        System.out.println("NEW CLASSE : " + e.getClass());
+        ReaderGenerique readerGenerique = context.getBean("readerGenerique", ReaderGenerique.class);
+        readerGenerique.setClasss(e.getClass());
+        readerGenerique.setProperties(properties);
         //Generator generator = context.getBean("generator",Generator.class);
         //generator.setClassName("model.Generique");
         //generator.setProperties(properties);
@@ -160,8 +156,8 @@ public class UploadController extends Controller {
     public Result cols() throws IOException {
         ApplicationContext context = Global.getApplicationContext();
         String cheminMac = "/Users/bouhafs/Documents/sample-data.csv";
-        //String cheminWin = "C:/Users/MBS/Desktop/complete/src/main/resources/sample-data.csv";
-        File destination = new File(cheminMac);
+        String cheminWin = "C:/Users/MBS/Desktop/complete/src/main/resources/sample-data.csv";
+        File destination = new File(cheminWin);
         Form<ParamFormData> formData = Form.form(ParamFormData.class).bindFromRequest();
         String[] types = {"INTEGER", "STRING", "CHAR", "DOUBLE", "FLOAT", "DATE"};
         List<String> type = new ArrayList<String>(Arrays.asList(types));
@@ -186,7 +182,6 @@ public class UploadController extends Controller {
             ReaderGenerique readerGenerique = context.getBean("readerGenerique", ReaderGenerique.class);
             readerGenerique.setColumns(cols);
             readerGenerique.setLineToSkip(nbLineToEscape);
-
 
             ObjectNode result;
             //JsonArrayBuilder jsa =  Json.createArrayBuilder();
@@ -231,8 +226,8 @@ public class UploadController extends Controller {
     public Result validate(){
         ApplicationContext context = Global.getApplicationContext();
         String cheminMac = "/Users/bouhafs/Documents/sample-data.csv";
-        //String cheminWin = "C:/Users/MBS/Desktop/complete/src/main/resources/sample-data.csv";
-        File destination = new File(cheminMac);
+        String cheminWin = "C:/Users/MBS/Desktop/complete/src/main/resources/sample-data.csv";
+        File destination = new File(cheminWin);
         JobParameters param = new JobParametersBuilder()
                 .addString("input.file.name", destination.getPath())
                 .addLong("time",System.currentTimeMillis()).toJobParameters();
