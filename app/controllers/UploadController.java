@@ -13,6 +13,7 @@ import org.springframework.batch.core.repository.JobExecutionAlreadyRunningExcep
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.batch.item.file.FlatFileParseException;
+import org.springframework.cglib.beans.BeanMap;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import play.Routes;
@@ -35,6 +36,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.sql.Array;
 import java.sql.BatchUpdateException;
 import java.util.*;
@@ -55,7 +57,8 @@ public class UploadController extends Controller {
 
     public Result upload() throws IOException {
             String cheminMac = "/Users/bouhafs/Documents/sample-data.csv";
-            File destination = new File("C:/Users/MBS/Desktop/complete/src/main/resources/sample-data.csv");
+            //String cheminWin = "C:/Users/MBS/Desktop/complete/src/main/resources/sample-data.csv";
+            File destination = new File(cheminMac);
                 Form<ParamFormData2> formData = Form.form(ParamFormData2.class).bindFromRequest();
                 ApplicationContext context = Global.getApplicationContext();
 
@@ -86,28 +89,57 @@ public class UploadController extends Controller {
                         return ok(resuls);
     }
 
-    public Result getTypes(){
+    public Result getTypes() throws NoSuchMethodException {
         Attribute attribute ;
         List<Attribute> attributes = new ArrayList<>();
         Form<ParamFormData1> formData = Form.form(ParamFormData1.class).bindFromRequest();
-
+        ApplicationContext context = Global.getApplicationContext();
         for (String s:colsSelected
              ) {
             System.out.println("Colselected"+s);
         }
+        final Map<String, Class<?>> properties =
+                new HashMap<String, Class<?>>();
         String tableName = formData.get().getTableName();
         for(int i = 0 ; i<colsSelected.length;i++) {
             attribute = new Attribute();
             String type = formData.get().getType().get(i);
+
             attribute.setType(type);
+            Class<?> o;
+            switch(formData.get().getType().get(i)){
+                case "INT":
+                    o = Integer.class;
+                    break;
+                case "VARCHAR":
+                    o = String.class;
+                    break;
+                case "DATE":
+                    o = Date.class;
+                    break;
+                default:
+                    o = String.class;
+                    break;
+            }
+            properties.put(cols[i],o.getClass());
+            //String colCap = cols[i].substring(0, 1).toUpperCase() + cols[i].substring(1);
+
+           /* beanGenerator.getClass().getMethod("set"+colCap,o.getClass());
+            System.out.println("set"+colCap);
+            beanGenerator.getClass().getMethod("get"+colCap);*/
             String size = formData.get().getSize().get(i);
             attribute.setSize(size);
             attribute.setName(cols[i]);
             attributes.add(attribute);
         }
+        //Generator generator = context.getBean("generator",Generator.class);
+        //generator.setClassName("model.Generique");
+        //generator.setProperties(properties);
+
         ObjectNode result;
         //JsonArrayBuilder jsa =  Json.createArrayBuilder();
         ArrayNode resuls = play.libs.Json.newArray();
+
         int i = 0;
         for (Attribute s:attributes
              ) {
@@ -118,6 +150,7 @@ public class UploadController extends Controller {
             result.put("size",s.getSize());
             result.put("type",s.getType());
             result.put("size",s.getSize());
+
             i++;
             resuls.add(result);
         }
@@ -126,7 +159,9 @@ public class UploadController extends Controller {
 
     public Result cols() throws IOException {
         ApplicationContext context = Global.getApplicationContext();
-        File destination = new File("C:/Users/MBS/Desktop/complete/src/main/resources/sample-data.csv");
+        String cheminMac = "/Users/bouhafs/Documents/sample-data.csv";
+        //String cheminWin = "C:/Users/MBS/Desktop/complete/src/main/resources/sample-data.csv";
+        File destination = new File(cheminMac);
         Form<ParamFormData> formData = Form.form(ParamFormData.class).bindFromRequest();
         String[] types = {"INTEGER", "STRING", "CHAR", "DOUBLE", "FLOAT", "DATE"};
         List<String> type = new ArrayList<String>(Arrays.asList(types));
@@ -151,9 +186,12 @@ public class UploadController extends Controller {
             ReaderGenerique readerGenerique = context.getBean("readerGenerique", ReaderGenerique.class);
             readerGenerique.setColumns(cols);
             readerGenerique.setLineToSkip(nbLineToEscape);
+
+
             ObjectNode result;
             //JsonArrayBuilder jsa =  Json.createArrayBuilder();
             ArrayNode resuls = play.libs.Json.newArray();
+            Object o;
             int i = 0;
             for (String s1 : cols) {
                 result = play.libs.Json.newObject();
@@ -192,7 +230,9 @@ public class UploadController extends Controller {
 
     public Result validate(){
         ApplicationContext context = Global.getApplicationContext();
-        File destination = new File("C:/Users/MBS/Desktop/complete/src/main/resources/sample-data.csv");
+        String cheminMac = "/Users/bouhafs/Documents/sample-data.csv";
+        //String cheminWin = "C:/Users/MBS/Desktop/complete/src/main/resources/sample-data.csv";
+        File destination = new File(cheminMac);
         JobParameters param = new JobParametersBuilder()
                 .addString("input.file.name", destination.getPath())
                 .addLong("time",System.currentTimeMillis()).toJobParameters();

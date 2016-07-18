@@ -24,7 +24,7 @@
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
 		<property name="url" value="jdbc:mysql://localhost:3306/test3?autoReconnect=true&amp;useSSL=false" />
 		<property name="username" value="root" />
-		<property name="password" value="" />
+		<property name="password" value="root" />
 	</bean>
 
 	<batch:job-repository id="jobRepository" data-source="dataSource" transaction-manager="transactionManager"/>
@@ -53,13 +53,12 @@
 					<bean class="org.springframework.batch.item.file.transform.DelimitedLineTokenizer">
                         <property name="delimiter" value=";"/>
                         <property name="names" value="#{readerGenerique.getColumns()}"/>
-
 					</bean>
 				</property>
 				<property name="fieldSetMapper">
 					<bean
 							class="org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper">
-						<property name="prototypeBeanName" value="person" />
+						<property name="prototypeBeanName" value="generator" />
 					</bean>
 				</property>
 			</bean>
@@ -68,10 +67,13 @@
 		<property name="strict" value="false" />
 	</bean>
 
-	<bean id="person" class="model.Person" scope="prototype" />
-
 	<bean id="readerGenerique" class="model.ReaderGenerique" />
 
+
+	<bean id="person" class="model.Person"/>
+
+	<bean id="app" class="model.App" scope="prototype"/>
+	<bean id="generator" class="#{app.getClasss()}" />
 
 
 	<bean id="recordSeperatorPolicy " class="handle.BlankLineRecordSeparatorPolicy"/>
@@ -92,7 +94,7 @@
 				<chunk
 						reader="cvsFileItemReader"
 						writer="cvsFileItemWriter"
-						processor="cvsFileItemProcessor"
+
 						commit-interval="1">
 				</chunk>
 			</tasklet>

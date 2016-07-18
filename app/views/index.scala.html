@@ -31,15 +31,15 @@
                 <ul class="nav nav-pills nav-justified thumbnail setup-panel">
                     <li class="active"><a href="#step-1" >
                         <h4 class="list-group-item-heading">Step 1</h4>
-                        <p class="list-group-item-text">First step description</p>
+                        <p class="list-group-item-text">File configuration</p>
                     </a></li>
                     <li class="disabled"><a href="#step-2" >
                         <h4 class="list-group-item-heading">Step 2</h4>
-                        <p class="list-group-item-text">Second step description</p>
+                        <p class="list-group-item-text">Data configuration</p>
                     </a></li>
                     <li class="disabled"><a href="#step-3" >
                         <h4 class="list-group-item-heading">Step 3</h4>
-                        <p class="list-group-item-text">Third step description</p>
+                        <p class="list-group-item-text">Validation configuration</p>
                     </a></li>
                 </ul>
             </div>
@@ -120,15 +120,13 @@
                     <div class="panel panel-default">
                         <div class="panel-body">
                             <form id="form1" action="@routes.UploadController.getTypes" method="POST">
-                            <div id="legend">
                             @text(paramForm("tableName"),
                                 placeholder = "Name of table",
                                 label="Table Name",
                                 help = " TABLE NAME Please enter the table Name . (required)",
                                 isID=false
                             )
-                            </div>
-                            <table class="table">
+                            <table class="table table-striped table-bordered" cellspacing="0" width="100%">
                                 <thead>
                                     <tr>
                                         <th >Id</th>
@@ -137,6 +135,14 @@
                                         <th > Size</th>
                                     </tr>
                                 </thead>
+                                <tfoot>
+                                <tr>
+                                    <th >Id</th>
+                                    <th > Name</th>
+                                    <th > Type </th>
+                                    <th > Size</th>
+                                </tr>
+                                </tfoot>
                                 <tbody id="tableaucontenus1">
                                 </tbody>
                             </table>
@@ -152,10 +158,11 @@
                 </div>
         <div class="row setup-content" id="step-3">
             <div class="col-xs-12">
-                <div class="col-md-12 well">
                     <h1 class="text-center"> STEP 3</h1>
+                    <div class="panel panel-default">
+                        <div class="panel-body">
                     <form action="@routes.UploadController.validate()" method="post">
-                    <table class="table">
+                    <table class="table table-striped table-bordered" cellspacing="0" width="100%">
                         <thead>
                             <tr>
                                 <th >Id</th>
@@ -164,14 +171,26 @@
                                 <th > Size </th>
                             </tr>
                         </thead>
+                    <tfoot>
+                        <tr>
+                            <th >Id</th>
+                            <th > Column Name</th>
+                            <th > Column Type </th>
+                            <th > Size </th>
+                        </tr>
+                    </tfoot>
+
                         <tbody id="tableaucontenus2">
                         </tbody>
                     </table>
                     <button id="activate-step-4" class="btn btn-primary btn-lg">Validate</button>
                     </form>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
+
     </div>
 
 

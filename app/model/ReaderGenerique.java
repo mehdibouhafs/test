@@ -21,6 +21,7 @@ public class ReaderGenerique extends Model {
     private int lineToSkip;
 
 
+
     public ReaderGenerique() {
     }
 

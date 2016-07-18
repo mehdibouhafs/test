@@ -43,7 +43,8 @@ public class ParamFormData {
     public List<ValidationError> validate() {
         List<ValidationError> errors = new ArrayList<>();
         String cheminMac = "/Users/bouhafs/Documents/sample-data.csv";
-        File destination = new File("C:/Users/MBS/Desktop/complete/src/main/resources/sample-data.csv");
+        String cheminWindows = "C:/Users/MBS/Desktop/complete/src/main/resources/sample-data.csv";
+        File destination = new File(cheminMac);
         FileReader fr = null;
         String s = "";
         try {

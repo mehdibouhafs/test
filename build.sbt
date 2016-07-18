@@ -25,7 +25,8 @@ libraryDependencies ++= Seq(
 "com.sun.xml.bind" % "jaxb-impl" % "2.2.11",
 "com.sun.xml.bind" % "jaxb-core" % "2.2.11",
 "commons-io" % "commons-io" % "2.4",
-  "javax.json" % "javax.json-api" % "1.0"
+"cglib" % "cglib" % "3.2.4"
+
 
 )
 

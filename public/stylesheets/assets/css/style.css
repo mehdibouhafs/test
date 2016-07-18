@@ -67,6 +67,28 @@ a:hover{
     color: #737373;
 }
 
+#type{
+    width:150px;
+}
+
+#type option{
+    width:50px;
+}
+
+#separator{
+    width:200px;
+    text-indent: 60px;
+}
+
+#separator option{
+    width:100px;
+}
+
+#numberline{
+    width:10px;
+}
+
+
 
 /*----------------------------
     The file upload form
