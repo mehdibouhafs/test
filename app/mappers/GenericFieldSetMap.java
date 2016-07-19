@@ -31,7 +31,7 @@ public class GenericFieldSetMap implements FieldSetMapper<Object> {
         ReaderGenerique readerGenerique = context.getBean("readerGenerique",ReaderGenerique.class);
         Object generator = context.getBean("generator",readerGenerique);
         App app = new App();
-        return app.SettersBean(readerGenerique.getProperties(),generator,fieldSet);
+        //return app.SettersBean(readerGenerique.getProperties(),generator,fieldSet);
           /*  Person person = new Person();
         person.setFirstName(fieldSet.readString(1));
         person.setLastName(fieldSet.readString(2));
@@ -45,5 +45,6 @@ public class GenericFieldSetMap implements FieldSetMapper<Object> {
         } catch (Exception e) {
             e.printStackTrace();
         }*/
+        return  null;
     }
 }

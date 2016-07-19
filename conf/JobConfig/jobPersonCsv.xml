@@ -44,7 +44,7 @@
 		<property name="jobRepository" ref="jobRepositoryy" />
 	</bean>
 
-	<bean id="cvsFileItemReader" class="org.springframework.batch.item.file.FlatFileItemReader" scope="step" >
+	<bean id="cvsFileItemReader" class="org.springframework.batch.item.file.FlatFileItemReader" scope="step">
 		<!--<property name="recordSeparatorPolicy" ref="recordSeperatorPolicy "/>-->
 		<property name="resource" value="file:#{jobParameters['input.file.name']}" />
 		<property name="lineMapper">
@@ -58,7 +58,7 @@
 				<property name="fieldSetMapper">
 					<bean
 							class="org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper">
-						<property name="prototypeBeanName" value="generator" />
+						<property name="prototypeBeanName" value="firstBe" />
 					</bean>
 				</property>
 			</bean>
@@ -71,9 +71,10 @@
 
 	<bean id="person" class="model.Person"/>
 
-	<bean id="app" class="model.App" lazy-init="true"/>
+	<bean id="generator" class="model.Generator"  lazy-init="true" />
 
-	<bean id="generator" class="#{readerGenerique.classs}" />
+	<bean id="firstBe" class="#{generator.getClassGenerate()}" lazy-init="true"></bean>
+
 
 	<bean id="recordSeperatorPolicy " class="handle.BlankLineRecordSeparatorPolicy"/>
 

@@ -1,6 +1,8 @@
 package controllers;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import javassist.CannotCompileException;
+import javassist.NotFoundException;
 import model.*;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
@@ -10,6 +12,7 @@ import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
+import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.context.ApplicationContext;
 import play.data.Form;
 import play.libs.Json;
@@ -75,7 +78,7 @@ public class UploadController extends Controller {
                         return ok(resuls);
     }
 
-    public Result getTypes() throws NoSuchMethodException, IllegalAccessException, ClassNotFoundException, InstantiationException {
+    public Result getTypes() throws NoSuchMethodException, IllegalAccessException, ClassNotFoundException, InstantiationException, CannotCompileException, NotFoundException {
         Attribute attribute ;
         List<Attribute> attributes = new ArrayList<>();
         Form<ParamFormData1> formData = Form.form(ParamFormData1.class).bindFromRequest();
@@ -87,7 +90,6 @@ public class UploadController extends Controller {
         final Map<String, Class<?>> properties =
                 new HashMap<String, Class<?>>();
         String tableName = formData.get().getTableName();
-        App app = context.getBean("app",App.class);
         for(int i = 0 ; i<colsSelected.length;i++) {
             attribute = new Attribute();
             String type = formData.get().getType().get(i);
@@ -122,15 +124,13 @@ public class UploadController extends Controller {
             attributes.add(attribute);
         }
         System.out.println(properties);
-        String classeName = app.randomIdentifier();
-        Object e = app.createBeanClass(classeName,properties);
-        System.out.println("NEW CLASSE : " + e.getClass());
-        ReaderGenerique readerGenerique = context.getBean("readerGenerique", ReaderGenerique.class);
-        readerGenerique.setClasss(e.getClass());
-        readerGenerique.setProperties(properties);
-        //Generator generator = context.getBean("generator",Generator.class);
-        //generator.setClassName("model.Generique");
-        //generator.setProperties(properties);
+        Generator c = context.getBean("generator",Generator.class);
+        c.setProperties(properties);
+        c.generator();
+        Object c1 = context.getBean("firstBe");
+
+        System.out.println("GeneratorClass"+c.getClassGenerate());
+        System.out.println("NEW CLASSE : " + c1.getClass());
 
         ObjectNode result;
         //JsonArrayBuilder jsa =  Json.createArrayBuilder();
