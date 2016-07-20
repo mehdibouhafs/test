@@ -13,11 +13,6 @@ import javassist.bytecode.ConstPool;
 import org.springframework.batch.item.file.transform.FieldSet;
 import org.springframework.context.annotation.Bean;
 
-
-import net.sf.cglib.beans.BeanGenerator;
-import net.sf.cglib.core.NamingPolicy;
-import net.sf.cglib.core.Predicate;
-
 /**
  * Hello world!
  *
@@ -26,9 +21,7 @@ public class App
 	{
 		public App() {
 		}
-
 		private static int counter = 0;
-
 		public static Class<?> buildCSVClass(Map<String, Class<?>> properties) throws CannotCompileException, NotFoundException, IOException {
 			ClassPool pool = new ClassPool(true);//ClassPool.getDefault();
 			CtClass result = pool.makeClass("model.CSV_CLASS$" + (counter));
@@ -62,8 +55,6 @@ public class App
 			result.delete(result.length()-2, result.length());
 			return result.append("\n}").toString();
 		}
-
-
 
 		public static void setField(String field,Object value,Object object){
 			try {

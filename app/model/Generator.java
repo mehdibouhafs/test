@@ -2,6 +2,7 @@ package model;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.context.annotation.Bean;
@@ -14,7 +15,7 @@ import javassist.NotFoundException;
 
 public class Generator {
 	
-	private Map<String, Class<?>> properties = new HashMap<>();
+	private Map<String, Class<?>> properties = new LinkedHashMap<>();
 	
 	private Class<?> classGenerate = Object.class;
 	

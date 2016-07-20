@@ -1,10 +1,6 @@
 package util;
 
-import javassist.CannotCompileException;
-import javassist.ClassPool;
-import javassist.CtClass;
-import javassist.CtField;
-import javassist.NotFoundException;
+import javassist.*;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.ConstPool;
 
@@ -13,10 +9,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
 
 public class test {
 	public static void main(String[] args) throws Exception {
-		String chemin = "C:\\Users\\MBS\\Desktop\\complete\\src\\main\\resources\\sample-data.csv";
+		String chemin = "C:/Users/MBS/Desktop/complete/src/main/resources/sample-data.csv";
 	    String[] fieldNames = null;
 	    Class<?> rowObjectClass = null;
 	    try(BufferedReader stream = new BufferedReader(new InputStreamReader(new FileInputStream(new File(chemin))))) {
@@ -30,7 +28,7 @@ public class test {
 	            }
 	            if(rowObjectClass == null) {
 	                fieldNames = line.split(",");
-	                rowObjectClass = buildCSVClass(fieldNames);
+	                rowObjectClass = buildCSVClass(new HashMap<>());
 	            } else {
 	                String[] values = line.split(",");
 	                Object rowObject = rowObjectClass.newInstance();
@@ -45,20 +43,20 @@ public class test {
 	    }
 	}
 
-	private static int counter = 0;
+	private static int counter = 5;
 	
-	public static Class<?> buildCSVClass(String[] fieldNames) throws CannotCompileException, NotFoundException {
-	    ClassPool pool = ClassPool.getDefault();
-	    CtClass result = pool.makeClass("CSV_CLASS$" + (counter++));
-	    ClassFile classFile = result.getClassFile();
-	    ConstPool constPool = classFile.getConstPool();
-	    classFile.setSuperclass(Object.class.getName());
-	    for (String fieldName : fieldNames) {
-	        CtField field = new CtField(ClassPool.getDefault().get(String.class.getName()), fieldName, result);
-	        result.addField(field);
-	    }
-	    classFile.setVersionToJava5();
-	    return result.toClass();
+	public static Class<?> buildCSVClass(Map<String, Class<?>> properties) throws CannotCompileException, NotFoundException {
+		ClassPool pool = ClassPool.getDefault();
+		CtClass result = pool.makeClass("ok.ok.CSV_CLASS$" + (counter++));
+		ClassFile classFile = result.getClassFile();
+		ConstPool constPool = classFile.getConstPool();
+		classFile.setSuperclass(Object.class.getName());
+		for (Map.Entry<String, Class<?>> entry : properties.entrySet()) {
+			CtField field = new CtField(ClassPool.getDefault().get(entry.getValue().getName()), entry.getKey(), result);
+			result.addField(field);
+		}
+		classFile.setVersionToJava5();
+		return result.toClass();
 	}
 
 	public static String reflectToString(Object value) throws IllegalAccessException {

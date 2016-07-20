@@ -37,19 +37,16 @@ public class FieldSetItemPreparedStatementSetter implements ItemPreparedStatemen
                 switch (entry.getValue().getSimpleName()){
                     case "Integer":
                         System.out.println(i+"Integer :"+(Integer.parseInt(f.get(item).toString())));
-                        //ps.setInt(i,(Integer.parseInt(f.get(item).toString())));
+                        ps.setInt(i,(Integer.parseInt(f.get(item).toString())));
                         i++;
                         break;
                     case "String":
                         System.out.println(i+"String :"+ String.valueOf(f.get(item)));
-                        if(entry.getKey().equals("firstName")) {
-                            ps.setString(1, f.get(item)+"");
-                        }else{
-                            ps.setString(2, f.get(item)+"");
-                        }
+                            ps.setString(i, f.get(item)+"");
+                        i++;
                         break;
                     case "Date":
-                        System.out.println("Date"+i);
+                        System.out.println("Date"+i+":"+((java.util.Date)(f.get(item))).getTime());
                        /* final String NEW_FORMAT = "dd/MM/yyyy";
                         SimpleDateFormat sdf = new SimpleDateFormat("EE MMM dd HH:mm:ss z yyyy", Locale.ENGLISH);
                         java.util.Date date = null;
@@ -61,15 +58,17 @@ public class FieldSetItemPreparedStatementSetter implements ItemPreparedStatemen
                             java.util.Date date1 = formatter.parse(s);
                             System.out.println("Date :"+ date1.toString());*/
                         try {
-                            ps.setDate(3,  new Date(((java.util.Date)(f.get(item))).getTime()));
+                            ps.setDate(i,  new Date(((java.util.Date)(f.get(item))).getTime()));
+                            i++;
                         } catch (IllegalAccessException e) {
                             e.printStackTrace();
                         }
                         break;
                     default:
+                        System.out.println("DEFAULT");
                         break;
                 }
-                i++;
+
             } catch (NoSuchFieldException e) {
                 e.printStackTrace();
             } catch (IllegalAccessException e) {

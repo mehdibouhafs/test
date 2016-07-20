@@ -6,6 +6,7 @@ import java.util.List;
  * Created by MBS on 13/07/2016.
  */
 public class ParamFormData1 {
+
     public String tableName;
 
     public List<String> type;

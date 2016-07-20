@@ -1,6 +1,8 @@
 package controllers;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import dao.ObjectDao;
+import dao.ObjectDaoJdbc;
 import javassist.CannotCompileException;
 import javassist.NotFoundException;
 import model.*;
@@ -12,6 +14,7 @@ import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
+import org.springframework.batch.item.database.JdbcBatchItemWriter;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.context.ApplicationContext;
 import play.data.Form;
@@ -83,16 +86,29 @@ public class UploadController extends Controller {
         List<Attribute> attributes = new ArrayList<>();
         Form<ParamFormData1> formData = Form.form(ParamFormData1.class).bindFromRequest();
         ApplicationContext context = Global.getApplicationContext();
+        ReaderGenerique readerGenerique = context.getBean("readerGenerique",ReaderGenerique.class);
         for (String s:colsSelected
              ) {
             System.out.println("Colselected"+s);
         }
         final Map<String, Class<?>> properties =
-                new HashMap<String, Class<?>>();
-        String tableName = formData.get().getTableName();
+                new LinkedHashMap<>();
+        final Map<String,String> columnsTable = new LinkedHashMap<>();
+        final Map<String, String[]> values = request().body().asFormUrlEncoded();
+        System.out.println(values);
+        String tableName = "People1";
+        for(Map.Entry<String,String[]> map : values.entrySet()){
+            System.out.println("Value Map Form1"+map.getValue());
+            if(map.getKey().equals("tableName")) {
+                 tableName = map.getValue()[0];
+            }
+        }
+
+        System.out.println("TABLE NAme " + tableName);
         for(int i = 0 ; i<colsSelected.length;i++) {
             attribute = new Attribute();
             String type = formData.get().getType().get(i);
+            String typeSize = type +"(" + formData.get().getSize().get(i)+")";
             attribute.setType(type);
             Object o;
             switch(type){
@@ -104,7 +120,7 @@ public class UploadController extends Controller {
                     String c1="";
                     o = c1;
                     break;
-                case "DATE":
+                case "DATETIME":
                     Date d = new Date();
                     o = d;
                     break;
@@ -113,7 +129,10 @@ public class UploadController extends Controller {
                     o = k;
                     break;
             }
+            System.out.println("COls"+cols[i]);
+            System.out.println("typeSize"+typeSize);
             properties.put(cols[i],o.getClass());
+            columnsTable.put(cols[i],typeSize);
             //String colCap = cols[i].substring(0, 1).toUpperCase() + cols[i].substring(1);
            /* beanGenerator.getClass().getMethod("set"+colCap,o.getClass());
             System.out.println("set"+colCap);
@@ -124,6 +143,8 @@ public class UploadController extends Controller {
             attributes.add(attribute);
         }
         System.out.println(properties);
+        readerGenerique.setColumnsTable(columnsTable);
+        readerGenerique.setTable(tableName);
         Generator c = context.getBean("generator",Generator.class);
         c.setProperties(properties);
         c.generator();
@@ -223,29 +244,53 @@ public class UploadController extends Controller {
     }
 
 
+    /* <property name="sql">
+			<!-- Why CDATA?
+                 because < etc. is not allowed for xml values
+                 when you use &lt; xml parser will work, but
+                 now the sql won't because of the & spring assumes
+                 a placeholder, see
+                 - AbstractSqlPagingQueryProvider.init(...)
+                 - JdbcParameterUtils.countParameterPlaceholders(...)
+                 -->
+			<value><![CDATA[
+    INSERT INTO People
+            (person_id,first_name,last_name,date)
+    VALUES
+            (?,?,?,?)
+    ]]></value>*/
+
     public Result validate(){
         ApplicationContext context = Global.getApplicationContext();
-        String cheminMac = "/Users/bouhafs/Documents/sample-data.csv";
-        String cheminWin = "C:/Users/MBS/Desktop/complete/src/main/resources/sample-data.csv";
-        File destination = new File(cheminWin);
-        JobParameters param = new JobParametersBuilder()
-                .addString("input.file.name", destination.getPath())
-                .addLong("time",System.currentTimeMillis()).toJobParameters();
-        JobLauncher jobLauncher = (JobLauncher) context.getBean("jobLauncher");
-        String ext = getExtension(destination.getPath());
-        Job job = (Job) context.getBean("importUserJob");
-        try {
-            jobLauncher.run(job, param);
-        } catch (JobExecutionAlreadyRunningException e) {
-            e.printStackTrace();
-        } catch (JobRestartException e) {
-            e.printStackTrace();
-        } catch (JobInstanceAlreadyCompleteException e) {
-            e.printStackTrace();
-        } catch (JobParametersInvalidException e) {
-            e.printStackTrace();
+        ReaderGenerique readerGenerique = context.getBean("readerGenerique",ReaderGenerique.class);
+        ObjectDao objectDao = context.getBean("ObjectDao",ObjectDaoJdbc.class);
+        Boolean create = objectDao.createTable(readerGenerique.getTable(),readerGenerique.getColumnsTable());
+        System.out.println();
+        if(create) {
+            String cheminMac = "/Users/bouhafs/Documents/sample-data.csv";
+            String cheminWin = "C:/Users/MBS/Desktop/complete/src/main/resources/sample-data.csv";
+            File destination = new File(cheminWin);
+            JobParameters param = new JobParametersBuilder()
+                    .addString("input.file.name", destination.getPath())
+                    .addLong("time", System.currentTimeMillis()).toJobParameters();
+            JobLauncher jobLauncher = (JobLauncher) context.getBean("jobLauncher");
+            String ext = getExtension(destination.getPath());
+            Job job = (Job) context.getBean("importUserJob");
+            try {
+                jobLauncher.run(job, param);
+            } catch (JobExecutionAlreadyRunningException e) {
+                e.printStackTrace();
+            } catch (JobRestartException e) {
+                e.printStackTrace();
+            } catch (JobInstanceAlreadyCompleteException e) {
+                e.printStackTrace();
+            } catch (JobParametersInvalidException e) {
+                e.printStackTrace();
+            }
+            return ok("valider");
+        }else {
+            return ok("Table Not Create");
         }
-        return ok("valider");
     }
 
     public List<Integer> getPositons(List<String> s){

@@ -27,6 +27,10 @@
 		<property name="password" value="" />
 	</bean>
 
+	<bean id="ObjectDao" class="dao.ObjectDaoJdbc">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
 	<batch:job-repository id="jobRepository" data-source="dataSource" transaction-manager="transactionManager"/>
 
 	<bean id="transactionManager"
@@ -67,6 +71,8 @@
 		<property name="strict" value="false" />
 	</bean>
 
+
+
 	<bean id="readerGenerique" class="model.ReaderGenerique" />
 
 	<bean id="person" class="model.Person"/>
@@ -106,24 +112,7 @@
 
 	<bean id="cvsFileItemWriter" class="org.springframework.batch.item.database.JdbcBatchItemWriter" scope="step">
 		<property name="dataSource" ref="dataSource" />
-		<property name="sql">
-			<!-- Why CDATA?
-                 because < etc. is not allowed for xml values
-                 when you use &lt; xml parser will work, but
-                 now the sql won't because of the & spring assumes
-                 a placeholder, see
-                 - AbstractSqlPagingQueryProvider.init(...)
-                 - JdbcParameterUtils.countParameterPlaceholders(...)
-                 -->
-			<value>
-				<![CDATA[
-                    INSERT INTO People
-                    (first_name,last_name,date)
-                    VALUES
-                    (?,?,?)
-                ]]>
-			</value>
-		</property>
+		<property name="sql" value="#{readerGenerique.cData}"/>
 		<property name="itemPreparedStatementSetter">
 			<bean class="processor.FieldSetItemPreparedStatementSetter"/>
 		</property>

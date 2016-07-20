@@ -21,7 +21,13 @@ public class ReaderGenerique extends Model {
 
     private int lineToSkip;
 
+    private String table;
+
     private Class<?> classs = Object.class;
+
+    public Map<String,String> columnsTable;
+
+    public  String cData ;
 
 
     private Map<String, Class<?>> properties;
@@ -37,6 +43,14 @@ public class ReaderGenerique extends Model {
         this.id = id;
     }
 
+
+    public String getcData() {
+        return cData;
+    }
+
+    public void setcData(String cData) {
+        this.cData = cData;
+    }
 
     public String[] getColumns() {
         return columns;
@@ -68,5 +82,21 @@ public class ReaderGenerique extends Model {
 
     public void setProperties(Map<String, Class<?>> properties) {
         this.properties = properties;
+    }
+
+    public Map<String, String> getColumnsTable() {
+        return columnsTable;
+    }
+
+    public void setColumnsTable(Map<String, String> columnsTable) {
+        this.columnsTable = columnsTable;
+    }
+
+    public String getTable() {
+        return table;
+    }
+
+    public void setTable(String table) {
+        this.table = table;
     }
 }
