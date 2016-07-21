@@ -44,6 +44,43 @@ public class App
 			result.detach();
 			return result.toClass();
 		}
+		public static Class<?> buildCSVClassName(Map<String, Class<?>> properties,String classeName) throws CannotCompileException, NotFoundException, IOException {
+			ClassPool pool = new ClassPool(true);//ClassPool.getDefault();
+			CtClass result = pool.makeClass(classeName+".CSV_CLASS$" + (counter));
+			counter++;
+			result.setSuperclass(pool.get((Serializable.class).getName()));
+			ClassFile classFile = result.getClassFile();
+			ConstPool constPool = classFile.getConstPool();
+			classFile.setSuperclass(Object.class.getName());
+			for (Map.Entry<String, Class<?>> entry : properties.entrySet()) {
+				CtField field = new CtField(ClassPool.getDefault().get(entry.getValue().getName()), entry.getKey(), result);
+				CtMethod setter =  CtNewMethod.setter("set"+entry.getKey(), field);
+				CtMethod getter =  CtNewMethod.getter("get"+entry.getKey(), field);
+				result.addField(field);
+				result.addMethod(setter);
+				result.addMethod(getter);
+			}
+			classFile.setVersionToJava5();
+			result.writeFile();
+			result.defrost();
+			result.detach();
+			return result.toClass();
+		}
+
+		public static Object generatorBean(Map<String,Class<?>> properties,String className) throws IOException, CannotCompileException, NotFoundException, IllegalAccessException {
+			Class<?> cla = App.buildCSVClassName(properties,className);
+			Object o = null;
+			try {
+				o = cla.newInstance();
+			} catch (InstantiationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SecurityException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return o;
+		}
 
 		public static String reflectToString(Object value) throws IllegalAccessException {
 			StringBuilder result = new StringBuilder(value.getClass().getName());

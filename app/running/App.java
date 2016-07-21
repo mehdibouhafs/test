@@ -15,13 +15,6 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class App {
 	public static void main(String[] args) throws JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException, JobParametersInvalidException {
-		String springConfig = "JobConfig/jobEncadrant.xml";
-
-		ApplicationContext context = new ClassPathXmlApplicationContext(springConfig);
-		Job job = (Job) context.getBean("TestJob");
-		String dateParam = new Date().toString();
-		JobParameters param = new JobParametersBuilder().addString("date", dateParam).toJobParameters();
-		JobLauncher jobLauncher = (JobLauncher) context.getBean("jobLauncher"); 
-		jobLauncher.run(job, param);
+		System.out.println("APPPPPP !!!!!!!!!");
 	}
 }

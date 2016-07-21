@@ -28,7 +28,7 @@ public class test {
 	            }
 	            if(rowObjectClass == null) {
 	                fieldNames = line.split(",");
-	                rowObjectClass = buildCSVClass(new HashMap<>());
+	                rowObjectClass = buildPersonClass(new HashMap<>());
 	            } else {
 	                String[] values = line.split(",");
 	                Object rowObject = rowObjectClass.newInstance();
@@ -44,10 +44,11 @@ public class test {
 	}
 
 	private static int counter = 5;
-	
-	public static Class<?> buildCSVClass(Map<String, Class<?>> properties) throws CannotCompileException, NotFoundException {
-		ClassPool pool = ClassPool.getDefault();
-		CtClass result = pool.makeClass("ok.ok.CSV_CLASS$" + (counter++));
+
+	public static Class<?> buildPersonClass(Map<String, Class<?>> properties) throws CannotCompileException, NotFoundException {
+		System.out.println("Test Build PErson Object");
+		ClassPool pool = new ClassPool(true);//ClassPool.getDefault();
+		CtClass result = pool.makeClass("model.Person$" + (counter++));
 		ClassFile classFile = result.getClassFile();
 		ConstPool constPool = classFile.getConstPool();
 		classFile.setSuperclass(Object.class.getName());
@@ -56,6 +57,8 @@ public class test {
 			result.addField(field);
 		}
 		classFile.setVersionToJava5();
+		System.out.println("Result0"+result.toClass().toString());
+		System.out.println("Result0"+result.toClass());
 		return result.toClass();
 	}
 

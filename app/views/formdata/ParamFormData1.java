@@ -1,5 +1,8 @@
 package views.formdata;
 
+import play.data.validation.ValidationError;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -7,19 +10,25 @@ import java.util.List;
  */
 public class ParamFormData1 {
 
-    public String tableName;
+    public String table;
 
     public List<String> type;
 
     public List<String> size;
 
-
     public ParamFormData1() {
     }
 
-    public ParamFormData1(List<String> type, String tableName) {
-        this.type = type;
-        this.tableName = tableName;
+    public List<ValidationError> validate() {
+        List<ValidationError> errors = new ArrayList<>();
+        if(table.equals("") || table == null){
+            errors.add(new ValidationError("table", "No Name Table was given."));
+        }
+        if(errors.size() > 0) {
+            System.out.println(errors);
+            return errors;
+        }
+        return null;
     }
 
     public List<String> getSize() {
@@ -30,12 +39,12 @@ public class ParamFormData1 {
         this.size = size;
     }
 
-    public String getTableName() {
-        return tableName;
+    public String getTable() {
+        return table;
     }
 
-    public void setTableName(String tableName) {
-        this.tableName = tableName;
+    public void setTable(String table) {
+        this.table = table;
     }
 
     public List<String> getType() {
@@ -46,7 +55,12 @@ public class ParamFormData1 {
         this.type = type;
     }
 
-    public ParamFormData1(String tableName) {
-        this.tableName = tableName;
+    @Override
+    public String toString() {
+        return "ParamFormData1{" +
+                "table='" + table + '\'' +
+                ", type=" + type +
+                ", size=" + size +
+                '}';
     }
 }

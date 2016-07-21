@@ -74,46 +74,52 @@ public class JobCompletionNotificationListener extends JobExecutionListenerSuppo
 			List<Object> results = jdbcTemplate.query(select, new RowMapper<Object>() {
 				@Override
 				public Object mapRow(ResultSet rs, int row) throws SQLException {
-
 					try {
-						Class<?> t = test.buildCSVClass(readerGenerique.getProperties());
-						Object person = t.newInstance();
-						Field f1 =t.getClass().getDeclaredField("id");
-						f1.setAccessible(true);
-						f1.set(person,rs.getInt(1));
-						Field f2 =t.getClass().getDeclaredField("firstName");
-						f2.setAccessible(true);
-						f2.set(person,rs.getString(2));
-						Field f3 =t.getClass().getDeclaredField("lastName");
-						f3.setAccessible(true);
-						f3.set(person,rs.getString(3));
-						Field f4 =t.getClass().getDeclaredField("date");
-						f4.setAccessible(true);
-						f4.set(person,rs.getDate(4));
-						return person;
+						Object o = App.buildCSVClassName(readerGenerique.getProperties(),"listeners").newInstance();
+						Field c;
+						int i=1;
+						for (Field f : o.getClass().getDeclaredFields()
+								) {
+							c = o.getClass().getDeclaredField(f.getName());
+							switch (f.getType().getSimpleName()) {
+								case "String":
+									c.setAccessible(true);
+									c.set(o, rs.getString(i));
+									i++;
+									break;
+								case "Integer":
+									c.setAccessible(true);
+									c.set(o, rs.getInt(i));
+									i++;
+									break;
+								case "Date":
+									c.setAccessible(true);
+									c.set(o, rs.getDate(i));
+									i++;
+									break;
+							}
+						}
+						System.out.println(App.reflectToString(o));
+						return o;
+
+					} catch (IllegalAccessException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
 					} catch (CannotCompileException e) {
 						e.printStackTrace();
 					} catch (NotFoundException e) {
 						e.printStackTrace();
-					} catch (InstantiationException e) {
-						e.printStackTrace();
-					} catch (IllegalAccessException e) {
-						e.printStackTrace();
 					} catch (NoSuchFieldException e) {
 						e.printStackTrace();
+					} catch (InstantiationException e) {
+						e.printStackTrace();
 					}
-					return  null;
+					return null;
 				}
-			});
+				});
 
-			/*for (Object person : results) {
-				//log.info("Found <" + person + "> in the database.");
-				try {
-					App.reflectToString(person);
-				} catch (IllegalAccessException e) {
-					e.printStackTrace();
-				}
-			}*/
+
 
 		}else if(jobExecution.getStatus() == BatchStatus.FAILED){
 		System.out.println("ExamResult job failed with following exceptions ");
@@ -123,6 +129,8 @@ public class JobCompletionNotificationListener extends JobExecutionListenerSuppo
 		}
 	}
 	}
+
+
 	private long getTimeInMillis(DateTime start, DateTime stop){
 		return stop.getMillis() - start.getMillis();
 	}

@@ -11,10 +11,10 @@
         name="@if(isMultiple) {@(field.name + "[]")} else {@field.name@champForm}"
       @if(champForm == ".separator"){style="width:20px;"}
         @if(isMultiple) {multiple="multiple"}>
-        @if(!isMultiple) {<option class="blank"  value=""></option>}
+        @if(!isMultiple) {<option class="blank"  value=";">;</option>}
 
       @for(string  <- optionMap) {
-        <option id="@string" class="text-center" value="@string">@string </option>
+          <option id="@string" class="text-center" value="@string">@string </option>
       }
       </select>
       </div>

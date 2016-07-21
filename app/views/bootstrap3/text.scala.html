@@ -14,7 +14,7 @@
           @if(champForm=="number") {
               name="@field.name"
           }
-             @if(!isID){value="@field.value.getOrElse("")"}
+             @if(!isID){value="1"}
              @if(isID){value="@field.id.substring(5)"}
              placeholder=""
           @if(label != ""){  style="width: 30.33333333%;"}

@@ -31,6 +31,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.*;
 
 
@@ -46,7 +47,6 @@ public class UploadController extends Controller {
     public UploadController() {
 
     }
-
     public Result upload() throws IOException {
             String cheminMac = "/Users/bouhafs/Documents/sample-data.csv";
             String cheminWin = "C:/Users/MBS/Desktop/complete/src/main/resources/sample-data.csv";
@@ -64,7 +64,6 @@ public class UploadController extends Controller {
         for (String s:ss
              ) {
             System.out.println(s);
-
         }
             ArrayNode resuls = Json.newArray();
             colsSelected = new String[ss.size()];
@@ -93,17 +92,12 @@ public class UploadController extends Controller {
         }
         final Map<String, Class<?>> properties =
                 new LinkedHashMap<>();
-        final Map<String,String> columnsTable = new LinkedHashMap<>();
-        final Map<String, String[]> values = request().body().asFormUrlEncoded();
-        System.out.println(values);
-        String tableName = "People1";
-        for(Map.Entry<String,String[]> map : values.entrySet()){
-            System.out.println("Value Map Form1"+map.getValue());
-            if(map.getKey().equals("tableName")) {
-                 tableName = map.getValue()[0];
-            }
-        }
 
+
+        final Map<String,String> columnsTable = new LinkedHashMap<>();
+
+        String tableName =  formData.get().getTable();
+        System.out.println(formData.get().toString());
         System.out.println("TABLE NAme " + tableName);
         for(int i = 0 ; i<colsSelected.length;i++) {
             attribute = new Attribute();
@@ -142,9 +136,11 @@ public class UploadController extends Controller {
             attribute.setName(cols[i]);
             attributes.add(attribute);
         }
-        System.out.println(properties);
+
+
         readerGenerique.setColumnsTable(columnsTable);
         readerGenerique.setTable(tableName);
+        readerGenerique.setProperties(properties);
         Generator c = context.getBean("generator",Generator.class);
         c.setProperties(properties);
         c.generator();
