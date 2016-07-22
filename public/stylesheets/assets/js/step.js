@@ -23,42 +23,44 @@ $(document).ready(function() {
         $(this).remove();
 
     })*/
-    $("form").submit(
-        function(e) {
-            //envoyer les donnees avec ajax
-            e.preventDefault();
-            $.ajax({
-                type : "POST",//la method à utiliser soit POST ou GET
-                url : "/cols", //lien de la servlet qui exerce le traitement sur les données
-                data : $('#form').serialize(),// sign_in c'est l'id du form qui contient le bouton submit et toutes les champs à envoyer
-                success : function(data) {// le cas ou la requete est bien execute en reçoi les données serialiser par JSON dans la variable msg
-                    //recuperation de la valeur stock dans l'attribut desactive
-                    for(i=0;data.length;i++) {
-                        //$("#cols").append($('<option>', {value:"ok"}).text("ok"));
-                        //$("#cols").append("<option value='" + data[i].name + "'>" + data[i].name + "</option>");
-                        $('#cols').show();
-                        $('#all').show();
-                        $('#none').show();
-                        $('#cols').multiSelect({
-                            selectableHeader: "<div class='custom-header'>Columns</div>",
-                            selectionHeader: "<div class='custom-header'>Columns Selected</div>",
-                            selectableFooter: "<div class='custom-header'>Columns</div>",
-                            selectionFooter: "<div class='custom-header'>Columns Selected footer</div>"
-                        });
-                        $('#cols').multiSelect('addOption', {
-                            value: data[i].name,
-                            text: data[i].name,
-                            selected: 'true'
-                        });
-                        $('#cols').multiSelect('refresh');
+    $(function() {
+        $("form").submit(
+            function (e) {
+                //envoyer les donnees avec ajax
+                e.preventDefault();
+                $.ajax({
+                    type: "POST",//la method à utiliser soit POST ou GET
+                    url: "/cols", //lien de la servlet qui exerce le traitement sur les données
+                    data: $('#form').serialize(),// sign_in c'est l'id du form qui contient le bouton submit et toutes les champs à envoyer
+                    success: function (data) {// le cas ou la requete est bien execute en reçoi les données serialiser par JSON dans la variable msg
+                        //recuperation de la valeur stock dans l'attribut desactive
+                        for (i = 0; data.length; i++) {
+                            //$("#cols").append($('<option>', {value:"ok"}).text("ok"));
+                            //$("#cols").append("<option value='" + data[i].name + "'>" + data[i].name + "</option>");
+                            $('#cols').show();
+                            $('#all').show();
+                            $('#none').show();
+                            $('#cols').multiSelect({
+                                selectableHeader: "<div class='custom-header'>Columns</div>",
+                                selectionHeader: "<div class='custom-header'>Columns Selected</div>",
+                                selectableFooter: "<div class='custom-header'>Columns</div>",
+                                selectionFooter: "<div class='custom-header'>Columns Selected footer</div>"
+                            });
+                            $('#cols').multiSelect('addOption', {
+                                value: data[i].name,
+                                text: data[i].name,
+                                selected: 'true'
+                            });
+                            $('#cols').multiSelect('refresh');
+                        }
+                    },
+                    error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
+                        console.log("error");
                     }
-                },
-                error : function() { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
-                    console.log("error");
-                }
-            });
+                });
 
-        });
+            });
+    });
 
     $("#activate-step-2").click(
         function(e) {
@@ -173,9 +175,20 @@ $(document).ready(function() {
                     $('ul.setup-panel li a[href="#step-3"]').trigger('click');
                     $(this).remove();
                     for(i=0;data.length;i++) {
-                        $("#tableaucontenus2").append("<tr><td>" + data[i].id + "</td><td>" + data[i].name + "</td><td>" + data[i].type + "</td><td>"+data[i].size+"</td></tr>")
+                        $("#tableaucontenus2").append("<tr><td>" + data[i].id + "</td><td>" + data[i].name + "</td><td>" +" <select class='form-control' id='type' name='type' disabled>" +
+                        "<option class='blank'  value='"+data[i].type+"' selected>"+data[i].type+"</option>" +
+                        "<option title='Un nombre entier de 4 octets. La fourchette des entiers relatifs est de -2 147 483 648 à 2 147 483 647. Pour les entiers positifs, cest de 0 à 4 294 967 295' >INT</option>" +
+                        "<option title='Une chaîne de longueur variable (0-65,535), la longueur effective réelle dépend de la taille maximum d une ligne'>VARCHAR</option>" +
+                        "<option title='Une colonne TEXT dune longueur maximum de 65 535 (2^16 - 1) caractères, stockée avec un préfixe de deux octets indiquant la longueur de la valeur en octets'>TEXT</option>" +
+                        "<option title='Une date, la fourchette est de «1000-01-01» à «9999-12-31»'>DATETIME</option>" +
+                        "<optgroup label='Numérique'>" +
+                        "<option title='Un nombre entier de 1 octet. La fourchette des nombres avec signe est de -128 à 127. Pour les nombres sans signe, c est de 0 à 255'>TINYINT</option>" +
+                        "<option title='Un nombre entier de 2 octets. La fourchette des nombres avec signe est de -32 768 à 32 767. Pour les nombres sans signe, c est de 0 à 65 535'>SMALLINT</option>" +
+                        "<option title='Un nombre entier de 3 octets. La fourchette des nombres avec signe est de -8 388 608 à 8 388 607. Pour les nombres sans signe, c est de 0 à 16 777 215'>MEDIUMINT</option>" +
+                        "<option title='Un nombre entier de 4 octets. La fourchette des entiers relatifs est de -2 147 483 648 à 2 147 483 647. Pour les entiers positifs, c est de 0 à 4 294 967 295'>INT</option>" +
+                        "<option title='Un nombre entier de 8 octets. La fourchette des nombres avec signe est de -9 223 372 036 854 775 808 à 9 223 372 036 854 775 807. Pour les nombres sans signe, c est de 0 à 18 446 744 073 709 551 615'>BIGINT</option>" +
+                        "</optgroup></select>"+ "</td><td><input type='number' id='size' name='size' size='4' value='"+data[i].size+"' disabled/></td><td><button class='btn btn-danger'><span class='glyphicon glyphicon-remove-sign'></span></button>&nbsp;&nbsp;<button id='md' value='modifier' class='btn btn-warning'><span class='glyphicon glyphicon-pencil'></span></button></td></tr>")
                     }
-
                 },
                 error : function() { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
                     console.log("error");
@@ -225,6 +238,57 @@ $(document).ready(function() {
 
     $("#none").click(function(){
         $("#cols").multiSelect('deselect_all');
+    });
+
+    $('table').on('click', '.glyphicon-remove-sign', function(e){
+
+        var r = confirm("Voulez vous vraiement supprimer ?");
+        if (r == true) {
+            $(this).closest('tr').remove();
+        } else {
+            console.log("ss");
+        }
+    });
+
+    $('table').on('click', '.glyphicon-pencil', function(e){
+
+        $("#md").click(function(){
+            console.log("lol : "+$(this));
+            if($(this).val()=="modifier"){
+                $(this).val("Enregistre");
+                $(this).removeClass('btn btn-warning');
+                $(this).addClass("btn btn-success");
+                $('#type').prop('disabled',false);
+                $('#size').prop('disabled',false);
+
+            }else{
+                $.ajax({
+                    type : "post",
+                    url : "/save", //process to mail
+                    data : $("#form3").serialize(),
+                    success : function(response) {
+                        alert("mdofication effectuer avec succes");
+                    },
+                    error : function() {
+                        console.log("erreur");
+                    }
+                });
+                $(this).val("modifier");
+                $(this).removeClass('btn btn-success');
+                $(this).addClass("btn btn-warning");
+                $('#type').prop('disabled',true);
+                $('#size').prop('disabled',true);
+            }
+        });
+
+        /*var r = confirm("Voulez vous vraiement modifier ?");
+       / if (r == true) {
+            console.log($(this));
+            $(this).closest('tr').remove();
+
+        } else {
+            console.log("ss");
+        }*/
     });
 });
 

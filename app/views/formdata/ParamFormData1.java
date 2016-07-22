@@ -17,19 +17,9 @@ public class ParamFormData1 {
     public List<String> size;
 
     public ParamFormData1() {
+        table="";
     }
 
-    public List<ValidationError> validate() {
-        List<ValidationError> errors = new ArrayList<>();
-        if(table.equals("") || table == null){
-            errors.add(new ValidationError("table", "No Name Table was given."));
-        }
-        if(errors.size() > 0) {
-            System.out.println(errors);
-            return errors;
-        }
-        return null;
-    }
 
     public List<String> getSize() {
         return size;

@@ -84,6 +84,17 @@ public class UploadController extends Controller {
         Attribute attribute ;
         List<Attribute> attributes = new ArrayList<>();
         Form<ParamFormData1> formData = Form.form(ParamFormData1.class).bindFromRequest();
+        //System.out.println(formData.toString());
+        if (formData.hasErrors()) {
+            System.out.println("ERROR POST");
+            // Don't call formData.get() when there are errors, pass 'null' to helpers instead.
+            flash("error", "Please correct errors above.");
+            return badRequest(index.render(null,formData,null,
+                    null,
+                    null,
+                    null
+            ));
+        }
         ApplicationContext context = Global.getApplicationContext();
         ReaderGenerique readerGenerique = context.getBean("readerGenerique",ReaderGenerique.class);
         for (String s:colsSelected
@@ -185,6 +196,8 @@ public class UploadController extends Controller {
             // Don't call formData.get() when there are errors, pass 'null' to helpers instead.
             flash("error", "Please correct errors above.");
             return badRequest(index.render(formData,
+                    null,
+                    null,
                     null,
                     type,
                     sep
@@ -307,7 +320,7 @@ public class UploadController extends Controller {
         List<String> cols = new ArrayList<>();
         ParamFormData paramData =  new ParamFormData();
         Form<ParamFormData> formData = Form.form(ParamFormData.class).fill(paramData);
-        return ok(index.render(formData,
+        return ok(index.render(formData,null,null,
                 null,
                 null,
                 sep

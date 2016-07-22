@@ -1,9 +1,10 @@
-@(field: Field, label: String, placeholder: String = "", help: String = "",isID : Boolean,champForm:String="")
+@(field: Field, label: String, placeholder: String = "", help: String = "",isID : Boolean,champForm:String="",iconName:String="")
 
   <div class="form-group @if(field.hasErrors) {has-error}">
-
-      @if(label != "") {<label class="col-sm-10 col-md-4 control-label">@label</label>}
-    <div class="col-sm-10 col-md-4">
+      @if(label != "") {<label  class="control-label col-xs-12 col-sm-2"    style="color: beige;" for="@field.name">@label</label>}
+    <div class="col-xs-12 col-sm-3">
+      <div class='input-group'>
+          <span class='input-group-addon'> <i class="@iconName" aria-hidden="true"></i></span>
       <input @if(champForm=="number"){ type="number" }
           @if(champForm!="number"){ type="text" }
              class="form-control"
@@ -13,18 +14,21 @@
           }
           @if(champForm=="number") {
               name="@field.name"
+
           }
-             @if(!isID){value="1"}
+             @if(!isID){value="@field.value.getOrElse("")"}
              @if(isID){value="@field.id.substring(5)"}
              placeholder=""
-          @if(label != ""){  style="width: 30.33333333%;"}
           @if(isID ){size="2" readonly="readonly"}
-          @if(champForm == "number"){size = "2"}
+          @if(champForm == "number"){size = "4"}
         @if(champForm=="number"){ min="1" max="9999"}
       />
+          </div>
         </div>
-      <div class="col-sm-10 col-md-4">
-      <span class="help-block" style="color: #18bc9c">@help</span>
-      <span class="help-block">@{field.error.map { error => error.message }}</span>
-    </div>
+  <div class="col-xs-12 col-sm-4">
+      <span class="help-block" style="color:#ffffff;">@help</span>
+  </div>
+  <div class="col-xs-12 col-sm-3">
+      <span class="help-block" style="color:red;">@{field.error.map { error => error.message }}</span>
+  </div>
   </div>

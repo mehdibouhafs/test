@@ -6,6 +6,7 @@ import play.data.Form;
 import play.mvc.*;
 import running.Global;
 import views.formdata.ParamFormData;
+import views.formdata.ParamFormData1;
 import views.html.*;
 
 import java.util.ArrayList;
@@ -43,11 +44,13 @@ public class HomeController extends Controller {
 
 
         ParamFormData paramData =  new ParamFormData();
+        ParamFormData1 paramData1 = new ParamFormData1();
         Form<ParamFormData> formData = Form.form(ParamFormData.class).fill(paramData);
-        return ok(index.render(formData,
+        Form<ParamFormData1> formData1 = Form.form(ParamFormData1.class);
+        return ok(index.render(formData,null,null,
                 null,
-                type,
-                sep
+                null,
+                null
         ));
     }
 
