@@ -9,7 +9,6 @@
         cols :List[String],
         types :List[String],
         separators : List[String]
-
         )
 @import views.html.bootstrap3._
 @main("TITLE") {
@@ -36,7 +35,7 @@
                         <h4 class="list-group-item-heading">Step 2</h4>
                         <p class="list-group-item-text">Data configuration</p>
                     </a></li>
-                    <li class="disabled"><a href="#step-3" >
+                    <li id="step33" class="disabled"><a href="#step-3" >
                         <h4 class="list-group-item-heading">Step 3</h4>
                         <p class="list-group-item-text">Validation configuration</p>
                     </a></li>
@@ -51,6 +50,22 @@
                      </div>
                         <legend> Config File</legend>
                     <form class="form-horizontal" role="form" id="form" action="@routes.UploadController.cols()" method="POST">
+
+                        <div class="form-group">
+                            <label class="control-label col-xs-12 col-sm-2" style="color: beige;" for="filePath">File Path</label>
+                            <div class="col-xs-12 col-sm-3">
+                                <div class='input-group'>
+                                    <span class='input-group-addon'> <i class="fa fa-table"></i></span>
+                                    <input type="text" class="form-control" id="filePath" name="filePath" value="" placeholder="File Path">
+                                </div>
+                            </div>
+                            <div class="col-sm-offset-0  col-sm-3">
+                                <span class="help-block" style="color:#ffffff;" > Please enter the File Path . (required)</span>
+                            </div>
+                            <div class="col-sm-offset-0  col-sm-3">
+                                <span class="help-block" style="color:red;"></span>
+                            </div>
+                        </div>
                         @select(paramForm("separator"),
                             optionMap = separators,
                             isMultiple = false,
@@ -130,7 +145,7 @@
                                             </div>
                                         </div>
                                         <div class="col-sm-offset-0  col-sm-3">
-                                            <span class="help-block" style="color:#ffffff;" > Please enter the number of line to switch . (required)</span>
+                                            <span class="help-block" style="color:#ffffff;" > Please enter the table Name . (required)</span>
                                         </div>
                                         <div class="col-sm-offset-0  col-sm-3">
                                             <span class="help-block" style="color:red;"></span>
@@ -145,6 +160,7 @@
                                         <th style="color:beige;"> Name</th>
                                         <th style="color:beige;"> Type </th>
                                         <th style="color:beige;"> Size</th>
+                                        <th style="color:beige;">Option</th>
                                     </tr>
                                 </thead>
                                 <tfoot  style="background: #18bc9c">
@@ -153,6 +169,7 @@
                                     <th style="color:beige;"> Name</th>
                                     <th style="color:beige;"> Type </th>
                                     <th style="color:beige;"> Size</th>
+                                    <th style="color:beige;">Option</th>
                                 </tr>
                                 </tfoot>
                                 <tbody id="tableaucontenus1">

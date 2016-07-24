@@ -1,4 +1,5 @@
 package controllers;
+import com.fasterxml.jackson.databind.annotation.JsonAppend;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import dao.ObjectDao;
@@ -6,6 +7,7 @@ import dao.ObjectDaoJdbc;
 import javassist.CannotCompileException;
 import javassist.NotFoundException;
 import model.*;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
@@ -40,49 +42,53 @@ import java.util.*;
  */
 public class UploadController extends Controller {
 
-    public String[] cols;
+    private String[] cols;
 
-    public String[] colsSelected;
+    private Map<Integer,String> colsSelectedMap;
+
+
+    private List<Attribute> attributes;
+
+    private Map<String, Class<?>> properties;
+
+    //String cheminMac = "/Users/bouhafs/Documents/sample-data.csv";
+    //String cheminWin = "C:/Users/MBS/Desktop/complete/src/main/resources/sample-data.csv";
+    private String filePath;
 
     public UploadController() {
 
     }
     public Result upload() throws IOException {
-            String cheminMac = "/Users/bouhafs/Documents/sample-data.csv";
-            String cheminWin = "C:/Users/MBS/Desktop/complete/src/main/resources/sample-data.csv";
-            File destination = new File(cheminWin);
+
+            //File destination = new File(cheminMac);
                 Form<ParamFormData2> formData = Form.form(ParamFormData2.class).bindFromRequest();
                 ApplicationContext context = Global.getApplicationContext();
 
-                 List<String> list = new ArrayList<String>(Arrays.asList(cols));
+                 List<String> list = new ArrayList<String>(Arrays.asList(getCols()));
                     String dateParam = new Date().toString();
             List<String> ss = formData.get().getCols();
                     //if (ext.equals("csv")) {
 
             ObjectNode result;
             //JsonArrayBuilder jsa =  Json.createArrayBuilder();
-        for (String s:ss
-             ) {
-            System.out.println(s);
-        }
+        colsSelectedMap = new HashMap<>();
             ArrayNode resuls = Json.newArray();
-            colsSelected = new String[ss.size()];
             int i=0;
             for (String s:ss) {
                 result = Json.newObject();
-                result.put("id",i);
+                result.put("id",i+"");
                 result.put("name",s);
-                colsSelected[i]=s;
+                colsSelectedMap.put(i,s);
                 i++;
                 resuls.add(result);
 
                              }
-                        return ok(resuls);
+                        return ok(Json.toJson(resuls));
     }
 
     public Result getTypes() throws NoSuchMethodException, IllegalAccessException, ClassNotFoundException, InstantiationException, CannotCompileException, NotFoundException {
         Attribute attribute ;
-        List<Attribute> attributes = new ArrayList<>();
+        attributes = new ArrayList<>();
         Form<ParamFormData1> formData = Form.form(ParamFormData1.class).bindFromRequest();
         //System.out.println(formData.toString());
         if (formData.hasErrors()) {
@@ -97,23 +103,19 @@ public class UploadController extends Controller {
         }
         ApplicationContext context = Global.getApplicationContext();
         ReaderGenerique readerGenerique = context.getBean("readerGenerique",ReaderGenerique.class);
-        for (String s:colsSelected
-             ) {
-            System.out.println("Colselected"+s);
-        }
-        final Map<String, Class<?>> properties =
-                new LinkedHashMap<>();
 
-
+        properties = new LinkedHashMap<>();
         final Map<String,String> columnsTable = new LinkedHashMap<>();
 
         String tableName =  formData.get().getTable();
         System.out.println(formData.get().toString());
         System.out.println("TABLE NAme " + tableName);
-        for(int i = 0 ; i<colsSelected.length;i++) {
+        System.out.println(colsSelectedMap);
+        for (Map.Entry<Integer,String> col : colsSelectedMap.entrySet()){
             attribute = new Attribute();
-            String type = formData.get().getType().get(i);
-            String typeSize = type +"(" + formData.get().getSize().get(i)+")";
+            String type = formData.get().getType().get(col.getKey());
+            String typeSize = type +"(" + formData.get().getSize().get(col.getKey())+")";
+            String size = formData.get().getSize().get(col.getKey());
             attribute.setType(type);
             Object o;
             switch(type){
@@ -130,31 +132,37 @@ public class UploadController extends Controller {
                     o = d;
                     break;
                 default:
-                    String k="";
-                    o = k;
+                    o = null;
                     break;
             }
-            System.out.println("COls"+cols[i]);
+            System.out.println("COlsid"+col.getKey()+"val : "+col.getValue());
             System.out.println("typeSize"+typeSize);
-            properties.put(cols[i],o.getClass());
-            columnsTable.put(cols[i],typeSize);
+            properties.put(col.getValue(),o.getClass());
+
+
+            columnsTable.put(col.getValue(),typeSize);
             //String colCap = cols[i].substring(0, 1).toUpperCase() + cols[i].substring(1);
            /* beanGenerator.getClass().getMethod("set"+colCap,o.getClass());
             System.out.println("set"+colCap);
             beanGenerator.getClass().getMethod("get"+colCap);*/
-            String size = formData.get().getSize().get(i);
+            attribute.setId(col.getKey());
             attribute.setSize(size);
-            attribute.setName(cols[i]);
+            attribute.setName(col.getValue());
             attributes.add(attribute);
         }
-
-
+        for (String s:cols){
+            Class<?> val = properties.get(s);
+            if(val == null){
+                properties.put(s,Object.class);
+            }
+        }
+        System.out.println("ColumnTable"+columnsTable);
         readerGenerique.setColumnsTable(columnsTable);
         readerGenerique.setTable(tableName);
         readerGenerique.setProperties(properties);
         Generator c = context.getBean("generator",Generator.class);
         c.setProperties(properties);
-        c.generator();
+        c.setClassGenerate(c.generator());
         Object c1 = context.getBean("firstBe");
 
         System.out.println("GeneratorClass"+c.getClassGenerate());
@@ -164,29 +172,25 @@ public class UploadController extends Controller {
         //JsonArrayBuilder jsa =  Json.createArrayBuilder();
         ArrayNode resuls = play.libs.Json.newArray();
 
-        int i = 0;
         for (Attribute s:attributes
              ) {
-
             result = new play.libs.Json().newObject();
-            result.put("id",i);
+            result.put("id",s.getId());
             result.put("name",s.getName());
-            result.put("size",s.getSize());
             result.put("type",s.getType());
             result.put("size",s.getSize());
-
-            i++;
             resuls.add(result);
         }
-        return  ok(resuls);
+        return  ok(Json.toJson(resuls));
     }
 
     public Result cols() throws IOException {
         ApplicationContext context = Global.getApplicationContext();
-        String cheminMac = "/Users/bouhafs/Documents/sample-data.csv";
-        String cheminWin = "C:/Users/MBS/Desktop/complete/src/main/resources/sample-data.csv";
-        File destination = new File(cheminWin);
         Form<ParamFormData> formData = Form.form(ParamFormData.class).bindFromRequest();
+        this.filePath = formData.get().getFilePath();
+        System.out.println("FilePath = "+filePath);
+        String s = filePath;
+        File destination = new File(filePath);
         String[] types = {"INTEGER", "STRING", "CHAR", "DOUBLE", "FLOAT", "DATE"};
         List<String> type = new ArrayList<String>(Arrays.asList(types));
         String[] seps = {";", ",", ".", "|", ":"};
@@ -212,20 +216,21 @@ public class UploadController extends Controller {
             ReaderGenerique readerGenerique = context.getBean("readerGenerique", ReaderGenerique.class);
             readerGenerique.setColumns(cols);
             readerGenerique.setLineToSkip(nbLineToEscape);
-
+            readerGenerique.setFilePath(filePath);
             ObjectNode result;
             //JsonArrayBuilder jsa =  Json.createArrayBuilder();
             ArrayNode resuls = play.libs.Json.newArray();
-            Object o;
+            //Object o;
             int i = 0;
             for (String s1 : cols) {
                 result = play.libs.Json.newObject();
-                result.put("id", i);
+                result.put("id", String.valueOf(i));
                 result.put("name", s1);
                 i++;
                 resuls.add(result);
             }
-            return ok(resuls);
+        System.out.println(Json.toJson(resuls));
+            return ok(Json.toJson(resuls));
     }
 
     public String[] firstLine (File f,String delimiter) throws IOException {
@@ -252,33 +257,19 @@ public class UploadController extends Controller {
         //rows.setRow(row);
     }
 
-
-    /* <property name="sql">
-			<!-- Why CDATA?
-                 because < etc. is not allowed for xml values
-                 when you use &lt; xml parser will work, but
-                 now the sql won't because of the & spring assumes
-                 a placeholder, see
-                 - AbstractSqlPagingQueryProvider.init(...)
-                 - JdbcParameterUtils.countParameterPlaceholders(...)
-                 -->
-			<value><![CDATA[
-    INSERT INTO People
-            (person_id,first_name,last_name,date)
-    VALUES
-            (?,?,?,?)
-    ]]></value>*/
+    public Result delete(int id){
+        colsSelectedMap.remove(id);
+        return ok("removed");
+    }
 
     public Result validate(){
         ApplicationContext context = Global.getApplicationContext();
         ReaderGenerique readerGenerique = context.getBean("readerGenerique",ReaderGenerique.class);
         ObjectDao objectDao = context.getBean("ObjectDao",ObjectDaoJdbc.class);
         Boolean create = objectDao.createTable(readerGenerique.getTable(),readerGenerique.getColumnsTable());
-        System.out.println();
+        System.out.println("Validate");
         if(create) {
-            String cheminMac = "/Users/bouhafs/Documents/sample-data.csv";
-            String cheminWin = "C:/Users/MBS/Desktop/complete/src/main/resources/sample-data.csv";
-            File destination = new File(cheminWin);
+            File destination = new File(filePath);
             JobParameters param = new JobParametersBuilder()
                     .addString("input.file.name", destination.getPath())
                     .addLong("time", System.currentTimeMillis()).toJobParameters();
@@ -311,6 +302,8 @@ public class UploadController extends Controller {
         }
         return  poss;
     }
+
+
 
     public Result index() {
         String[] types = {";",",",".","|",":"};
@@ -346,11 +339,35 @@ public class UploadController extends Controller {
         this.cols = cols;
     }
 
-    public String[] getColsSelected() {
-        return colsSelected;
+    public Map<Integer, String> getColsSelectedMap() {
+        return colsSelectedMap;
     }
 
-    public void setColsSelected(String[] colsSelected) {
-        this.colsSelected = colsSelected;
+    public void setColsSelectedMap(Map<Integer, String> colsSelectedMap) {
+        this.colsSelectedMap = colsSelectedMap;
+    }
+
+    public List<Attribute> getAttributes() {
+        return attributes;
+    }
+
+    public void setAttributes(List<Attribute> attributes) {
+        this.attributes = attributes;
+    }
+
+    public Map<String, Class<?>> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Map<String, Class<?>> properties) {
+        this.properties = properties;
+    }
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
     }
 }

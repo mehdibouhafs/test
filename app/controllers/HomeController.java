@@ -41,8 +41,6 @@ public class HomeController extends Controller {
         String[] seps = {";", ",", ".", "|", ":"};
         List<String> sep = new ArrayList<>(Arrays.asList(seps));
 
-
-
         ParamFormData paramData =  new ParamFormData();
         ParamFormData1 paramData1 = new ParamFormData1();
         Form<ParamFormData> formData = Form.form(ParamFormData.class).fill(paramData);

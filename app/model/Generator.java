@@ -28,11 +28,12 @@ public class Generator {
 		   Class<?> rowObjectClass = null;
 		   try {
 			   rowObjectClass = App.buildCSVClass(this.properties);
+			   this.classGenerate = rowObjectClass;
+			   return rowObjectClass;
 		   } catch (IOException e) {
 			   e.printStackTrace();
 		   }
-		   this.classGenerate = rowObjectClass;
-			return rowObjectClass;
+		   return null;
 	   }
 	   
 	   

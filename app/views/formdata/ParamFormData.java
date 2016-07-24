@@ -1,6 +1,9 @@
 package views.formdata;
 
+import model.ReaderGenerique;
+import org.springframework.context.ApplicationContext;
 import play.data.validation.ValidationError;
+import running.Global;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -11,6 +14,8 @@ import java.util.List;
  * Created by MBS on 07/07/2016.
  */
 public class ParamFormData {
+
+    public String filePath;
 
     public String separator;
 
@@ -41,27 +46,27 @@ public class ParamFormData {
      * @return Null if valid, or a List[ValidationError] if problems found.
      */
     public List<ValidationError> validate() {
+       // ApplicationContext context = Global.getApplicationContext();
+        //ReaderGenerique readerGenerique = context.getBean("readerGenerique",ReaderGenerique.class);
         List<ValidationError> errors = new ArrayList<>();
-        String cheminMac = "/Users/bouhafs/Documents/sample-data.csv";
-        String cheminWindows = "C:/Users/MBS/Desktop/complete/src/main/resources/sample-data.csv";
-        File destination = new File(cheminWindows);
-        FileReader fr = null;
-        String s = "";
-        try {
-            fr = new FileReader(destination);
-            BufferedReader br = new BufferedReader(fr);
-            s = br.readLine();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        if(separator.equals("")){
-            errors.add(new ValidationError("separator", "No Separator was given."));
-        }
-        if(s.contains(separator)== false){
-            errors.add(new ValidationError("separator", "Veuillez choisir le bon séparateur."));
-        }
+            File destination = new File(filePath);
+            FileReader fr = null;
+            String s = "";
+            try {
+                fr = new FileReader(destination);
+                BufferedReader br = new BufferedReader(fr);
+                s = br.readLine();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if (separator.equals("")) {
+                errors.add(new ValidationError("separator", "No Separator was given."));
+            }
+            if (s.contains(separator) == false) {
+                errors.add(new ValidationError("separator", "Veuillez choisir le bon séparateur."));
+            }
 
         /*if(tableName == null || tableName.equals("")){
             errors.add(new ValidationError("tableName", "No table name was given."));
@@ -75,7 +80,9 @@ public class ParamFormData {
                 errors.add(new ValidationError("rows["+i+"]", "No type was given for the row number ("+i+")"));
             }
         }
+
 */
+
         if(errors.size() > 0) {
             System.out.println(errors);
             return errors;
@@ -90,6 +97,14 @@ public class ParamFormData {
 
     public void setSeparator(String separator) {
         this.separator = separator;
+    }
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
     }
 
     @Override

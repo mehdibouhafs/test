@@ -16,8 +16,7 @@
               name="@field.name"
 
           }
-             @if(!isID){value="@field.value.getOrElse("")"}
-             @if(isID){value="@field.id.substring(5)"}
+             value="@field.value.getOrElse("")"
              placeholder=""
           @if(isID ){size="2" readonly="readonly"}
           @if(champForm == "number"){size = "4"}

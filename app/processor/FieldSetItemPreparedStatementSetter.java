@@ -46,6 +46,7 @@ public class FieldSetItemPreparedStatementSetter implements ItemPreparedStatemen
                         i++;
                         break;
                     case "Date":
+                        System.out.println("Date");
                         System.out.println("Date"+i+":"+((java.util.Date)(f.get(item))).getTime());
                        /* final String NEW_FORMAT = "dd/MM/yyyy";
                         SimpleDateFormat sdf = new SimpleDateFormat("EE MMM dd HH:mm:ss z yyyy", Locale.ENGLISH);

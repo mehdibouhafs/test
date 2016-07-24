@@ -21,6 +21,8 @@ public class ReaderGenerique extends Model {
 
     private int lineToSkip;
 
+    private String filePath;
+
     private String table;
 
     private Class<?> classs = Object.class;
@@ -98,5 +100,13 @@ public class ReaderGenerique extends Model {
 
     public void setTable(String table) {
         this.table = table;
+    }
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
     }
 }

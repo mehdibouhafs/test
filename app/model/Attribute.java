@@ -8,6 +8,7 @@ public class Attribute  {
     private String type;
     private String name;
     private String size;
+    private int id;
 
     public Attribute() {
     }
@@ -34,5 +35,13 @@ public class Attribute  {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }
