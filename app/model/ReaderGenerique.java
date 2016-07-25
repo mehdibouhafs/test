@@ -1,6 +1,7 @@
 package model;
 
 import com.avaje.ebean.Model;
+import org.joda.time.DateTime;
 
 import javax.persistence.Entity;
 import java.util.HashMap;
@@ -19,6 +20,8 @@ public class ReaderGenerique extends Model {
 
     //private Object person;
 
+    private String separator;
+
     private int lineToSkip;
 
     private String filePath;
@@ -30,6 +33,9 @@ public class ReaderGenerique extends Model {
     public Map<String,String> columnsTable;
 
     public  String cData ;
+
+
+    private Long dateTime;
 
 
     private Map<String, Class<?>> properties;
@@ -102,11 +108,31 @@ public class ReaderGenerique extends Model {
         this.table = table;
     }
 
+    public Long getDateTime() {
+        return dateTime;
+    }
+
+    public void setDateTime(Long dateTime) {
+        this.dateTime = dateTime;
+    }
+
+    public void setDateTime(long dateTime) {
+        this.dateTime = dateTime;
+    }
+
     public String getFilePath() {
         return filePath;
     }
 
     public void setFilePath(String filePath) {
         this.filePath = filePath;
+    }
+
+    public String getSeparator() {
+        return separator;
+    }
+
+    public void setSeparator(String separator) {
+        this.separator = separator;
     }
 }

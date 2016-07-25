@@ -10,15 +10,13 @@ import java.util.List;
  */
 public class ParamFormData1 {
 
-    public String table;
+    public String tableName;
 
     public List<String> type;
 
     public List<String> size;
 
-    public ParamFormData1() {
-        table="";
-    }
+
 
 
     public List<String> getSize() {
@@ -29,12 +27,12 @@ public class ParamFormData1 {
         this.size = size;
     }
 
-    public String getTable() {
-        return table;
+    public String getTableName() {
+        return tableName;
     }
 
-    public void setTable(String table) {
-        this.table = table;
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
     }
 
     public List<String> getType() {
@@ -48,7 +46,7 @@ public class ParamFormData1 {
     @Override
     public String toString() {
         return "ParamFormData1{" +
-                "table='" + table + '\'' +
+                "table='" + tableName + '\'' +
                 ", type=" + type +
                 ", size=" + size +
                 '}';

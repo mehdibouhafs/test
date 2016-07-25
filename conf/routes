@@ -6,20 +6,20 @@
 
 GET     /home              @controllers.Application.home
 
-GET     /                       controllers.UploadController.index()
+GET     /                       controllers.Application.index()
 
 # An example controller showing a sample home page
-POST     /upload                   controllers.UploadController.upload()
+POST     /upload                   controllers.Application.upload()
 
-POST    /getTypes                      controllers.UploadController.getTypes()
+POST    /getTypes                      controllers.Application.getTypes()
 
-POST    /validate                       controllers.UploadController.validate()
-
-
-POST    /cols                           controllers.UploadController.cols()
+POST    /validate                       controllers.Application.validate()
 
 
-GET    /delete                          controllers.UploadController.delete(id : Int)
+POST    /cols                           controllers.Application.cols()
+
+
+GET    /delete                          controllers.Application.delete(id : Int)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

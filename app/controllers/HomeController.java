@@ -38,7 +38,7 @@ public class HomeController extends Controller {
         String[] types = {";",",",".","|",":"};
         List<String> type = new ArrayList<>(Arrays.asList(types));
 
-        String[] seps = {";", ",", ".", "|", ":"};
+        String[] seps = {";", ",", ".", "|", ":"," "};
         List<String> sep = new ArrayList<>(Arrays.asList(seps));
 
         ParamFormData paramData =  new ParamFormData();

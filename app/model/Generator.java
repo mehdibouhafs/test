@@ -23,11 +23,11 @@ public class Generator {
 		// TODO Auto-generated constructor stub
 	}
 	
-	   public Class<?> generator() throws CannotCompileException, NotFoundException{
+	   public Class<?> generator(String name) throws CannotCompileException, NotFoundException{
 
 		   Class<?> rowObjectClass = null;
 		   try {
-			   rowObjectClass = App.buildCSVClass(this.properties);
+			   rowObjectClass = App.buildCSVClassName(this.properties,name);
 			   this.classGenerate = rowObjectClass;
 			   return rowObjectClass;
 		   } catch (IOException e) {

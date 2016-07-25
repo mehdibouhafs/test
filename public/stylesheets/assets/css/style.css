@@ -8,13 +8,22 @@
 --------------------------*/
 
 
+.nav>li.disabled>a {
+    color: #84d4ff;
+}
+
+.nav-pills>li.active>a {
+    color: #05ffce;
+    background-color: #131315;
+}
+
 .well{
     background-color: #131313;
 }
 
 a, a:visited {
     outline:none;
-    color:#389dc1;
+    color:#00ff2d;
 }
 
 a:hover{
@@ -74,8 +83,8 @@ a:hover{
 }
 
 #separator{
-    width:200px;
-    text-indent: 60px;
+    width:100px;
+    text-indent: 0px;
 }
 
 #separator option{

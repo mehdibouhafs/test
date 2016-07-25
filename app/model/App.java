@@ -47,23 +47,20 @@ public class App
 		}
 		public static Class<?> buildCSVClassName(Map<String, Class<?>> properties,String classeName) throws CannotCompileException, NotFoundException, IOException {
 			ClassPool pool = new ClassPool(true);//ClassPool.getDefault();
-			CtClass result = pool.makeClass(classeName+".CSV_CLASS$" + (counter));
+			CtClass result = pool.makeClass(classeName+"$" + (counter));
 			counter++;
 			result.setSuperclass(pool.get((Serializable.class).getName()));
 			ClassFile classFile = result.getClassFile();
 			ConstPool constPool = classFile.getConstPool();
 			classFile.setSuperclass(Object.class.getName());
 			for (Map.Entry<String, Class<?>> entry : properties.entrySet()) {
+				System.out.println("APP+Generaot key and Value ="+entry.getKey()+"  value = "+entry.getValue());
 				CtField field = new CtField(ClassPool.getDefault().get(entry.getValue().getName()), entry.getKey(), result);
 				CtMethod setter =  CtNewMethod.setter("set"+entry.getKey(), field);
 				CtMethod getter =  CtNewMethod.getter("get"+entry.getKey(), field);
-
 				result.addField(field);
 				result.addMethod(setter);
 				result.addMethod(getter);
-			}
-			for(Field f : result.getClass().getDeclaredFields()) {
-				f.setAccessible(true);
 			}
 			classFile.setVersionToJava5();
 			result.writeFile();

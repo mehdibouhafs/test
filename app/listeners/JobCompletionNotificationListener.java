@@ -52,11 +52,12 @@ public class JobCompletionNotificationListener extends JobExecutionListenerSuppo
 		stopTime = new DateTime();
 
 		if(jobExecution.getStatus() == BatchStatus.COMPLETED) {
+			ApplicationContext context = Global.getApplicationContext();
+			ReaderGenerique readerGenerique = context.getBean("readerGenerique",ReaderGenerique.class);
 			//log.info("!!! JOB FINISHED! Time to verify the results");
 			System.out.println("ExamResult Job stops at :"+stopTime);
 			System.out.println("Total time take in millis :"+getTimeInMillis(startTime , stopTime));
-			ApplicationContext context = Global.getApplicationContext();
-			ReaderGenerique readerGenerique = context.getBean("readerGenerique",ReaderGenerique.class);
+			readerGenerique.setDateTime(getTimeInMillis(startTime , stopTime));
 			StringBuffer cols = null;
 			int i=0;
 			for (Map.Entry<String,String> prop :readerGenerique.getColumnsTable().entrySet()
@@ -70,12 +71,11 @@ public class JobCompletionNotificationListener extends JobExecutionListenerSuppo
 			}
 
 			final String select = "SELECT "+cols.toString()+" From "+readerGenerique.getTable();
-
 			List<Object> results = jdbcTemplate.query(select, new RowMapper<Object>() {
 				@Override
 				public Object mapRow(ResultSet rs, int row) throws SQLException {
 					try {
-						Object o = App.buildCSVClassName(readerGenerique.getProperties(),"listeners").newInstance();
+						Object o = App.buildCSVClassName(readerGenerique.getProperties(),readerGenerique.getTable()).newInstance();
 						Field c;
 						int i=1;
 						for (Field f : o.getClass().getDeclaredFields()
@@ -130,6 +130,21 @@ public class JobCompletionNotificationListener extends JobExecutionListenerSuppo
 	}
 	}
 
+	public DateTime getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime(DateTime startTime) {
+		this.startTime = startTime;
+	}
+
+	public DateTime getStopTime() {
+		return stopTime;
+	}
+
+	public void setStopTime(DateTime stopTime) {
+		this.stopTime = stopTime;
+	}
 
 	private long getTimeInMillis(DateTime start, DateTime stop){
 		return stop.getMillis() - start.getMillis();

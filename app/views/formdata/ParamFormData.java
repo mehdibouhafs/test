@@ -45,11 +45,11 @@ public class ParamFormData {
      *
      * @return Null if valid, or a List[ValidationError] if problems found.
      */
-    public List<ValidationError> validate() {
-       // ApplicationContext context = Global.getApplicationContext();
-        //ReaderGenerique readerGenerique = context.getBean("readerGenerique",ReaderGenerique.class);
+   /* public List<ValidationError> validate() {
+        //ApplicationContext context = Global.getApplicationContext();
+       // ReaderGenerique readerGenerique = context.getBean("readerGenerique",ReaderGenerique.class);
         List<ValidationError> errors = new ArrayList<>();
-            File destination = new File(filePath);
+          /*  File destination = new File(readerGenerique.getFilePath());
             FileReader fr = null;
             String s = "";
             try {
@@ -60,13 +60,13 @@ public class ParamFormData {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
-            }
-            if (separator.equals("")) {
+            }*/
+           /* if (separator.equals("")) {
                 errors.add(new ValidationError("separator", "No Separator was given."));
             }
-            if (s.contains(separator) == false) {
+          /*  if (s.contains(separator) == false) {
                 errors.add(new ValidationError("separator", "Veuillez choisir le bon séparateur."));
-            }
+            }*/
 
         /*if(tableName == null || tableName.equals("")){
             errors.add(new ValidationError("tableName", "No table name was given."));
@@ -83,13 +83,13 @@ public class ParamFormData {
 
 */
 
-        if(errors.size() > 0) {
+       /*if(errors.size() > 0) {
             System.out.println(errors);
             return errors;
         }
 
         return null;
-    }
+    }*/
 
     public String getSeparator() {
         return separator;

@@ -2,7 +2,7 @@
   @import java.math.BigInteger;
   <div class="form-group @if(field.hasErrors) {has-error}">
       @if(champForm==""){<label  class="control-label col-xs-12 col-sm-2" style="color: beige;" for="@field.id"> Séparateur :</label>}
-    <div class="col-xs-12 col-sm-3">
+    <div class="col-xs-12 col-sm-2">
       <div class='input-group'>
         <span class='input-group-addon'> <i class="@iconName" aria-hidden="true"></i></span>
       <select
@@ -20,7 +20,7 @@
     <div class="col-xs-12 col-sm-4">
       <span class="help-block" style="color:#ffffff;">@help</span>
       </div>
-    <div class="col-xs-12 col-sm-3">
+    <div class="col-xs-12 col-sm-4">
       <span class="help-block" style="color:red;">@{field.error.map { error => error.message }}</span>
     </div>
     </div>
