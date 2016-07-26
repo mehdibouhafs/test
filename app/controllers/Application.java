@@ -16,16 +16,22 @@ import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteExcep
 import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 import play.data.Form;
 import play.libs.Json;
 import play.mvc.*;
 import play.mvc.Controller;
 import running.Global;
+import util.ReadXMLFile2;
 import views.formdata.ParamFormData;
 import views.formdata.ParamFormData1;
 import views.formdata.ParamFormData2;
 import views.html.index;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -43,12 +49,14 @@ public class Application extends Controller {
 
     private String[] cols;
 
-    private Map<Integer,String> colsSelectedMap;
+    private Map<Integer, String> colsSelectedMap;
 
 
     private List<Attribute> attributes;
 
     private Map<String, Class<?>> properties;
+
+    private String extFile;
 
     //String cheminMac = "/Users/bouhafs/Documents/sample-data.csv";
     //String cheminWin = "C:/Users/MBS/Desktop/complete/src/main/resources/sample-data.csv";
@@ -82,12 +90,12 @@ public class Application extends Controller {
         //JsonArrayBuilder jsa =  Json.createArrayBuilder();
         colsSelectedMap = new HashMap<>();
         ArrayNode resuls = Json.newArray();
-        int i=0;
-        for (String s:ss) {
+        int i = 0;
+        for (String s : ss) {
             result = Json.newObject();
-            result.put("id",i+"");
-            result.put("name",s);
-            colsSelectedMap.put(i,s);
+            result.put("id", i + "");
+            result.put("name", s);
+            colsSelectedMap.put(i, s);
             i++;
             resuls.add(result);
         }
@@ -95,53 +103,53 @@ public class Application extends Controller {
     }
 
     public Result getTypes() throws NoSuchMethodException, IllegalAccessException, ClassNotFoundException, InstantiationException, CannotCompileException, NotFoundException {
-        Attribute attribute ;
+        Attribute attribute;
         attributes = new ArrayList<>();
         Form<ParamFormData1> formData = Form.form(ParamFormData1.class).bindFromRequest();
         //System.out.println(formData.toString());
         if (formData.hasErrors()) {
             // Don't call formData.get() when there are errors, pass 'null' to helpers instead.
             flash("error", "Please correct errors above.");
-            return badRequest(index.render(null,formData,null,
+            return badRequest(index.render(null, formData, null,
                     null,
                     null,
                     null
             ));
         }
         ApplicationContext context = Global.getApplicationContext();
-        ReaderGenerique readerGenerique = context.getBean("readerGenerique",ReaderGenerique.class);
+        ReaderGenerique readerGenerique = context.getBean("readerGenerique", ReaderGenerique.class);
         properties = new LinkedHashMap<>();
-        final Map<String,String> columnsTable = new LinkedHashMap<>();
-        for (Map.Entry<Integer,String> col : colsSelectedMap.entrySet()){
+        final Map<String, String> columnsTable = new LinkedHashMap<>();
+        for (Map.Entry<Integer, String> col : colsSelectedMap.entrySet()) {
             attribute = new Attribute();
             String type = formData.get().getType().get(col.getKey());
-            String typeSize = type +"(" + formData.get().getSize().get(col.getKey())+")";
+            String typeSize = type + "(" + formData.get().getSize().get(col.getKey()) + ")";
             String size = formData.get().getSize().get(col.getKey());
             attribute.setType(type);
             Object o;
-            switch(type){
+            switch (type) {
                 case "INT":
-                    int c=0;
+                    int c = 0;
                     o = c;
                     break;
                 case "TINYINT":
-                    int c00=0;
+                    int c00 = 0;
                     o = c00;
                     break;
                 case "SMALLINT":
-                    int c01=0;
+                    int c01 = 0;
                     o = c01;
                     break;
                 case "BLOB":
-                    Blob c01782= null;
+                    Blob c01782 = null;
                     o = c01782;
                     break;
                 case "DOUBLE":
-                    Double c001=0.0;
+                    Double c001 = 0.0;
                     o = c001;
                     break;
                 case "DECIMAL":
-                    Double c0019=0.0;
+                    Double c0019 = 0.0;
                     o = c0019;
                     break;
                 case "REAL":
@@ -157,19 +165,19 @@ public class Application extends Controller {
                     o = b;
                     break;
                 case "MEDIUMINT":
-                    int c02=0;
+                    int c02 = 0;
                     o = c02;
                     break;
                 case "BIGINT":
-                    int c03=0;
+                    int c03 = 0;
                     o = c03;
                     break;
                 case "VARCHAR":
-                    String c1="";
+                    String c1 = "";
                     o = c1;
                     break;
                 case "TEXT":
-                    String c10="";
+                    String c10 = "";
                     o = c10;
                     break;
                 case "DATETIME":
@@ -186,8 +194,8 @@ public class Application extends Controller {
                     break;
             }
 
-            properties.put(col.getValue(),o.getClass());
-            columnsTable.put(col.getValue(),typeSize);
+            properties.put(col.getValue(), o.getClass());
+            columnsTable.put(col.getValue(), typeSize);
             //String colCap = cols[i].substring(0, 1).toUpperCase() + cols[i].substring(1);
            /* beanGenerator.getClass().getMethod("set"+colCap,o.getClass());
             System.out.println("set"+colCap);
@@ -197,38 +205,49 @@ public class Application extends Controller {
             attribute.setName(col.getValue());
             attributes.add(attribute);
         }
-        for (String s:cols){
+        for (String s : cols) {
             Class<?> val = properties.get(s);
-            if(val == null){
-                properties.put(s,Object.class);
+            if (val == null) {
+                properties.put(s, Object.class);
             }
         }
         readerGenerique.setColumnsTable(columnsTable);
         readerGenerique.setTable(formData.get().getTableName());
         readerGenerique.setProperties(properties);
-        Generator c = context.getBean("generator",Generator.class);
+        Generator c = context.getBean("generator", Generator.class);
         c.setProperties(properties);
-        c.setClassGenerate(c.generator(formData.get().getTableName()));
+        Class<?> classNew = c.generator(formData.get().getTableName());
+        System.out.println("Classe New "+classNew);
+        c.setClassGenerate(classNew);
         Object c1 = context.getBean("firstBe");
+        String sp = classNew.toString();
+        String[] a= sp.split(" ");
+        System.out.println("A1"+a[1]);
+        readerGenerique.setClassXml(a[1]);
+        System.out.println("classsssssssssssssssssssss   "+c1.getClass());
         ObjectNode result;
         //JsonArrayBuilder jsa =  Json.createArrayBuilder();
         ArrayNode resuls = play.libs.Json.newArray();
-        for (Attribute s:attributes
+        for (Attribute s : attributes
                 ) {
             result = new play.libs.Json().newObject();
-            result.put("id",s.getId());
-            result.put("name",s.getName());
-            result.put("type",s.getType());
-            result.put("size",s.getSize());
+            result.put("id", s.getId());
+            result.put("name", s.getName());
+            result.put("type", s.getType());
+            result.put("size", s.getSize());
             resuls.add(result);
         }
-        return  ok(Json.toJson(resuls));
+        return ok(Json.toJson(resuls));
     }
 
     public Result cols() throws IOException {
         ApplicationContext context = Global.getApplicationContext();
+        ReaderGenerique readerGenerique = context.getBean("readerGenerique", ReaderGenerique.class);
         Form<ParamFormData> formData = Form.form(ParamFormData.class).bindFromRequest();
-        this.filePath =formData.get().getFilePath();
+        this.filePath = formData.get().getFilePath();
+        readerGenerique.setFilePath(this.filePath);
+        this.extFile = getExtension(filePath);
+        readerGenerique.setExt(extFile);
         File destination = new File(this.filePath);
         if (formData.hasErrors()) {
             // Don't call formData.get() when there are errors, pass 'null' to helpers instead.
@@ -241,32 +260,36 @@ public class Application extends Controller {
                     null
             ));
         }
-        if (formData.get().getSeparator() != null) {
-            cols = firstLine(destination, formData.get().getSeparator());
-        } else {
-            cols = firstLine(destination, null);
+        if (extFile.equals("csv")) {
+            System.out.println("csv File cols");
+            if (formData.get().getSeparator() != null) {
+                cols = firstLine(destination, formData.get().getSeparator());
+            } else {
+                cols = firstLine(destination, null);
+            }
+            int nbLineToEscape = formData.get().getNumberLine();
+            readerGenerique.setLineToSkip(nbLineToEscape);
+            readerGenerique.setSeparator(formData.get().getSeparator());
+            readerGenerique.setColumns(cols);
+        }else if(extFile.equals("xml")){
+            System.out.println("xml File cols");
+            cols = firstLine1(destination);
         }
-        int nbLineToEscape = formData.get().getNumberLine();
-        ReaderGenerique readerGenerique = context.getBean("readerGenerique", ReaderGenerique.class);
-        readerGenerique.setColumns(cols);
-        readerGenerique.setSeparator(formData.get().getSeparator());
-        readerGenerique.setLineToSkip(nbLineToEscape);
-        readerGenerique.setFilePath(this.filePath);
         ObjectNode result;
-        //JsonArrayBuilder jsa =  Json.createArrayBuilder();
-        ArrayNode resuls = play.libs.Json.newArray();
-        //Object o;
-        int i = 0;
-        for (String s1 : cols) {
-            result = play.libs.Json.newObject();
-            result.put("id", String.valueOf(i));
-            result.put("name", s1);
-            i++;
-            resuls.add(result);
-        }
-        return ok(Json.toJson(resuls));
-
-    }
+            //JsonArrayBuilder jsa =  Json.createArrayBuilder();
+            ArrayNode resuls = play.libs.Json.newArray();
+            //Object o;
+            int i = 0;
+            for(String s1 :cols)
+            {
+                result = play.libs.Json.newObject();
+                result.put("id", String.valueOf(i));
+                result.put("name", s1);
+                i++;
+                resuls.add(result);
+            }
+            return ok(Json.toJson(resuls));
+}
 
     public String[] firstLine (File f,String delimiter) throws IOException {
         //String result = new ArrayList<>(); // !!!
@@ -292,6 +315,35 @@ public class Application extends Controller {
         //rows.setRow(row);
     }
 
+    public String[] firstLine1(File f){
+        DocumentBuilder dBuilder = null;
+        try {
+            dBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            Document doc = dBuilder.parse(f);
+            if (doc.hasChildNodes()) {
+                ReadXMLFile2 readXMLFile2 = new ReadXMLFile2();
+
+                readXMLFile2.printNote(doc.getChildNodes());
+                String[] ss = new String[readXMLFile2.getS().size()-2];
+                int j=0;
+                for (int i=2;i<readXMLFile2.getS().size();i++) {
+                    ss[j]=readXMLFile2.getS().get(i);
+                    j++;
+                }
+                return ss;
+            }
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        } catch (SAXException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+
+    }
+
     public Result delete(int id){
         colsSelectedMap.remove(id);
         return ok("removed");
@@ -309,24 +361,53 @@ public class Application extends Controller {
                     .addString("input.file.name", destination.getPath())
                     .addLong("time", System.currentTimeMillis()).toJobParameters();
             JobLauncher jobLauncher = (JobLauncher) context.getBean("jobLauncher");
-            String ext = getExtension(destination.getPath());
-            Job job = (Job) context.getBean("importUserJob");
-            try {
-                JobExecution jobExecution = jobLauncher.run(job, param);
-                JobCompletionNotificationListener listener = context.getBean("listener", JobCompletionNotificationListener.class);
-                if (jobExecution.getStatus().equals(BatchStatus.COMPLETED)) {
-                    ObjectNode result = play.libs.Json.newObject();
-                    result.put("time",readerGenerique.getDateTime());
-                    return ok(Json.toJson(result));
+            if(extFile.equals("csv")) {
+                System.out.println("CSV JOB");
+                Job job = (Job) context.getBean("importUserJob");
+                try {
+                    JobExecution jobExecution = jobLauncher.run(job, param);
+                    JobCompletionNotificationListener listener = context.getBean("listener", JobCompletionNotificationListener.class);
+                    if (jobExecution.getStatus().equals(BatchStatus.COMPLETED)) {
+                        Generator c = context.getBean("generator", Generator.class);
+                        c.setClassGenerate(null);
+                        Object c1 = context.getBean("firstBe");
+                        System.out.println(c1.getClass());
+
+                        ObjectNode result = play.libs.Json.newObject();
+                        result.put("time", readerGenerique.getDateTime());
+                        return ok(Json.toJson(result));
+                    }
+                } catch (JobExecutionAlreadyRunningException e) {
+                    e.printStackTrace();
+                } catch (JobRestartException e) {
+                    e.printStackTrace();
+                } catch (JobInstanceAlreadyCompleteException e) {
+                    e.printStackTrace();
+                } catch (JobParametersInvalidException e) {
+                    e.printStackTrace();
                 }
-            } catch (JobExecutionAlreadyRunningException e) {
-                e.printStackTrace();
-            } catch (JobRestartException e) {
-                e.printStackTrace();
-            } catch (JobInstanceAlreadyCompleteException e) {
-                e.printStackTrace();
-            } catch (JobParametersInvalidException e) {
-                e.printStackTrace();
+            }else if(extFile.equals("xml")){
+                System.out.println("XML JOB");
+                Job job = (Job) context.getBean("importXML");
+                try {
+                    JobExecution jobExecution = jobLauncher.run(job, param);
+                    JobCompletionNotificationListener listener = context.getBean("listener", JobCompletionNotificationListener.class);
+                    if (jobExecution.getStatus().equals(BatchStatus.COMPLETED)) {
+                        Generator c = context.getBean("generator", Generator.class);
+                        c.setClassGenerate(null);
+                        ObjectNode result = play.libs.Json.newObject();
+                        result.put("time", readerGenerique.getDateTime());
+                        return ok(Json.toJson(result));
+                    }
+                } catch (JobExecutionAlreadyRunningException e) {
+                    e.printStackTrace();
+                } catch (JobRestartException e) {
+                    e.printStackTrace();
+                } catch (JobInstanceAlreadyCompleteException e) {
+                    e.printStackTrace();
+                } catch (JobParametersInvalidException e) {
+                    e.printStackTrace();
+                }
             }
 
         } else {
@@ -410,4 +491,11 @@ public class Application extends Controller {
         this.filePath = filePath;
     }
 
+    public String getExtFile() {
+        return extFile;
+    }
+
+    public void setExtFile(String extFile) {
+        this.extFile = extFile;
+    }
 }

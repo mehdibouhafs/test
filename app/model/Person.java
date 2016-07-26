@@ -1,6 +1,5 @@
 package model;
 import com.avaje.ebean.Model;
-import model.adapter.LocalDateAdapter;
 import play.data.format.Formats;
 
 import javax.persistence.Entity;
@@ -49,7 +48,7 @@ public class Person extends Model{
     }
 
     @XmlElement(name = "date")
-    @XmlJavaTypeAdapter(type = LocalDateAdapter.class, value = model.adapter.LocalDateAdapter.class)
+    @XmlJavaTypeAdapter(type = LocalDateAdapter.class, value = model.LocalDateAdapter.class)
 
     public Date getDate() {
         return date;

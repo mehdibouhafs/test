@@ -1,6 +1,6 @@
 @(field: Field, optionMap: List[String], isMultiple: Boolean, help: String = "",  champForm : String = "", iconName :String = "")
   @import java.math.BigInteger;
-  <div class="form-group @if(field.hasErrors) {has-error}">
+  <div class="form-group @if(field.hasErrors) {has-error}" id="separatorForm">
       @if(champForm==""){<label  class="control-label col-xs-12 col-sm-2" style="color: beige;" for="@field.id"> Séparateur :</label>}
     <div class="col-xs-12 col-sm-2">
       <div class='input-group'>

@@ -1,0 +1,55 @@
+package util;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+public class ReadXMLFile2 {
+
+	private List<String> s = new ArrayList<>();
+
+
+	public List<String> getS() {
+		return s;
+	}
+
+	public void setS(List<String> s) {
+		this.s = s;
+	}
+
+	public void printNote(NodeList nodeList) {
+    for (int count = 0; count < nodeList.getLength(); count++) {
+	Node tempNode = nodeList.item(count);
+	// make sure it's element node.
+	if (tempNode.getNodeType() == Node.ELEMENT_NODE) {
+		// get node name and value
+		if(!s.contains(tempNode.getNodeName())){
+		s.add(tempNode.getNodeName());
+		}
+		if (tempNode.hasAttributes()) {
+			// get attributes names and values
+			NamedNodeMap nodeMap = tempNode.getAttributes();
+			for (int i = 0; i < nodeMap.getLength(); i++) {
+				Node node = nodeMap.item(i);
+			}
+		}
+		if (tempNode.hasChildNodes()) {
+			// loop again if has child nodes
+			printNote(tempNode.getChildNodes());
+		}
+	}
+
+    }
+
+
+
+  }
+
+}

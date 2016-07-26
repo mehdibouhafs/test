@@ -23,10 +23,7 @@
 
 		<property name="unmarshaller">
 			<bean class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
-				<property name="classesToBeBound">
-					<list>
-						<value>model.Person</value>
-					</list>
+				<property name="classesToBeBound" value="#{readerGenerique.getClassXml()}" >
 				</property>
 			</bean>
 		</property>
@@ -39,8 +36,7 @@
 				<chunk
 						reader="xmlItemReader"
 						writer="cvsFileItemWriter"
-						processor="cvsFileItemProcessor"
-						commit-interval="5">
+						commit-interval="1">
 				</chunk>
 			</tasklet>
 		</batch:step>

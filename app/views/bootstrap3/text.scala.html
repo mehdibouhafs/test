@@ -1,6 +1,6 @@
 @(field: Field, label: String, placeholder: String = "", help: String = "",isID : Boolean,champForm:String="",iconName:String="")
 
-  <div class="form-group @if(field.hasErrors) {has-error}">
+  <div class="form-group @if(field.hasErrors) {has-error}" id="numberlineForm">
       @if(label != "") {<label  class="control-label col-xs-12 col-sm-2"    style="color: beige;" for="@field.name">@label</label>}
     <div class="col-xs-12 col-sm-2">
       <div class='input-group'>

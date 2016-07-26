@@ -1,4 +1,4 @@
-package model.adapter;
+package model;
 
 
 

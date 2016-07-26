@@ -1,4 +1,6 @@
 $(document).ready(function() {
+    $('#separatorForm').hide();
+    $('#numberlineForm').hide();
     var navListItems = $('ul.setup-panel li a'),
         allWells = $('.setup-content');
     allWells.hide();
@@ -35,6 +37,23 @@ $(document).ready(function() {
         $(this).remove();
 
     })*/
+    
+    $('#filePath').change(function () {
+        var array = $('#filePath').val().split(".");
+        console.log("array"+array +"lenghth"+array.length);
+        var ext = array[array.length-1];
+        if(ext == "csv"){
+            $('#separatorForm').show();
+            $('#numberlineForm').show();
+        }else{
+            $('#separatorForm').hide();
+            $('#numberlineForm').hide();
+            $('#table').text("Fragument Root Element Name");
+            //$('#table').attr("placeholder").val("Fragument Root Element Name");
+            $('#tableSpan').text("Please enter Fragument Root Element Name");
+        }
+    });
+    
     $('#form0').validate({ // initialize the plugin
         rules: {
             filePath: {

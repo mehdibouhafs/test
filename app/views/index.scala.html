@@ -49,8 +49,6 @@
                     <h1 style="color: #18bc9c;"> Configuration File </h1>
                      </div>
 
-
-
                     <form class="form-horizontal" id="form0" name="form0" action="@routes.Application.cols()" method="POST">
                         <div class="form-group">
                             <label class="control-label col-xs-12 col-sm-2" style="color: beige;" for="filePath">File Path</label>
@@ -137,7 +135,7 @@
                             <form id="form1" name="form1" action="@routes.Application.getTypes" method="POST">
                                 <div class="panel-body well">
                                     <div class="form-group">
-                                        <label class="control-label col-xs-12 col-sm-2" style="color: beige;" for="tableName">Table</label>
+                                        <label id="table" class="control-label col-xs-12 col-sm-2" style="color: beige;" for="tableName">Table</label>
                                         <div class="col-xs-12 col-sm-3">
                                             <div class='input-group'>
                                                 <span class='input-group-addon'> <i class="fa fa-table"></i></span>
@@ -145,7 +143,7 @@
                                             </div>
                                         </div>
                                         <div class="col-sm-offset-0  col-sm-3">
-                                            <span class="help-block" style="color:#ffffff;" > Please enter the table Name . (required)</span>
+                                            <span id="tableSpan" class="help-block" style="color:#ffffff;" > Please enter the table Name . (required)</span>
                                         </div>
                                         <div class="col-sm-offset-0  col-sm-3">
                                             <span class="help-block" style="color:red;"></span>

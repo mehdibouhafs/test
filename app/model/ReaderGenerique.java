@@ -16,6 +16,8 @@ public class ReaderGenerique extends Model {
 
     private int id;
 
+    private String ext;
+
     private String[] columns;//separe par , id,firstName,lastName,date
 
     //private Object person;
@@ -33,6 +35,11 @@ public class ReaderGenerique extends Model {
     public Map<String,String> columnsTable;
 
     public  String cData ;
+
+
+    private String classXml;
+
+    private String fragmentRootElementName;
 
 
     private Long dateTime;
@@ -134,5 +141,29 @@ public class ReaderGenerique extends Model {
 
     public void setSeparator(String separator) {
         this.separator = separator;
+    }
+
+    public String getFragmentRootElementName() {
+        return fragmentRootElementName;
+    }
+
+    public void setFragmentRootElementName(String fragmentRootElementName) {
+        this.fragmentRootElementName = fragmentRootElementName;
+    }
+
+    public String getExt() {
+        return ext;
+    }
+
+    public void setExt(String ext) {
+        this.ext = ext;
+    }
+
+    public String getClassXml() {
+        return classXml;
+    }
+
+    public void setClassXml(String classXml) {
+        this.classXml = classXml;
     }
 }

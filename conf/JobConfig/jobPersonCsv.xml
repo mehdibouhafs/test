@@ -78,7 +78,7 @@
 
 	<bean id="generator" class="model.Generator"  lazy-init="true" />
 
-	<bean id="firstBe" class="#{generator.getClassGenerate()}" lazy-init="true"></bean>
+	<bean id="firstBe" class="#{generator.getClassGenerate()}" lazy-init="true" ></bean>
 
 
 	<bean id="recordSeperatorPolicy " class="handle.BlankLineRecordSeparatorPolicy"/>

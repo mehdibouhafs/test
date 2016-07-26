@@ -17,6 +17,8 @@ public class ParamFormData {
 
     public String filePath;
 
+    public String fragmentRootElementName;
+
     public String separator;
 
     public int numberLine;
@@ -105,6 +107,14 @@ public class ParamFormData {
 
     public void setFilePath(String filePath) {
         this.filePath = filePath;
+    }
+
+    public String getFragmentRootElementName() {
+        return fragmentRootElementName;
+    }
+
+    public void setFragmentRootElementName(String fragmentRootElementName) {
+        this.fragmentRootElementName = fragmentRootElementName;
     }
 
     @Override

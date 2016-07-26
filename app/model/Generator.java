@@ -5,12 +5,13 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import javassist.CannotCompileException;
 import javassist.NotFoundException;
-
+import running.Global;
 
 
 public class Generator {
@@ -24,11 +25,19 @@ public class Generator {
 	}
 	
 	   public Class<?> generator(String name) throws CannotCompileException, NotFoundException{
-
+		   ApplicationContext applicationContext = Global.getApplicationContext();
+		   ReaderGenerique readerGenerique = applicationContext.getBean("readerGenerique", ReaderGenerique.class);
 		   Class<?> rowObjectClass = null;
 		   try {
-			   rowObjectClass = App.buildCSVClassName(this.properties,name);
-			   this.classGenerate = rowObjectClass;
+			   if(readerGenerique.getExt().equals("csv")) {
+				   System.out.println(" buildCsvClassName CSV ");
+				   rowObjectClass = App.buildCSVClassName(this.properties, name);
+				   classGenerate = rowObjectClass;
+			   }else if(readerGenerique.getExt().equals("xml")){
+				   System.out.println(" buildXmlClassName XML ");
+				   rowObjectClass = App.buildCSVClassNamexml(this.properties, name);
+				   classGenerate = rowObjectClass;
+			   }
 			   return rowObjectClass;
 		   } catch (IOException e) {
 			   e.printStackTrace();
