@@ -12,11 +12,14 @@ public class ParamFormData1 {
 
     public String tableName;
 
+    public List<String> primaryKey;
+
+
+    public List<Boolean> autoIncrement;
+
     public List<String> type;
 
     public List<String> size;
-
-
 
 
     public List<String> getSize() {
@@ -43,6 +46,22 @@ public class ParamFormData1 {
         this.type = type;
     }
 
+    public List<String> getPrimaryKey() {
+        return primaryKey;
+    }
+
+    public void setPrimaryKey(List<String> primaryKey) {
+        this.primaryKey = primaryKey;
+    }
+
+    public List<Boolean> getAutoIncrement() {
+        return autoIncrement;
+    }
+
+    public void setAutoIncrement(List<Boolean> autoIncrement) {
+        this.autoIncrement = autoIncrement;
+    }
+
     @Override
     public String toString() {
         return "ParamFormData1{" +
@@ -51,4 +70,6 @@ public class ParamFormData1 {
                 ", size=" + size +
                 '}';
     }
+
+
 }

@@ -37,20 +37,28 @@ $(document).ready(function() {
         $(this).remove();
 
     })*/
-    
     $('#filePath').change(function () {
-        var array = $('#filePath').val().split(".");
-        console.log("array"+array +"lenghth"+array.length);
-        var ext = array[array.length-1];
-        if(ext == "csv"){
-            $('#separatorForm').show();
-            $('#numberlineForm').show();
-        }else{
-            $('#separatorForm').hide();
-            $('#numberlineForm').hide();
-            $('#table').text("Fragument Root Element Name");
-            //$('#table').attr("placeholder").val("Fragument Root Element Name");
-            $('#tableSpan').text("Please enter Fragument Root Element Name");
+        if($('#filePath').val()=="" || $('#filePath').val()==" "){
+            $("#validate").hide();
+        }else {
+            $(".ms-list").html("");
+            $("#cols").multiSelect('refresh');
+            var array = $('#filePath').val().split(".");
+            console.log("array" + array + "lenghth" + array.length);
+            var ext = array[array.length - 1];
+            $('#columns').hide();
+            if (ext == "csv") {
+                $('#separatorForm').show();
+                $('#numberlineForm').show();
+                $("#validate").show();
+            } else {
+                $('#separatorForm').hide();
+                $('#numberlineForm').hide();
+                $('#table').text("Fragument Root Element Name");
+                //$('#table').attr("placeholder").val("Fragument Root Element Name");
+                $('#tableSpan').text("Please enter Fragument Root Element Name");
+                $("#validate").show();
+            }
         }
     });
     
@@ -140,6 +148,7 @@ $(document).ready(function() {
                                 selected: 'true'
                             });
                             $('#cols').multiSelect('refresh');
+                            $('#columns').show();
                         }
                     },
                     error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
@@ -149,7 +158,12 @@ $(document).ready(function() {
 
             });
     });
-
+$('#form1').submit(function (e) {
+    e.preventDefault();
+});
+    $('#form2').submit(function (e) {
+        e.preventDefault();
+    });
     $("#activate-step-2").click(
         function(e) {
             //envoyer les donnees avec ajax
@@ -170,6 +184,8 @@ $(document).ready(function() {
                         for (var i = 0; i < le; i++) {
                             var type = 'type[' + data[i].id + ']';
                             var size = 'size[' + data[i].id + ']';
+                            var primaryKey = 'primaryKey[' + data[i].id + ']';
+                            var autoIncrement = 'autoIncrement[' + data[i].id + ']';
                             var s;
                             if (i == 0) {
                                 s ="<td><select class='form-control' id='type' name='" + type + "'>" +
@@ -421,7 +437,12 @@ $(document).ready(function() {
                                     "</td>" +
                                     "<td><input type='number' id='data[i].id' name='" + size + "' size='4' value='5'/> </td>";*/
                             }
-                            $("#tableaucontenus1").append("<tr data-id='" + data[i].id + "'><td>" + data[i].id + "</td><td>" + data[i].name + "</td>" + s + "<td><button class='btn btn-danger'><span class='glyphicon glyphicon-remove-sign'></span></button>&nbsp;&nbsp;</tr>");
+                            $("#tableaucontenus1").append("<tr data-id='" + data[i].id + "'><td>" + data[i].id + "</td><td>" + data[i].name + "</td>" + s + "<td><select name='"+primaryKey+"' id='"+primaryKey+"'><option value='none'>---</option>"+
+                                "<option value='PRIMARY' title='Primaire'>PRIMARY</option>"+
+                                "<option value='UNIQUE' title='Unique'>UNIQUE</option>"+
+                                "<option value='INDEX' title='Index'>INDEX</option>"+
+                               "<option value='FULLTEXT' title='Texte entier'>FULLTEXT</option>"+
+                                "<option value='SPATIAL' title='Spatial'>SPATIAL</option></select></td><td> <input type='checkbox' id='"+autoIncrement+"' name='"+autoIncrement+"' value='false'></td><td><button class='btn btn-danger'><span class='glyphicon glyphicon-remove-sign'></span></button>&nbsp;&nbsp;</td></tr>");
                         }
                     },
                     error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
@@ -450,19 +471,8 @@ $(document).ready(function() {
                             for (var i = 0; i < data.length; i++) {
                                 var type = 'type[' + data[i].id + ']';
                                 var size = 'size[' + data[i].id + ']';
-                                $("#tableaucontenus2").append("<tr data-id='" + data[i].id + "'><td>" + data[i].id + "</td><td>" + data[i].name + "</td><td>" + " <select class='form-control' id='" + type + "' name='" + type + "' disabled>" +
-                                    "<option class='blank'  value='" + data[i].type + "' selected>" + data[i].type + "</option>" +
-                                    "<option title='Un nombre entier de 4 octets. La fourchette des entiers relatifs est de -2 147 483 648 à 2 147 483 647. Pour les entiers positifs, cest de 0 à 4 294 967 295' >INT</option>" +
-                                    "<option title='Une chaîne de longueur variable (0-65,535), la longueur effective réelle dépend de la taille maximum d une ligne'>VARCHAR</option>" +
-                                    "<option title='Une colonne TEXT dune longueur maximum de 65 535 (2^16 - 1) caractères, stockée avec un préfixe de deux octets indiquant la longueur de la valeur en octets'>TEXT</option>" +
-                                    "<option title='Une date, la fourchette est de «1000-01-01» à «9999-12-31»'>DATETIME</option>" +
-                                    "<optgroup label='Numérique'>" +
-                                    "<option title='Un nombre entier de 1 octet. La fourchette des nombres avec signe est de -128 à 127. Pour les nombres sans signe, c est de 0 à 255'>TINYINT</option>" +
-                                    "<option title='Un nombre entier de 2 octets. La fourchette des nombres avec signe est de -32 768 à 32 767. Pour les nombres sans signe, c est de 0 à 65 535'>SMALLINT</option>" +
-                                    "<option title='Un nombre entier de 3 octets. La fourchette des nombres avec signe est de -8 388 608 à 8 388 607. Pour les nombres sans signe, c est de 0 à 16 777 215'>MEDIUMINT</option>" +
-                                    "<option title='Un nombre entier de 4 octets. La fourchette des entiers relatifs est de -2 147 483 648 à 2 147 483 647. Pour les entiers positifs, c est de 0 à 4 294 967 295'>INT</option>" +
-                                    "<option title='Un nombre entier de 8 octets. La fourchette des nombres avec signe est de -9 223 372 036 854 775 808 à 9 223 372 036 854 775 807. Pour les nombres sans signe, c est de 0 à 18 446 744 073 709 551 615'>BIGINT</option>" +
-                                    "</optgroup></select>" + "</td><td><input type='number' id='" + size + "' name='" + size + "' value='" + data[i].size + "' disabled/></td></tr>")
+
+                                $("#tableaucontenus2").append("<tr data-id='" + data[i].id + "'><td>" + data[i].id + "</td><td>" + data[i].name + "</td><td>"+ data[i].type+"</td><td>"+data[i].primaryKey+"</td><td>"+data[i].size+"</td> <td> <input type='checkbox' checked='"+data[i].autoIncrement+"' disabled></td></tr>");
                             }
                         },
                         error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
@@ -530,6 +540,7 @@ $(document).ready(function() {
     $("#cols").hide();
     $("#all").hide();
     $("#none").hide();
+    $("#validate").hide();
     $('#activate-step-2').hide();
 
     $("#all").click(function (e) {
@@ -542,8 +553,20 @@ $(document).ready(function() {
         $("#cols").multiSelect('deselect_all');
     });
 
-    $('#table1').on('click', '.glyphicon-remove-sign', function(e){
 
+    $('#table1').bind("DOMSubtreeModified",function (e) {
+        e.preventDefault();
+        if($('#tableaucontenus1').children().length==0){
+            $('ul.setup-panel li a[href="#step-1"]').trigger('click');
+            $("#cols").multiSelect('deselect_all');
+            $("#step22").removeClass('active');
+            $("#step22").addClass('disabled');
+            
+        }
+
+    })
+
+    $('#table1').on('click', '.glyphicon-remove-sign', function(e){
         var r = confirm("Voulez vous vraiement supprimer ?");
         if (r == true) {
             $(this).closest('tr').remove();

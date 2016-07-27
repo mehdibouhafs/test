@@ -8,6 +8,8 @@ public class Attribute  {
     private String type;
     private String name;
     private String size;
+    private String primaryKey;
+    private boolean autoIncrement;
     private int id;
 
     public Attribute() {
@@ -43,5 +45,21 @@ public class Attribute  {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getPrimaryKey() {
+        return primaryKey;
+    }
+
+    public boolean isAutoIncrement() {
+        return autoIncrement;
+    }
+
+    public void setAutoIncrement(boolean autoIncrement) {
+        this.autoIncrement = autoIncrement;
+    }
+
+    public void setPrimaryKey(String primaryKey) {
+        this.primaryKey = primaryKey;
     }
 }

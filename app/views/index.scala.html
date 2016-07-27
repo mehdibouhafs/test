@@ -31,7 +31,7 @@
                         <h4 class="list-group-item-heading">Step 1</h4>
                         <p class="list-group-item-text">File configuration</p>
                     </a></li>
-                    <li class="disabled"><a href="#step-2" >
+                    <li id="step22" class="disabled"><a href="#step-2" >
                         <h4 class="list-group-item-heading">Step 2</h4>
                         <p class="list-group-item-text">Data configuration</p>
                     </a></li>
@@ -87,7 +87,7 @@
                         </div>
                         </form>
                     <form id="form2" name="form2" action="@routes.Application.upload()" method="post">
-                        <div class="col-md-12 well" style="background-color: #131313;margin-top: 0px;padding-top: 0px;">
+                        <div id="columns" class="col-md-12 well" style="background-color: #131313;margin-top: 0px;padding-top: 0px;">
                             <div class="row">
                             <div class="col-sm-3 ">
                             </div>
@@ -157,7 +157,9 @@
                                         <th style="color:beige;">Id</th>
                                         <th style="color:beige;"> Name</th>
                                         <th style="color:beige;"> Type </th>
-                                        <th style="color:beige;"> Size</th>
+                                        <th style="color:beige;"> Taille</th>
+                                        <th style="color:beige;"> Index</th>
+                                        <th style="color:beige;"> Auto Increment</th>
                                         <th style="color:beige;">Option</th>
                                     </tr>
                                 </thead>
@@ -167,6 +169,8 @@
                                     <th style="color:beige;"> Name</th>
                                     <th style="color:beige;"> Type </th>
                                     <th style="color:beige;"> Size</th>
+                                    <th style="color:beige;"> Index </th>
+                                    <th style="color:beige;"> Auto Increment</th>
                                     <th style="color:beige;">Option</th>
                                 </tr>
                                 </tfoot>
@@ -207,7 +211,9 @@
                                 <th style="color:beige;">Id</th>
                                 <th style="color:beige;">Colomun Name</th>
                                 <th style="color:beige;">Colomun Type </th>
-                                <th style="color:beige;"> Size </th>
+                                <th style="color:beige;"> Index </th>
+                                <th style="color:beige;"> Taille </th>
+                                <th style="color:beige;"> Auto Increment</th>
                             </tr>
                         </thead>
                     <tfoot style="background: #18bc9c">
@@ -215,7 +221,9 @@
                             <th style="color:beige;">Id</th>
                             <th style="color:beige;"> Column Name</th>
                             <th style="color:beige;"> Column Type </th>
-                            <th style="color:beige;"> Size </th>
+                            <th style="color:beige;"> Index </th>
+                            <th style="color:beige;"> Taille </th>
+                            <th style="color:beige;"> Auto Increment</th>
                         </tr>
                     </tfoot>
                         <tbody id="tableaucontenus2">

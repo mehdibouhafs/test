@@ -123,9 +123,13 @@ public class Application extends Controller {
         for (Map.Entry<Integer, String> col : colsSelectedMap.entrySet()) {
             attribute = new Attribute();
             String type = formData.get().getType().get(col.getKey());
-            String typeSize = type + "(" + formData.get().getSize().get(col.getKey()) + ")";
+            String typeSize = type + "(" + formData.get().getSize().get(col.getKey()) + "),"+formData.get().getPrimaryKey().get(col.getKey());;
             String size = formData.get().getSize().get(col.getKey());
+            String primarykey = formData.get().getPrimaryKey().get(col.getKey());
+            boolean autoIncrement = formData.get().getAutoIncrement().get(col.getKey());
+            attribute.setAutoIncrement(autoIncrement);
             attribute.setType(type);
+
             Object o;
             switch (type) {
                 case "INT":
@@ -193,7 +197,6 @@ public class Application extends Controller {
                     o = null;
                     break;
             }
-
             properties.put(col.getValue(), o.getClass());
             columnsTable.put(col.getValue(), typeSize);
             //String colCap = cols[i].substring(0, 1).toUpperCase() + cols[i].substring(1);
@@ -203,6 +206,7 @@ public class Application extends Controller {
             attribute.setId(col.getKey());
             attribute.setSize(size);
             attribute.setName(col.getValue());
+            attribute.setPrimaryKey(primarykey);
             attributes.add(attribute);
         }
         for (String s : cols) {
@@ -235,6 +239,12 @@ public class Application extends Controller {
             result.put("name", s.getName());
             result.put("type", s.getType());
             result.put("size", s.getSize());
+            result.put("primaryKey",s.getPrimaryKey());
+            if(s.isAutoIncrement() == true) {
+                result.put("autoIncrement", "checked");
+            }else{
+                result.put("autoIncrement", "");
+            }
             resuls.add(result);
         }
         return ok(Json.toJson(resuls));
