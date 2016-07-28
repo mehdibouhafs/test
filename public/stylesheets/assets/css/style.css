@@ -9,12 +9,12 @@
 
 
 .nav>li.disabled>a {
-    color: #84d4ff;
+    color: #ffffff;
 }
 
 .nav-pills>li.active>a {
-    color: #05ffce;
-    background-color: #131315;
+    color: #ffffff;
+    background-color: #18bc9c;
 }
 
 .well{
