@@ -84,6 +84,7 @@
 	<bean id="recordSeperatorPolicy " class="handle.BlankLineRecordSeparatorPolicy"/>
 
 	<bean id="cvsFileItemProcessor" class="processor.PersonItemProcessor"/>
+
 	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
 		<constructor-arg ref ="dataSource"/>
 	</bean>

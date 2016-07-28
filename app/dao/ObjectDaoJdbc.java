@@ -83,14 +83,23 @@ public class ObjectDaoJdbc extends JdbcTemplate implements ObjectDao{
                 }
             }
             if (i == 0) {
-                query = new StringBuffer("CREATE TABLE IF NOT EXISTS " + table + " ("
-                        + entry.getKey() + " " + typeSize[0]);
+                if(typeSize[0].equals("INTEGER") || typeSize[0].equals("SMALLINT")|| typeSize[0].equals("BIGINT")|| typeSize[0].equals("BIGINT")|| typeSize[0].equals("DOUBLE")) {
+                    query = new StringBuffer("CREATE TABLE IF NOT EXISTS " + table + " ("
+                            + entry.getKey() + " " + typeSize[0] + " " + typeSize[2]);
+                }else {
+                    query = new StringBuffer("CREATE TABLE IF NOT EXISTS " + table + " ("
+                            + entry.getKey() + " " + typeSize[0]);
+                }
                 query2 = new StringBuffer("INSERT INTO "+ table+ " ("
                         + entry.getKey() );
                 query3 = new StringBuffer("(?");
                 i++;
             } else {
-                query.append(", " + entry.getKey() + " " + typeSize[0]);
+                if(typeSize[2].equals("AUTO_INCREMENT") && (typeSize[0].equals("INTEGER") || typeSize[0].equals("SMALLINT")|| typeSize[0].equals("BIGINT")|| typeSize[0].equals("BIGINT")|| typeSize[0].equals("DOUBLE"))){
+                    query.append(", " + entry.getKey() + " " + typeSize[0]+" "+typeSize[2]);
+                }else{
+                    query.append(", " + entry.getKey() + " " + typeSize[0]);
+                }
                 query2.append(", "+entry.getKey());
                 query3.append(",?");
 

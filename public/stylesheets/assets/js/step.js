@@ -188,7 +188,7 @@ $('#form1').submit(function (e) {
                             var autoIncrement = 'autoIncrement[' + data[i].id + ']';
                             var s;
                             if (i == 0) {
-                                s ="<td><select class='form-control' id='type' name='" + type + "'>" +
+                                s ="<td><select class='form-control' id='"+type+"' name='" + type + "'>" +
                                     "<option class='blank'  value=''>Please select a value</option>" +
                                     "<option title='Un nombre entier de 4 octets. La fourchette des entiers relatifs est de -2 147 483 648 à 2 147 483 647. Pour les entiers positifs, cest de 0 à 4 294 967 295' selected>INT</option>" +
                                     "<option title='Une chaîne de longueur variable (0-65,535), la longueur effective réelle dépend de la taille maximum d'une ligne'>VARCHAR</option>" +
@@ -246,7 +246,7 @@ $('#form1').submit(function (e) {
                                     "<td><input type='number' id='data[i].id' name='" + size + "' size='4' value='10'/> </td>";*/
                             }
                             if (i == 1) {
-                                s=  "<td><select class='form-control' id='type' name='" + type + "'>" +
+                                s=  "<td><select class='form-control' id='"+type+"' name='" + type + "'>" +
                                     "<option class='blank'  value=''>Please select a value</option>" +
                                     "<option title='Un nombre entier de 4 octets. La fourchette des entiers relatifs est de -2 147 483 648 à 2 147 483 647. Pour les entiers positifs, cest de 0 à 4 294 967 295' >INT</option>" +
                                     "<option title='Une chaîne de longueur variable (0-65,535), la longueur effective réelle dépend de la taille maximum d une ligne' selected >VARCHAR</option>" +
@@ -310,7 +310,7 @@ $('#form1').submit(function (e) {
                                     "<td><input type='number' id='data[i].id' name='" + size + "' size='4' value='255'/> </td>";*/
                             }
                             if (i == 2) {
-                                s= "<td><select class='form-control' id='type' name='" + type + "'>" +
+                                s= "<td><select class='form-control' id='"+type+"' name='" + type + "'>" +
                                     "<option class='blank'  value=''>Please select a value</option>" +
                                     "<option title='Un nombre entier de 4 octets. La fourchette des entiers relatifs est de -2 147 483 648 à 2 147 483 647. Pour les entiers positifs, cest de 0 à 4 294 967 295' >INT</option>" +
                                     "<option title='Une chaîne de longueur variable (0-65,535), la longueur effective réelle dépend de la taille maximum d une ligne' selected>VARCHAR</option>" +
@@ -374,7 +374,7 @@ $('#form1').submit(function (e) {
                                     "<td><input type='number' id='data[i].id' name='" + size + "' size='4' value='255'/> </td>";*/
                             }
                             if (i == 3) {
-                                s = "<td><select class='form-control' id='type' name='" + type + "'>" +
+                                s = "<td><select class='form-control' id='"+type+"' name='" + type + "'>" +
                                     "<option class='blank'  value=''>Please select a value</option>" +
                                     "<option title='Un nombre entier de 4 octets. La fourchette des entiers relatifs est de -2 147 483 648 à 2 147 483 647. Pour les entiers positifs, cest de 0 à 4 294 967 295'>INT</option>" +
                                     "<option title='Une chaîne de longueur variable (0-65,535), la longueur effective réelle dépend de la taille maximum d une ligne'>VARCHAR</option>" +
@@ -442,7 +442,7 @@ $('#form1').submit(function (e) {
                                 "<option value='UNIQUE' title='Unique'>UNIQUE</option>"+
                                 "<option value='INDEX' title='Index'>INDEX</option>"+
                                "<option value='FULLTEXT' title='Texte entier'>FULLTEXT</option>"+
-                                "<option value='SPATIAL' title='Spatial'>SPATIAL</option></select></td><td> <input type='checkbox' id='"+autoIncrement+"' name='"+autoIncrement+"' value='false'></td><td><button class='btn btn-danger'><span class='glyphicon glyphicon-remove-sign'></span></button>&nbsp;&nbsp;</td></tr>");
+                                "<option value='SPATIAL' title='Spatial'>SPATIAL</option></select></td><td> <input type='checkbox' id='"+autoIncrement+"' name='"+autoIncrement+"' value='autoIncrement'/></td><td><button class='btn btn-danger'><span class='glyphicon glyphicon-remove-sign'></span></button>&nbsp;&nbsp;</td></tr>");
                         }
                     },
                     error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
@@ -471,8 +471,18 @@ $('#form1').submit(function (e) {
                             for (var i = 0; i < data.length; i++) {
                                 var type = 'type[' + data[i].id + ']';
                                 var size = 'size[' + data[i].id + ']';
+                                var autoIncrement = 'autoIncrement[' + data[i].id + ']';
+                                console.log("data ["+i +data[i].autoIncrement)
+                                var q;
+                                if(data[i].autoIncrement == "true"){
+                                    console.log("TRUE");
+                                q= "<td> <input type='checkbox' name='"+autoIncrement+"' checked='checked' disabled></td>";
 
-                                $("#tableaucontenus2").append("<tr data-id='" + data[i].id + "'><td>" + data[i].id + "</td><td>" + data[i].name + "</td><td>"+ data[i].type+"</td><td>"+data[i].primaryKey+"</td><td>"+data[i].size+"</td> <td> <input type='checkbox' checked='"+data[i].autoIncrement+"' disabled></td></tr>");
+                                }else{
+                                    console.log("FALSEE");
+                                    q = "<td> <input type='checkbox' name='"+autoIncrement+"' disabled></td>";
+                                }
+                                $("#tableaucontenus2").append("<tr data-id='" + data[i].id + "'><td>" + data[i].id + "</td><td>" + data[i].name + "</td><td>"+ data[i].type+"</td><td>"+data[i].primaryKey+"</td><td>"+data[i].size+"</td>"+q+"</tr>");
                             }
                         },
                         error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
@@ -586,6 +596,21 @@ $('#form1').submit(function (e) {
             });
         } else {
             console.log("ss");
+        }
+    });
+
+    $('#table1').on('click','input[type="checkbox"]', function(e) {
+        var id =  $(this).closest('tr').data('id');
+        console.log("type= "+ $('#type\\['+id+'\\] option:selected').text());
+        if($('#type\\['+id+'\\] option:selected').text() != 'INT'){
+            alert("Impossible de choisir un "+$('#type\\['+id+'\\]').val()+"Auto Increment");
+            $('#autoIncrement\\[' + id + '\\]').prop('checked',false);
+        }else {
+            for (var i = 0; i < 4; i++) {
+                if (i != id) {
+                    $('#autoIncrement\\[' + i + '\\]').prop('checked', false);
+                }
+            }
         }
     });
 

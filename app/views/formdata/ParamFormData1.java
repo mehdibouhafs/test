@@ -14,9 +14,6 @@ public class ParamFormData1 {
 
     public List<String> primaryKey;
 
-
-    public List<Boolean> autoIncrement;
-
     public List<String> type;
 
     public List<String> size;
@@ -54,13 +51,7 @@ public class ParamFormData1 {
         this.primaryKey = primaryKey;
     }
 
-    public List<Boolean> getAutoIncrement() {
-        return autoIncrement;
-    }
 
-    public void setAutoIncrement(List<Boolean> autoIncrement) {
-        this.autoIncrement = autoIncrement;
-    }
 
     @Override
     public String toString() {

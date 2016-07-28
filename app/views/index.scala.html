@@ -63,22 +63,56 @@
                             </div>
 
                         </div>
+                        <div class="form-group" id="separatorForm">
+                           <label  class="control-label col-xs-12 col-sm-2" style="color: beige;" for="separator"> Séparateur :</label>
+                            <div class="col-xs-12 col-sm-2">
+                                <div class='input-group'>
+                                    <span class='input-group-addon'> <i class="fa fa-scissors" aria-hidden="true"></i></span>
+                                    <select
+                                    class="form-control"
+                                    id="separator"
+                                    name="separator">
+                                        <option class="blank"  value=";">;</option>
+                                        <option id="separator[0]",name="separator[0]" title="point virgule" value=";">;</option>
+                                        <option id="separator[1]",name="separator[1]" title="virgule" value=",">,</option>
+                                        <option id="separator[2]",name="separator[2]" title="deux points" value=":">:</option>
+                                        <option id="separator[3]",name="separator[3]" title="pipe" value="|">|</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-sm-4">
+                                <span class="help-block" style="color:#ffffff;">Please select Séparator requiered !</span>
+                            </div>
+                            <div class="col-xs-12 col-sm-4">
+                                <span class="help-block" style="color:red;"></span>
+                            </div>
+                        </div>
 
-                        @select(paramForm("separator"),
-                            optionMap = separators,
-                            isMultiple = false,
-                            help = "Select the Separator for your file. (required)",
-                            champForm = "",
-                            iconName = "fa fa-cog"
-                        )
-                        @text(paramForm("numberLine"),
-                            placeholder = "Number Line to switch",
-                            label="Nombre de line :",
-                            help = " Please enter the number of line to switch . (required)",
-                            isID=false,
-                            champForm="number",
-                            iconName = "fa fa-scissors"
-                        )
+
+
+
+                        <div class="form-group " id="numberlineForm">
+                           <label  class="control-label col-xs-12 col-sm-2"    style="color: beige;" for="numberLine">Number Line to Skipe :</label>
+                            <div class="col-xs-12 col-sm-2">
+                                <div class='input-group'>
+                                    <span class='input-group-addon'> <i class="fa fa-scissors" aria-hidden="true"></i></span>
+                                    <input
+                                    type="number"
+                                    class="form-control"
+                                    id="numberLine"
+                                    name="numberLine"
+                                    value=""
+                                    placeholder="Number of lines to Skipe"
+                                    />
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-sm-4">
+                                <span class="help-block" style="color:#ffffff;">Pleaze Give us number of line to switch required !!</span>
+                            </div>
+                            <div class="col-xs-12 col-sm-4">
+                                <span class="help-block" style="color:red;"></span>
+                            </div>
+                        </div>
                             <button id="validate" class="btn btn-primary btn-success pull-right"  type="submit" style="padding: 10px 70px;">Valider</button>
                         <div class="text-center" style="padding-bottom: 25px;padding-top: 25px;">
                         <h1 style="color: #18bc9c;"> Selection Columns </h1>

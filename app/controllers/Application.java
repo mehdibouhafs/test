@@ -1,4 +1,5 @@
 package controllers;
+import akka.dispatch.Foreach;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import dao.ObjectDao;
@@ -106,8 +107,9 @@ public class Application extends Controller {
         Attribute attribute;
         attributes = new ArrayList<>();
         Form<ParamFormData1> formData = Form.form(ParamFormData1.class).bindFromRequest();
+        System.out.println(formData.get().toString());
         //System.out.println(formData.toString());
-        if (formData.hasErrors()) {
+       /* if (formData.hasErrors()) {
             // Don't call formData.get() when there are errors, pass 'null' to helpers instead.
             flash("error", "Please correct errors above.");
             return badRequest(index.render(null, formData, null,
@@ -115,19 +117,39 @@ public class Application extends Controller {
                     null,
                     null
             ));
-        }
+        }*/
         ApplicationContext context = Global.getApplicationContext();
         ReaderGenerique readerGenerique = context.getBean("readerGenerique", ReaderGenerique.class);
         properties = new LinkedHashMap<>();
+        StringBuffer typeSizes;
         final Map<String, String> columnsTable = new LinkedHashMap<>();
         for (Map.Entry<Integer, String> col : colsSelectedMap.entrySet()) {
             attribute = new Attribute();
             String type = formData.get().getType().get(col.getKey());
-            String typeSize = type + "(" + formData.get().getSize().get(col.getKey()) + "),"+formData.get().getPrimaryKey().get(col.getKey());;
+            String typeSize = type + "(" + formData.get().getSize().get(col.getKey()) + "),"+formData.get().getPrimaryKey().get(col.getKey())+",";
+            typeSizes = new StringBuffer(typeSize);
             String size = formData.get().getSize().get(col.getKey());
             String primarykey = formData.get().getPrimaryKey().get(col.getKey());
-            boolean autoIncrement = formData.get().getAutoIncrement().get(col.getKey());
-            attribute.setAutoIncrement(autoIncrement);
+            System.out.println("KEY"+col.getKey());
+
+
+            try {
+               // boolean autoIncrement = formData.get().getAutoIncrement().get(col.getKey());
+                String[] autoIncrement = request().body().asFormUrlEncoded().get("autoIncrement["+col.getKey()+"]");
+                if(autoIncrement[0].equals("autoIncrement")){
+                    System.out.println("FDP TRUE" + col.getKey() +"val = " +col.getValue());
+                    String s = "AUTO_INCREMENT";
+                    typeSizes.append(s);
+                    attribute.setAutoIncrement(true);
+                }else{
+                    System.out.println("FDP false" + col.getKey() +"val = " +col.getValue());
+                }
+            }catch (Exception e){
+                System.out.println("Exception try" + col.getKey() +"val = " +col.getValue());
+                String s = "walou";
+                attribute.setAutoIncrement(false);
+                typeSizes.append(s);
+            }
             attribute.setType(type);
 
             Object o;
@@ -198,7 +220,7 @@ public class Application extends Controller {
                     break;
             }
             properties.put(col.getValue(), o.getClass());
-            columnsTable.put(col.getValue(), typeSize);
+            columnsTable.put(col.getValue(), typeSizes.toString());
             //String colCap = cols[i].substring(0, 1).toUpperCase() + cols[i].substring(1);
            /* beanGenerator.getClass().getMethod("set"+colCap,o.getClass());
             System.out.println("set"+colCap);
@@ -232,6 +254,7 @@ public class Application extends Controller {
         ObjectNode result;
         //JsonArrayBuilder jsa =  Json.createArrayBuilder();
         ArrayNode resuls = play.libs.Json.newArray();
+        System.out.println("Attributes"+attributes);
         for (Attribute s : attributes
                 ) {
             result = new play.libs.Json().newObject();
@@ -241,9 +264,9 @@ public class Application extends Controller {
             result.put("size", s.getSize());
             result.put("primaryKey",s.getPrimaryKey());
             if(s.isAutoIncrement() == true) {
-                result.put("autoIncrement", "checked");
+                result.put("autoIncrement", "true");
             }else{
-                result.put("autoIncrement", "");
+                result.put("autoIncrement", "false");
             }
             resuls.add(result);
         }

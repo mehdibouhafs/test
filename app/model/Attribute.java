@@ -3,7 +3,7 @@ package model;
 /**
  * Created by MBS on 15/07/2016.
  */
-public class Attribute  {
+public class Attribute {
 
     private String type;
     private String name;
@@ -61,5 +61,13 @@ public class Attribute  {
 
     public void setPrimaryKey(String primaryKey) {
         this.primaryKey = primaryKey;
+    }
+
+    @Override
+    public String toString() {
+        return "Attribute{" +
+                "id=" + id +
+                ", autoIncrement=" + autoIncrement +
+                '}';
     }
 }
