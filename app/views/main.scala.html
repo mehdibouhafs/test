@@ -24,6 +24,9 @@
 
         @* Here's where we render the page title `String`. *@
         <title>@title</title>
+
+        <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/jquery-ui.css")"/>
+        <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/dataTables.jqueryui.min.css")"/>
         <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/freelancer.css")">
         <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/bootstrap.min.css")">
         <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/assets/css/multi-select.css")">
@@ -164,12 +167,14 @@
         <!-- Our main JS file -->
         <script src="@routes.Assets.versioned("stylesheets/assets/js/script.js")"></script>
         <script src="@routes.Assets.versioned("stylesheets/assets/js/jquery.validate.js")"></script>
+        <script src="@routes.Assets.versioned("stylesheets/assets/js/jquery.dataTables.min.js")"></script>
             <!-- Enable tooltips. Used primarily to validate that JQuery + Bootstrap JS are loaded. Remove this script if you don't want tooltips. -->
         <script type="text/javascript">
                 jQuery(function ($) {
                     $("[rel='tooltip']").tooltip()
                 });
         </script>
+
 
 
 

@@ -19,6 +19,12 @@ POST    /validate                       controllers.Application.validate()
 POST    /cols                           controllers.Application.cols()
 
 
+POST   /colsxml                         controllers.Application.colsxml()
+
+
+POST  /path                             controllers.Application.path()
+
+
 GET    /delete                          controllers.Application.delete(id : Int)
 
 # Map static resources from the /public folder to the /assets URL path

@@ -25,9 +25,7 @@ import play.mvc.*;
 import play.mvc.Controller;
 import running.Global;
 import util.ReadXMLFile2;
-import views.formdata.ParamFormData;
-import views.formdata.ParamFormData1;
-import views.formdata.ParamFormData2;
+import views.formdata.*;
 import views.html.index;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -273,7 +271,7 @@ public class Application extends Controller {
         return ok(Json.toJson(resuls));
     }
 
-    public Result cols() throws IOException {
+    public Result path() throws IOException {
         ApplicationContext context = Global.getApplicationContext();
         ReaderGenerique readerGenerique = context.getBean("readerGenerique", ReaderGenerique.class);
         Form<ParamFormData> formData = Form.form(ParamFormData.class).bindFromRequest();
@@ -281,7 +279,6 @@ public class Application extends Controller {
         readerGenerique.setFilePath(this.filePath);
         this.extFile = getExtension(filePath);
         readerGenerique.setExt(extFile);
-        File destination = new File(this.filePath);
         if (formData.hasErrors()) {
             // Don't call formData.get() when there are errors, pass 'null' to helpers instead.
             flash("error", "Please correct errors above.");
@@ -293,21 +290,37 @@ public class Application extends Controller {
                     null
             ));
         }
-        if (extFile.equals("csv")) {
+        return ok("path"+filePath);
+
+    }
+
+
+    public Result cols() throws IOException {
+        ApplicationContext context = Global.getApplicationContext();
+        ReaderGenerique readerGenerique = context.getBean("readerGenerique", ReaderGenerique.class);
+        Form<ParamformData01> formData01 = Form.form(ParamformData01.class).bindFromRequest();
+        File destination = new File(this.filePath);
+        if (formData01.hasErrors()) {
+            // Don't call formData.get() when there are errors, pass 'null' to helpers instead.
+            flash("error", "Please correct errors above.");
+            return badRequest(index.render(null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+            ));
+        }
             System.out.println("csv File cols");
-            if (formData.get().getSeparator() != null) {
-                cols = firstLine(destination, formData.get().getSeparator());
+            if (formData01.get().getSeparator() != null) {
+                cols = firstLine(destination, formData01.get().getSeparator());
             } else {
                 cols = firstLine(destination, null);
             }
-            int nbLineToEscape = formData.get().getNumberLine();
+            int nbLineToEscape = formData01.get().getNumberLine();
             readerGenerique.setLineToSkip(nbLineToEscape);
-            readerGenerique.setSeparator(formData.get().getSeparator());
+            readerGenerique.setSeparator(formData01.get().getSeparator());
             readerGenerique.setColumns(cols);
-        }else if(extFile.equals("xml")){
-            System.out.println("xml File cols");
-            cols = firstLine1(destination);
-        }
         ObjectNode result;
             //JsonArrayBuilder jsa =  Json.createArrayBuilder();
             ArrayNode resuls = play.libs.Json.newArray();
@@ -323,6 +336,43 @@ public class Application extends Controller {
             }
             return ok(Json.toJson(resuls));
 }
+
+    public Result colsxml() throws IOException {
+        ApplicationContext context = Global.getApplicationContext();
+        ReaderGenerique readerGenerique = context.getBean("readerGenerique", ReaderGenerique.class);
+        Form<ParamFormData02> formData = Form.form(ParamFormData02.class).bindFromRequest();
+        File destination = new File(this.filePath);
+        if (formData.hasErrors()) {
+            // Don't call formData.get() when there are errors, pass 'null' to helpers instead.
+            flash("error", "Please correct errors above.");
+            return badRequest(index.render(null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+            ));
+        }
+            System.out.println("xml File cols");
+            String typeXML = formData.get().getXml();
+            System.out.println(typeXML);
+            cols = firstLine1(destination);
+        ObjectNode result;
+        //JsonArrayBuilder jsa =  Json.createArrayBuilder();
+        ArrayNode resuls = play.libs.Json.newArray();
+        //Object o;
+        int i = 0;
+        for(String s1 :cols)
+        {
+            result = play.libs.Json.newObject();
+            result.put("id", String.valueOf(i));
+            result.put("name", s1);
+            i++;
+            resuls.add(result);
+        }
+        return ok(Json.toJson(resuls));
+    }
+
 
     public String[] firstLine (File f,String delimiter) throws IOException {
         //String result = new ArrayList<>(); // !!!

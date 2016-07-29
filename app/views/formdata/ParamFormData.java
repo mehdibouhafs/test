@@ -17,21 +17,14 @@ public class ParamFormData {
 
     public String filePath;
 
-    public String fragmentRootElementName;
 
-    public String separator;
 
-    public int numberLine;
+
 
     public ParamFormData() {
     }
 
-    public int getNumberLine() {
-        return numberLine;
-    }
-    public void setNumberLine(int numberLine) {
-        this.numberLine = numberLine;
-    }
+
 
     /**
      * Validates Form<StudentFormData>.
@@ -93,13 +86,6 @@ public class ParamFormData {
         return null;
     }*/
 
-    public String getSeparator() {
-        return separator;
-    }
-
-    public void setSeparator(String separator) {
-        this.separator = separator;
-    }
 
     public String getFilePath() {
         return filePath;
@@ -109,19 +95,7 @@ public class ParamFormData {
         this.filePath = filePath;
     }
 
-    public String getFragmentRootElementName() {
-        return fragmentRootElementName;
-    }
 
-    public void setFragmentRootElementName(String fragmentRootElementName) {
-        this.fragmentRootElementName = fragmentRootElementName;
-    }
 
-    @Override
-    public String toString() {
-        return "ParamFormData{" +
-                "separator='" + separator + '\'' +
-                ", numberLine=" + numberLine +
-                '}';
-    }
+
 }
