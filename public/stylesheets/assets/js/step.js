@@ -39,12 +39,27 @@ $(document).ready(function() {
         $(this).remove();
 
     })*/
-    $('#filePath').change(function () {
+    $('#filePath').change(function (e) {
         $('#csv').hide();
         $('#xml').hide();
         if($('#filePath').val()=="" || $('#filePath').val()==" "){
             $("#validate").hide();
         }else {
+            e.preventDefault();
+            $.ajax({
+                type: "POST",//la method à utiliser soit POST ou GET
+                url: "/path", //lien de la servlet qui exerce le traitement sur les données
+                data: $('#form00').serialize(),// sign_in c'est l'id du form qui contient le bouton submit et toutes les champs à envoyer
+                dataType: 'json',
+                success: function (data) {// le cas ou la requete est bien execute en reçoi les données serialiser par JSON dans la variable msg
+                    //recuperation de la valeur stock dans l'attribut desactive
+                    console.log(data);
+                },
+                error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
+                    console.log("error");
+                }
+            });
+
             $(".ms-list").html("");
             $("#cols").multiSelect('refresh');
             var array = $('#filePath').val().split(".");
@@ -187,27 +202,7 @@ $(document).ready(function() {
             }
         }
     });
-    $(function() {
-        $("#form00").submit(
-            function (e) {
-                //envoyer les donnees avec ajax
-                e.preventDefault();
-                $.ajax({
-                    type: "POST",//la method à utiliser soit POST ou GET
-                    url: "/path", //lien de la servlet qui exerce le traitement sur les données
-                    data: $('#form00').serialize(),// sign_in c'est l'id du form qui contient le bouton submit et toutes les champs à envoyer
-                    dataType: 'json',
-                    success: function (data) {// le cas ou la requete est bien execute en reçoi les données serialiser par JSON dans la variable msg
-                        //recuperation de la valeur stock dans l'attribut desactive
-                        console.log(data);
-                    },
-                    error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
-                        console.log("error");
-                    }
-                });
 
-            });
-    });
 
 
     $(function() {
