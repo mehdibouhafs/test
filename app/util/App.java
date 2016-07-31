@@ -1,71 +1,120 @@
-package util;
+package model;
 
-
+import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
-
+import java.util.*;
 import javassist.*;
-import org.jdom2.CDATA;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.stereotype.Component;
-import org.springframework.ui.Model;
-
+import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.ConstPool;
+import javassist.bytecode.annotation.Annotation;
+import javassist.bytecode.annotation.ClassMemberValue;
+import javassist.bytecode.annotation.StringMemberValue;
+
+
 /**
  * Hello world!
  *
  */
-public class App 
-{
-	   public App() {
-	}
-	   private static int counter = 0;
-	   public static Class<?> buildCSVClass(Map<String, Class<?>> properties) throws CannotCompileException, NotFoundException {
-		   System.out.println("BuildCsvClass UTIL");
-		   ClassPool pool = new ClassPool(true);//ClassPool.getDefault();
-		   CtClass result = pool.makeClass("listeners.CSV_CLASS$" + (counter));
-		   counter++;
-		   result.setSuperclass(pool.get((Serializable.class).getName()));
-		   ClassFile classFile = result.getClassFile();
-		   ConstPool constPool = classFile.getConstPool();
-		   classFile.setSuperclass(Object.class.getName());
-	       for (Entry<String, Class<?>> entry : properties.entrySet()) {
-	           CtField field = new CtField(ClassPool.getDefault().get(entry.getValue().getName()), entry.getKey(), result);
-			   CtMethod setter =  CtNewMethod.setter("set"+entry.getKey(), field);
-			   CtMethod getter =  CtNewMethod.getter("get"+entry.getKey(), field);
-			   result.addField(field);
-			   result.addMethod(setter);
-			   result.addMethod(getter);
-	       }
-	       classFile.setVersionToJava5();
-	       return result.toClass();
-	   }
+public class App
+	{
+		public App() {
+		}
+		private static int counter1 = 0;
+		private static int counter2 = 0;
 
-	   public static String reflectToString(Object value) throws IllegalAccessException {
-	       StringBuilder result = new StringBuilder(value.getClass().getName());
-	       result.append("@").append(System.identityHashCode(value)).append(" {");
-	       for (Field f : value.getClass().getDeclaredFields()) {
-	           f.setAccessible(true);
-	           result.append("\n\t").append(f.getName()).append(" = ").append(f.get(value)).append(", ");
-	       }
-	       result.delete(result.length()-2, result.length());
-	       return result.append("\n}").toString();
-	   }
-	   
-	   public static void setField(String field,Object value,Object object){
+		public static Class<?> buildCSVClassName(Map<String, Class<?>> properties,String classeName) throws CannotCompileException, NotFoundException, IOException {
+			System.out.println("BUILD CLASSNAME CSV NORMAL");
+			ClassPool pool = new ClassPool(true);//ClassPool.getDefault();
+			CtClass result = pool.makeClass("app.generate."+classeName+"csv$" + (counter1));
+			counter1++;
+			result.setSuperclass(pool.get((Serializable.class).getName()));
+			ClassFile classFile = result.getClassFile();
+			ConstPool constPool = classFile.getConstPool();
+			classFile.setSuperclass(Object.class.getName());
+			for (Map.Entry<String, Class<?>> entry : properties.entrySet()) {
+				CtField field = new CtField(ClassPool.getDefault().get(entry.getValue().getName()), entry.getKey(), result);
+				CtMethod setter =  CtNewMethod.setter("set"+entry.getKey(), field);
+				CtMethod getter =  CtNewMethod.getter("get"+entry.getKey(), field);
+				result.addField(field);
+				result.addMethod(setter);
+				result.addMethod(getter);
+			}
+			classFile.setVersionToJava5();
+			result.writeFile();
+			result.defrost();
+			result.detach();
+			return result.toClass();
+		}
+
+		public static Class<?> buildCSVClassNamexml(Map<String, Class<?>> properties,String classeName) throws CannotCompileException, NotFoundException, IOException {
+			System.out.println("BUILD XML CLASSNAME XML");
+			ClassPool pool = new ClassPool(true);//ClassPool.getDefault();
+			CtClass result = pool.makeClass("app.generate."+classeName+"xml$" + (counter2));
+			counter2++;
+			result.setSuperclass(pool.get((Serializable.class).getName()));
+			ClassFile classFile = result.getClassFile();
+			ConstPool constPool = classFile.getConstPool();
+			classFile.setSuperclass(Object.class.getName());
+			AnnotationsAttribute attr = new AnnotationsAttribute(constPool, AnnotationsAttribute.visibleTag);
+			Annotation annot = new Annotation("javax.xml.bind.annotation.XmlRootElement", constPool);
+			annot.addMemberValue("name", new StringMemberValue(classeName,classFile.getConstPool()));
+			attr.addAnnotation(annot);
+			classFile.addAttribute(attr);
+			for (Map.Entry<String, Class<?>> entry : properties.entrySet()) {
+				CtField field = new CtField(ClassPool.getDefault().get(entry.getValue().getName()), entry.getKey(), result);
+				CtMethod setter =  CtNewMethod.setter("set"+entry.getKey(), field);
+				CtMethod getter =  CtNewMethod.getter("get"+entry.getKey(), field);
+				 AnnotationsAttribute attra = new AnnotationsAttribute(constPool, AnnotationsAttribute.visibleTag);
+				 Annotation annota = new Annotation("javax.xml.bind.annotation.XmlElement", constPool);
+				 annota.addMemberValue("name", new StringMemberValue(entry.getKey(),classFile.getConstPool()));
+				 attra.addAnnotation(annota);
+				if(entry.getValue()== Date.class){
+					Annotation annota1 = new Annotation("javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter", constPool);
+					annota1.addMemberValue("type", new ClassMemberValue("model.LocalDateAdapter",classFile.getConstPool()));
+					annota1.addMemberValue("value", new ClassMemberValue("model.LocalDateAdapter",classFile.getConstPool()));
+					attra.addAnnotation(annota1);
+				}
+					field.getFieldInfo().addAttribute(attra);
+					result.addField(field);
+			}
+			classFile.setVersionToJava5();
+			result.writeFile();
+			result.defrost();
+			result.detach();
+			return result.toClass();
+		}
+
+		public static Object generatorBean(Map<String,Class<?>> properties,String className) throws IOException, CannotCompileException, NotFoundException, IllegalAccessException {
+			Class<?> cla = App.buildCSVClassName(properties,className);
+			Object o = null;
+			try {
+				o = cla.newInstance();
+			} catch (InstantiationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SecurityException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return o;
+		}
+
+		public static String reflectToString(Object value) throws IllegalAccessException {
+			StringBuilder result = new StringBuilder(value.getClass().getName());
+			result.append("@").append(System.identityHashCode(value)).append(" {");
+			for (Field f : value.getClass().getDeclaredFields()) {
+				f.setAccessible(true);
+				result.append("\n\t").append(f.getName()).append(" = ").append(f.get(value)).append(", ");
+			}
+			result.delete(result.length()-2, result.length());
+			return result.append("\n}").toString();
+		}
+
+		public static void setField(String field,Object value,Object object){
 			try {
 				Field f = object.getClass().getDeclaredField(field);
 				f.set(object,value);
@@ -75,45 +124,19 @@ public class App
 				e.printStackTrace();
 			}
 		}
-	   
-	   public static void main(String[] args) throws InstantiationException, IllegalAccessException, NoSuchFieldException, SecurityException, CannotCompileException, NotFoundException, IllegalArgumentException, ParseException {
-		   Map<String, Class<?>> properties = new HashMap<>();
-			   properties.put("id", Integer.class);
-			   properties.put("firstName", String.class);
-			   properties.put("Date", Date.class);
-			/*  try {
-				Class<?> rowObjectClass = App.buildCSVClass(properties);
-				Object rowObject = rowObjectClass.newInstance();
-				 Field f = rowObjectClass.getDeclaredField("id");
-				 f.setAccessible(true);
-	             f.set(rowObject,1);
-				System.out.println(reflectToString(rowObject));
-			} catch (CannotCompileException | NotFoundException e) {
-				// TODO Auto-generated catch block
+
+		public static Object getField(String field,Object object){
+			try {
+				Field f = object.getClass().getDeclaredField(field);
+				return  f.get(field);
+			} catch (NoSuchFieldException e) {
 				e.printStackTrace();
-			}*/
-		   for (int i=0;i<3;i++) {
-			   Class<?> cla = App.buildCSVClass(properties);
-			   Object o = cla.newInstance();
-			   Field f6 =  o.getClass().getDeclaredField("id");
-			   f6.set(o, i);
-			   System.out.println("---------"+App.reflectToString(o));
-		   }
-
-	}
-	   
-		
-		
-		
-		
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			}
+			return  null;
+		}
 		
 
-
-	    
-
-	    
-
-	   
-	
-	
 }
+

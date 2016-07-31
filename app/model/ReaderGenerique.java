@@ -18,9 +18,7 @@ public class ReaderGenerique extends Model {
 
     private String ext;
 
-    private String[] columns;//separe par , id,firstName,lastName,date
-
-    //private Object person;
+    private String[] columns;
 
     private String separator;
 

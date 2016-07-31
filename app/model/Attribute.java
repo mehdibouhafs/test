@@ -5,12 +5,13 @@ package model;
  */
 public class Attribute {
 
+    private int id;
     private String type;
     private String name;
     private String size;
     private String primaryKey;
     private boolean autoIncrement;
-    private int id;
+
 
     public Attribute() {
     }
@@ -63,11 +64,15 @@ public class Attribute {
         this.primaryKey = primaryKey;
     }
 
-    @Override
-    public String toString() {
+    @java.lang.Override
+    public java.lang.String toString() {
         return "Attribute{" +
-                "id=" + id +
+                "type='" + type + '\'' +
+                ", name='" + name + '\'' +
+                ", size='" + size + '\'' +
+                ", primaryKey='" + primaryKey + '\'' +
                 ", autoIncrement=" + autoIncrement +
+                ", id=" + id +
                 '}';
     }
 }

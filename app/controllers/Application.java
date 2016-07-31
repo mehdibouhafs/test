@@ -571,6 +571,7 @@ public class Application extends Controller {
     }
 
     public void setFilePath(String filePath) {
+        System.out.println(filePath);
         this.filePath = filePath;
     }
 

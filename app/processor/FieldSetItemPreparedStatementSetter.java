@@ -3,7 +3,6 @@ package processor;
 import com.avaje.ebean.Model;
 import model.App;
 import model.Generator;
-import model.Person;
 import org.springframework.batch.item.database.ItemPreparedStatementSetter;
 import org.springframework.context.ApplicationContext;
 import running.Global;

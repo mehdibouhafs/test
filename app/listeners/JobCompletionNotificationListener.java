@@ -11,7 +11,6 @@ import java.util.Map;
 import javassist.CannotCompileException;
 import javassist.NotFoundException;
 import model.App;
-import model.Person;
 import model.ReaderGenerique;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -23,7 +22,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import running.Global;
-import util.test;
 
 public class JobCompletionNotificationListener extends JobExecutionListenerSupport {
 

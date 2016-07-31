@@ -577,7 +577,7 @@ $('#form1').submit(function (e) {
                              "</td>" +
                              "<td><input type='number' id='data[i].id' name='" + size + "' size='4' value='5'/> </td>";*/
                             // }
-                            $("#tableaucontenus1").append("<tr data-id='" + data[i].id + "'><td>" + data[i].id + "</td><td>" + data[i].name + "</td>" + s + "<td><select name='" + primaryKey + "' id='" + primaryKey + "'><option value='none'>---</option>" +
+                            $("#tableaucontenus1").append("<tr data-id='" + data[i].id + "'><td style='color: #63aef9;'>" + data[i].id + "</td><td>" + data[i].name + "</td>" + s + "<td><select name='" + primaryKey + "' id='" + primaryKey + "'><option value='none'>---</option>" +
                                 "<option value='PRIMARY' title='Primaire'>PRIMARY</option>" +
                                 "<option value='UNIQUE' title='Unique'>UNIQUE</option>" +
                                 "<option value='INDEX' title='Index'>INDEX</option>" +
@@ -590,6 +590,11 @@ $('#form1').submit(function (e) {
                             "scrollY":        "500px",
                             "scrollCollapse": true
                         });
+                        $('#table1_info').css("color","#63aef9");
+                        $('#table1_next').css("background-color","#18bc9c");
+                        $('#table1_previous').css("background-color","#18bc9c");
+                        $('#table1_filter').css("background-color","#18bc9c","color","beige");
+                        $('#table1_length').css("background-color","#18bc9c","color","beige");
 
                     },
                     error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
@@ -605,13 +610,16 @@ $('#form1').submit(function (e) {
             {
                 if ($("#tableaucontenus1").children().length > 0) {
                     var table = $('#table1').DataTable();
-                    var data = table.$('input, select').serialize()
+                    var data = table.$('input, select').serialize();
+                    var data1 = $('#tableName').serialize()+"&";
+                    var data2 = data1.concat(data);
+                    console.log(data2);
                     //envoyer les donnees avec ajax
                     $.ajax({
                         type: "POST",//la method à utiliser soit POST ou GET
                         url: "/getTypes", //lien de la servlet qui exerce le traitement sur les données
                         dataType: 'json',
-                        data: data,// sign_in c'est l'id du form qui contient le bouton submit et toutes les champs à envoyer
+                        data: data2,// sign_in c'est l'id du form qui contient le bouton submit et toutes les champs à envoyer
                         success: function (data) {// le cas ou la requete est bien execute en reçoi les données serialiser par JSON dans la variable msg
                             //recuperation de la valeur stock dans l'attribut desactive
                             $('ul.setup-panel li:eq(2)').removeClass('disabled');
@@ -654,7 +662,7 @@ $('#form1').submit(function (e) {
     $("#activate-step-4").click(function(e) {
             //envoyer les donnees avec ajax
         e.preventDefault();
-            if($("#tableaucontenus2").children().length>0 && $("#form1").valid() && $("#form0").valid()) {
+            if($("#tableaucontenus2").children().length>0) {//&& $("#form1").valid() && ($("#form0").valid() && ($("#form01").valid()||$("#form02").valid()))) {
                 $.ajax({
                     type: "POST",//la method à utiliser soit POST ou GET
                     url: "/validate", //lien de la servlet qui exerce le traitement sur les données// sign_in c'est l'id du form qui contient le bouton submit et toutes les champs à envoyer
