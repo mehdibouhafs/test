@@ -632,13 +632,20 @@ $('#form1').submit(function (e) {
                     var data = table.$('input, select').serialize();
                     var data1 = $('#tableName').serialize()+"&";
                     var data4 = data1.concat(data);
-                    console.log(data2);
+                    var typeXMl;
+                    $('[name="xml[]"]').each( function (){
+                        if($(this).prop('checked') == true){
+                            typeXMl = $(this).val();
+                        }
+                    });
+                    var data3 = "typeXML="+typeXMl+"&";
+                    var data5 = data3.concat(data4);
                     //envoyer les donnees avec ajax
                     $.ajax({
                         type: "POST",//la method à utiliser soit POST ou GET
                         url: "/getTypes", //lien de la servlet qui exerce le traitement sur les données
                         dataType: 'json',
-                        data: data4,// sign_in c'est l'id du form qui contient le bouton submit et toutes les champs à envoyer
+                        data: data5,// sign_in c'est l'id du form qui contient le bouton submit et toutes les champs à envoyer
                         success: function (data) {// le cas ou la requete est bien execute en reçoi les données serialiser par JSON dans la variable msg
                             //recuperation de la valeur stock dans l'attribut desactive
                             $('ul.setup-panel li:eq(2)').removeClass('disabled');

@@ -71,11 +71,13 @@ public class App
 			CtMethod getter =  CtNewMethod.getter("get"+entry.getKey(), field);
 			AnnotationsAttribute attra = new AnnotationsAttribute(constPool, AnnotationsAttribute.visibleTag);
 			if(typeXml.equals("type1")) {
+				System.out.println("TYPE 1");
 				Annotation annota = new Annotation("javax.xml.bind.annotation.XmlElement", constPool);
 				annota.addMemberValue("name", new StringMemberValue(entry.getKey(), classFile.getConstPool()));
 				attra.addAnnotation(annota);
 			}else{
 				if(typeXml.equals("type2")){
+					System.out.println("TYPE 2");
 					Annotation annota = new Annotation("javax.xml.bind.annotation.XmlAttribute", constPool);
 					annota.addMemberValue("name", new StringMemberValue(entry.getKey(), classFile.getConstPool()));
 					attra.addAnnotation(annota);
@@ -115,6 +117,7 @@ public class App
 				CtField field = new CtField(ClassPool.getDefault().get(entry.getValue().getName()), entry.getKey(), result);
 				CtMethod setter =  CtNewMethod.setter("set"+entry.getKey(), field);
 				CtMethod getter =  CtNewMethod.getter("get"+entry.getKey(), field);
+				result.addField(field);
 				AnnotationsAttribute attra = new AnnotationsAttribute(constPool, AnnotationsAttribute.visibleTag);
 				if(elements.contains(entry.getKey())) {
 					Annotation annota = new Annotation("javax.xml.bind.annotation.XmlElement", constPool);
@@ -132,7 +135,6 @@ public class App
 					attra.addAnnotation(annota1);
 				}
 				field.getFieldInfo().addAttribute(attra);
-				result.addField(field);
 			}
 			classFile.setVersionToJava5();
 			result.writeFile();
