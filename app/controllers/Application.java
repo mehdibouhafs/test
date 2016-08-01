@@ -10,6 +10,7 @@ import listeners.JobCompletionNotificationListener;
 import model.Attribute;
 import model.Generator;
 import model.ReaderGenerique;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.batch.core.*;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
@@ -50,6 +51,9 @@ public class Application extends Controller {
 
     private Map<Integer, String> colsSelectedMap;
 
+    private List<String> elements;
+    private List<String> attributtes;
+
 
     private List<Attribute> attributes;
 
@@ -85,6 +89,31 @@ public class Application extends Controller {
         List<String> list = new ArrayList<String>(Arrays.asList(getCols()));
         String dateParam = new Date().toString();
         List<String> ss = formData.get().getCols();
+        String type =formData.get().getTypeXML();
+
+         elements = new ArrayList<>();
+         attributtes = new ArrayList<>();
+
+        if(type.equals("type3")){
+            for(int i =0 ; i< ss.size();i++){
+                try {
+                    String[] element = request().body().asFormUrlEncoded().get("elements[" + i + "]");
+                    if(element[0].equals("elements[" + i + "]")){
+                        elements.add(ss.get(i));
+                    }
+                }catch (Exception e){
+                    String[] attribute = request().body().asFormUrlEncoded().get("attributes[" + i + "]");
+                    if(attribute[0].equals("attributes[" + i + "]")){
+                        attributtes.add(ss.get(i));
+                    }
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
+
+        System.out.println("Element = "+elements);
+        System.out.println("Attributes = "+attributtes);
+
         ObjectNode result;
         //JsonArrayBuilder jsa =  Json.createArrayBuilder();
         colsSelectedMap = new HashMap<>();
@@ -94,6 +123,7 @@ public class Application extends Controller {
             result = Json.newObject();
             result.put("id", i + "");
             result.put("name", s);
+
             colsSelectedMap.put(i, s);
             i++;
             resuls.add(result);
@@ -106,6 +136,7 @@ public class Application extends Controller {
         attributes = new ArrayList<>();
         Form<ParamFormData1> formData = Form.form(ParamFormData1.class).bindFromRequest();
         System.out.println(formData.get().toString());
+        String typeXml =formData.get().getTypeXML();
         //System.out.println(formData.toString());
        /* if (formData.hasErrors()) {
             // Don't call formData.get() when there are errors, pass 'null' to helpers instead.
@@ -129,7 +160,6 @@ public class Application extends Controller {
             String size = formData.get().getSize().get(col.getKey());
             String primarykey = formData.get().getPrimaryKey().get(col.getKey());
             System.out.println("KEY"+col.getKey());
-
 
             try {
                // boolean autoIncrement = formData.get().getAutoIncrement().get(col.getKey());
@@ -238,15 +268,17 @@ public class Application extends Controller {
         readerGenerique.setColumnsTable(columnsTable);
         readerGenerique.setTable(formData.get().getTableName());
         readerGenerique.setProperties(properties);
+
         Generator c = context.getBean("generator", Generator.class);
         c.setProperties(properties);
-        Class<?> classNew = c.generator(formData.get().getTableName());
-        System.out.println("Classe New "+classNew);
+        Class<?> classNew = null;
+        classNew = c.generator(formData.get().getTableName(), typeXml, attributtes, elements);
+        System.out.println("Classe New " + classNew);
         c.setClassGenerate(classNew);
         Object c1 = context.getBean("firstBe");
         String sp = classNew.toString();
         String[] a= sp.split(" ");
-        System.out.println("A1"+a[1]);
+        System.out.println("classe XML "+a[1]);
         readerGenerique.setClassXml(a[1]);
         System.out.println("classsssssssssssssssssssss   "+c1.getClass());
         ObjectNode result;
@@ -354,9 +386,9 @@ public class Application extends Controller {
             ));
         }
             System.out.println("xml File cols");
-            String typeXML = formData.get().getXml();
+            String typeXML = formData.get().getXml().get(0);
             System.out.println(typeXML);
-            cols = firstLine1(destination);
+            cols = firstLine1(destination,typeXML);
         ObjectNode result;
         //JsonArrayBuilder jsa =  Json.createArrayBuilder();
         ArrayNode resuls = play.libs.Json.newArray();
@@ -398,7 +430,7 @@ public class Application extends Controller {
         //rows.setRow(row);
     }
 
-    public String[] firstLine1(File f){
+    public String[] firstLine1(File f,String typeXml){
         DocumentBuilder dBuilder = null;
         try {
             dBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -407,13 +439,37 @@ public class Application extends Controller {
                 ReadXMLFile2 readXMLFile2 = new ReadXMLFile2();
 
                 readXMLFile2.printNote(doc.getChildNodes());
-                String[] ss = new String[readXMLFile2.getS().size()-2];
-                int j=0;
-                for (int i=2;i<readXMLFile2.getS().size();i++) {
-                    ss[j]=readXMLFile2.getS().get(i);
-                    j++;
+
+                if(typeXml.equals("type1")) {
+                    String[] ss = new String[readXMLFile2.getS().size() - 2];
+                    int j = 0;
+                    for (int i = 2; i < readXMLFile2.getS().size(); i++) {
+                        ss[j] = readXMLFile2.getS().get(i);
+                        j++;
+                    }
+                    return ss;
+                }else{
+                    if(typeXml.equals("type2")) {
+                        String[] att = new String[readXMLFile2.getAtt().size()];
+                        for(int i = 0 ; i<readXMLFile2.getAtt().size();i++){
+                            att[i] = readXMLFile2.getAtt().get(i);
+                        }
+                        return  att;
+                    }else if(typeXml.equals("type3")){
+                        String[] ss = new String[readXMLFile2.getS().size() - 2];
+                        int j = 0;
+                        for (int i = 2; i < readXMLFile2.getS().size(); i++) {
+                            ss[j] = readXMLFile2.getS().get(i);
+                            j++;
+                        }
+                        String[] att = new String[readXMLFile2.getAtt().size()];
+                        for(int i = 0 ; i<readXMLFile2.getAtt().size();i++){
+                            att[i] = readXMLFile2.getAtt().get(i);
+                        }
+                        String[] both = (String[]) ArrayUtils.addAll(ss, att);
+                        return both;
+                    }
                 }
-                return ss;
             }
         } catch (ParserConfigurationException e) {
             e.printStackTrace();
@@ -564,6 +620,22 @@ public class Application extends Controller {
 
     public void setProperties(Map<String, Class<?>> properties) {
         this.properties = properties;
+    }
+
+    public List<String> getElements() {
+        return elements;
+    }
+
+    public void setElements(List<String> elements) {
+        this.elements = elements;
+    }
+
+    public List<String> getAttributtes() {
+        return attributtes;
+    }
+
+    public void setAttributtes(List<String> attributtes) {
+        this.attributtes = attributtes;
     }
 
     public String getFilePath() {

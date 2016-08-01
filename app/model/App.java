@@ -1,11 +1,5 @@
 package model;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.*;
 import javassist.*;
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.ClassFile;
@@ -13,6 +7,13 @@ import javassist.bytecode.ConstPool;
 import javassist.bytecode.annotation.Annotation;
 import javassist.bytecode.annotation.ClassMemberValue;
 import javassist.bytecode.annotation.StringMemberValue;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -50,7 +51,53 @@ public class App
 			return result.toClass();
 		}
 
-		public static Class<?> buildCSVClassNamexml(Map<String, Class<?>> properties,String classeName) throws CannotCompileException, NotFoundException, IOException {
+		public static Class<?> buildCSVClassNamexml(Map<String, Class<?>> properties,String classeName,String typeXml) throws CannotCompileException, NotFoundException, IOException {
+		System.out.println("BUILD XML CLASSNAME XML");
+		ClassPool pool = new ClassPool(true);//ClassPool.getDefault();
+		CtClass result = pool.makeClass("app.generate."+classeName+"xml$" + (counter2));
+		counter2++;
+		result.setSuperclass(pool.get((Serializable.class).getName()));
+		ClassFile classFile = result.getClassFile();
+		ConstPool constPool = classFile.getConstPool();
+		classFile.setSuperclass(Object.class.getName());
+		AnnotationsAttribute attr = new AnnotationsAttribute(constPool, AnnotationsAttribute.visibleTag);
+		Annotation annot = new Annotation("javax.xml.bind.annotation.XmlRootElement", constPool);
+		annot.addMemberValue("name", new StringMemberValue(classeName,classFile.getConstPool()));
+		attr.addAnnotation(annot);
+		classFile.addAttribute(attr);
+		for (Map.Entry<String, Class<?>> entry : properties.entrySet()) {
+			CtField field = new CtField(ClassPool.getDefault().get(entry.getValue().getName()), entry.getKey(), result);
+			CtMethod setter =  CtNewMethod.setter("set"+entry.getKey(), field);
+			CtMethod getter =  CtNewMethod.getter("get"+entry.getKey(), field);
+			AnnotationsAttribute attra = new AnnotationsAttribute(constPool, AnnotationsAttribute.visibleTag);
+			if(typeXml.equals("type1")) {
+				Annotation annota = new Annotation("javax.xml.bind.annotation.XmlElement", constPool);
+				annota.addMemberValue("name", new StringMemberValue(entry.getKey(), classFile.getConstPool()));
+				attra.addAnnotation(annota);
+			}else{
+				if(typeXml.equals("type2")){
+					Annotation annota = new Annotation("javax.xml.bind.annotation.XmlAttribute", constPool);
+					annota.addMemberValue("name", new StringMemberValue(entry.getKey(), classFile.getConstPool()));
+					attra.addAnnotation(annota);
+				}
+			}
+			if(entry.getValue()== Date.class){
+				Annotation annota1 = new Annotation("javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter", constPool);
+				annota1.addMemberValue("type", new ClassMemberValue("model.LocalDateAdapter",classFile.getConstPool()));
+				annota1.addMemberValue("value", new ClassMemberValue("model.LocalDateAdapter",classFile.getConstPool()));
+				attra.addAnnotation(annota1);
+			}
+			field.getFieldInfo().addAttribute(attra);
+			result.addField(field);
+		}
+		classFile.setVersionToJava5();
+		result.writeFile();
+		result.defrost();
+		result.detach();
+		return result.toClass();
+	}
+
+		public static Class<?> buildCSVClassNamexmlType3(Map<String, Class<?>> properties, String classeName, List<String> attributes, List<String> elements) throws CannotCompileException, NotFoundException, IOException {
 			System.out.println("BUILD XML CLASSNAME XML");
 			ClassPool pool = new ClassPool(true);//ClassPool.getDefault();
 			CtClass result = pool.makeClass("app.generate."+classeName+"xml$" + (counter2));
@@ -68,18 +115,24 @@ public class App
 				CtField field = new CtField(ClassPool.getDefault().get(entry.getValue().getName()), entry.getKey(), result);
 				CtMethod setter =  CtNewMethod.setter("set"+entry.getKey(), field);
 				CtMethod getter =  CtNewMethod.getter("get"+entry.getKey(), field);
-				 AnnotationsAttribute attra = new AnnotationsAttribute(constPool, AnnotationsAttribute.visibleTag);
-				 Annotation annota = new Annotation("javax.xml.bind.annotation.XmlElement", constPool);
-				 annota.addMemberValue("name", new StringMemberValue(entry.getKey(),classFile.getConstPool()));
-				 attra.addAnnotation(annota);
+				AnnotationsAttribute attra = new AnnotationsAttribute(constPool, AnnotationsAttribute.visibleTag);
+				if(elements.contains(entry.getKey())) {
+					Annotation annota = new Annotation("javax.xml.bind.annotation.XmlElement", constPool);
+					annota.addMemberValue("name", new StringMemberValue(entry.getKey(), classFile.getConstPool()));
+					attra.addAnnotation(annota);
+				}else {
+					Annotation annota = new Annotation("javax.xml.bind.annotation.XmlAttribute", constPool);
+					annota.addMemberValue("name", new StringMemberValue(entry.getKey(), classFile.getConstPool()));
+					attra.addAnnotation(annota);
+				}
 				if(entry.getValue()== Date.class){
 					Annotation annota1 = new Annotation("javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter", constPool);
 					annota1.addMemberValue("type", new ClassMemberValue("model.LocalDateAdapter",classFile.getConstPool()));
 					annota1.addMemberValue("value", new ClassMemberValue("model.LocalDateAdapter",classFile.getConstPool()));
 					attra.addAnnotation(annota1);
 				}
-					field.getFieldInfo().addAttribute(attra);
-					result.addField(field);
+				field.getFieldInfo().addAttribute(attra);
+				result.addField(field);
 			}
 			classFile.setVersionToJava5();
 			result.writeFile();

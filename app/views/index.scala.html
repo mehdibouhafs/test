@@ -132,12 +132,12 @@
                                                 <input type="checkbox" id="xml[]" name="xml[]" class="hidden" value="type1">
                                             </div>
                                             <div class="col-md-4">
-                                                <img src="@routes.Assets.versioned("images/XmlType1.png")" class="img-responsive img-radio">
+                                                <img src="@routes.Assets.versioned("images/XmlType2.png")" class="img-responsive img-radio">
                                                 <button type="button" class="btn btn-primary btn-radio">Structure Fichier N° 2</button>
                                                 <input type="checkbox" id="xml[]" name="xml[]" class="hidden" value="type2">
                                             </div>
                                             <div class="col-md-4">
-                                                <img src="@routes.Assets.versioned("images/XmlType1.png")" class="img-responsive img-radio">
+                                                <img src="@routes.Assets.versioned("images/XmlType3.png")" class="img-responsive img-radio">
                                                 <button type="button" class="btn btn-primary btn-radio">Structure Fichier N° 3</button>
                                                 <input type="checkbox" id="xml[]" name="xml[]" class="hidden" value="type3">
                                             </div>
@@ -156,10 +156,8 @@
                     <form id="form2" name="form2" action="@routes.Application.upload()" method="post">
                         <div id="columns" class="col-md-12 well" style="background-color: rgb(44, 62, 80);margin-top: 0px;padding-top: 0px;">
                             <div class="row">
-                            <div class="col-sm-3 ">
-                            </div>
                             <div class="col-sm-8 ">
-                                <div class="col-sm-offset-2 col-sm-3">
+                                <div class="col-sm-offset-1 col-sm-3">
                                     <button id="all" class="button btn-success"  ><span class="fa fa-exchange" aria-hidden="true"></span>
                                         <span class="sr-only">Select All:</span>Select all</button>
                                 </div>
@@ -167,14 +165,41 @@
                                 <div class="col-sm-offset-1 col-sm-4">
                                     <button id="none" class="button btn-danger" ><span class="fa fa-exchange" aria-hidden="true"></span>
                                         Deselect all</button>
-                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-3 ">
+
                             </div>
                                 </div>
-                            <div class="col-sm-4 "></div>
-                            <div class="col-sm-4 ">
-                        <select class="searchable" id="cols" name="cols[]" multiple="multiple">
-                        </select>
+                            <div class="col-sm-4">
+                                <select class="searchable" id="cols" name="cols[]" multiple="multiple">
+                                </select>
                             </div>
+                            <div class="col-sm-4">
+
+                            </div>
+                            <div class="col-sm-4 ">
+                                <table class="table table-bordered" id="xmlTable" name="xmlTable">
+                                    <thead style="background: #18bc9c">
+                                        <tr>
+                                            <th style="color: beige; width: 26px;" class="sorting_asc" tabindex="0" aria-controls="table1" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Id: activate to sort column descending">Cols</th>
+                                            <th style="color: beige; width: 72px;" class="sorting" tabindex="0" aria-controls="table1" rowspan="1" colspan="1" aria-label=" Name: activate to sort column ascending"> Attribute</th>
+                                            <th style="color: beige; width: 72px;" class="sorting" tabindex="0" aria-controls="table1" rowspan="1" colspan="1" aria-label=" Name: activate to sort column ascending"> Element </th>
+                                        </tr>
+                                    </thead>
+                                    <tfoot  style="background: #18bc9c">
+                                        <tr>
+                                            <th style="color: beige; width: 26px;" class="sorting_asc" tabindex="0" aria-controls="table1" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Id: activate to sort column descending">Cols</th>
+                                            <th style="color: beige; width: 72px;" class="sorting" tabindex="0" aria-controls="table1" rowspan="1" colspan="1" aria-label=" Name: activate to sort column ascending"> Attribute</th>
+                                            <th style="color: beige; width: 72px;" class="sorting" tabindex="0" aria-controls="table1" rowspan="1" colspan="1" aria-label=" Name: activate to sort column ascending"> Element </th>
+                                        </tr>
+                                    </tfoot>
+                                    <tbody id="xmlTableContenu1">
+
+                                    </tbody>
+                                </table>
+                            </div>
+
                         <!-- <input id="activate-step-2" type="submit" class="btn btn-primary btn-lg"/>
                         <input type="submit" id="activate-step-2" class="btn btn-primary btn-lg"  >-->
                                 <div class="form-group">

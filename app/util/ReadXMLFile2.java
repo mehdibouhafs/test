@@ -15,14 +15,7 @@ public class ReadXMLFile2 {
 
 	private List<String> s = new ArrayList<>();
 
-
-	public List<String> getS() {
-		return s;
-	}
-
-	public void setS(List<String> s) {
-		this.s = s;
-	}
+	private List<String> att = new ArrayList<>();
 
 	public void printNote(NodeList nodeList) {
     for (int count = 0; count < nodeList.getLength(); count++) {
@@ -38,6 +31,9 @@ public class ReadXMLFile2 {
 			NamedNodeMap nodeMap = tempNode.getAttributes();
 			for (int i = 0; i < nodeMap.getLength(); i++) {
 				Node node = nodeMap.item(i);
+				if(!att.contains(node.getNodeName())){
+					att.add(node.getNodeName());
+				}
 			}
 		}
 		if (tempNode.hasChildNodes()) {
@@ -49,7 +45,21 @@ public class ReadXMLFile2 {
     }
 
 
-
   }
+	public List<String> getS() {
+		return s;
+	}
+
+	public void setS(List<String> s) {
+		this.s = s;
+	}
+
+	public List<String> getAtt() {
+		return att;
+	}
+
+	public void setAtt(List<String> att) {
+		this.att = att;
+	}
 
 }

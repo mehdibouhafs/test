@@ -43,7 +43,7 @@ $(document).ready(function() {
         $('#csv').hide();
         $('#xml').hide();
         if($('#filePath').val()=="" || $('#filePath').val()==" "){
-            $("#validate").hide();
+            location.reload();
         }else {
             e.preventDefault();
             $.ajax({
@@ -100,7 +100,7 @@ $(document).ready(function() {
             }
         }
     });
-    
+
     $('#form0').validate({ // initialize the plugin
         rules: {
             filePath: {
@@ -250,12 +250,13 @@ $(document).ready(function() {
             });
     });
 
-
+    var typeXMl;
     $(function() {
         $("#form02").submit(
             function (e) {
                 //envoyer les donnees avec ajax
                 e.preventDefault();
+                //console.log($("input[name='xml[]']").val());
                 $.ajax({
                     type: "POST",//la method à utiliser soit POST ou GET
                     url: "/colsxml", //lien de la servlet qui exerce le traitement sur les données
@@ -287,6 +288,14 @@ $(document).ready(function() {
                             $('#cols').multiSelect('refresh');
                             $('#columns').show();
                         }
+
+
+                        $('[name="xml[]"]').each( function (){
+                            if($(this).prop('checked') == true){
+                                typeXMl = $(this).val();
+                            }
+                        });
+
                     },
                     error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
                         console.log("error");
@@ -303,17 +312,26 @@ $('#form1').submit(function (e) {
         e.preventDefault();
     });
 
-
     $("#activate-step-2").click(
         function(e) {
             //envoyer les donnees avec ajax
             e.preventDefault();
             $("#tableaucontenus1").html("");
+            var typeXMl;
+            $('[name="xml[]"]').each( function (){
+                if($(this).prop('checked') == true){
+                    typeXMl = $(this).val();
+                }
+            });
+            var data1 = "typeXML="+typeXMl+"&";
+            var data2 = $('#form2').serialize();
+            var data3 = data1.concat(data2);
+            console.log("uploaaads"+data3);
                 $.ajax({
                     type: "POST",//la method à utiliser soit POST ou GET
                     url: "/upload", //lien de la servlet qui exerce le traitement sur les données
                     dataType: 'json',
-                    data: $('#form2').serialize(),// sign_in c'est l'id du form qui contient le bouton submit et toutes les champs à envoyer
+                    data: data3,// sign_in c'est l'id du form qui contient le bouton submit et toutes les champs à envoyer
                     success: function (data) {// le cas ou la requete est bien execute en reçoi les données serialiser par JSON dans la variable msg
                         //recuperation de la valeur stock dans l'attribut desactive
                         $('ul.setup-panel li:eq(1)').removeClass('disabled');
@@ -599,6 +617,7 @@ $('#form1').submit(function (e) {
                     },
                     error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
                         console.log("error");
+                        alert("Error Mapping ! make sure that you have selected a good type for the columns");
                     }
                 });
         });
@@ -612,14 +631,14 @@ $('#form1').submit(function (e) {
                     var table = $('#table1').DataTable();
                     var data = table.$('input, select').serialize();
                     var data1 = $('#tableName').serialize()+"&";
-                    var data2 = data1.concat(data);
+                    var data4 = data1.concat(data);
                     console.log(data2);
                     //envoyer les donnees avec ajax
                     $.ajax({
                         type: "POST",//la method à utiliser soit POST ou GET
                         url: "/getTypes", //lien de la servlet qui exerce le traitement sur les données
                         dataType: 'json',
-                        data: data2,// sign_in c'est l'id du form qui contient le bouton submit et toutes les champs à envoyer
+                        data: data4,// sign_in c'est l'id du form qui contient le bouton submit et toutes les champs à envoyer
                         success: function (data) {// le cas ou la requete est bien execute en reçoi les données serialiser par JSON dans la variable msg
                             //recuperation de la valeur stock dans l'attribut desactive
                             $('ul.setup-panel li:eq(2)').removeClass('disabled');
@@ -689,8 +708,22 @@ $('#form1').submit(function (e) {
         e.preventDefault();
         if($("#cols").val()!=null) {
             $('#activate-step-2').show();
+            if(typeXMl=="type3") {
+                var cols = $('#cols').val()+'';
+                var tabCols = cols.split(",");
+                $('#xmlTableContenu1').html("");
+                for(var i = 0;i<$('#cols :selected').length;i++){
+                    var attributes = 'attributes[' + i+ ']';
+                    var elements = 'elements[' + i+ ']';
+                    $('#xmlTableContenu1').append("<tr style='background-color: white'  data-id='"+i+"'><td>" + tabCols[i] + "</td><td><input type='checkbox' id='"+attributes+"' name='"+attributes+"' value='"+attributes+"'></td><td><input type='checkbox' id='"+elements+"' name='"+elements+"' value='"+elements+"' ></td></tr>");
+                }
+                $('#xmlTable').show();
+                console.log("val cols "+ $('#cols').val());
+                console.log("length cols"+$('#cols :selected').length);
+            }
             $('#validate').hide();
         }else {
+            $('#xmlTable').hide();
             $('#activate-step-2').hide();
         }
     });
@@ -707,7 +740,7 @@ $('#form1').submit(function (e) {
     $("#thanks").click(function (e) {
         location.reload();
     })
-
+    $('#xmlTable').hide();
     $('#xml').hide();
     $('#csv').hide();
     $("#cols").hide();
@@ -718,10 +751,13 @@ $('#form1').submit(function (e) {
     $("#all").click(function (e) {
         e.preventDefault();
         $("#cols").multiSelect('select_all');
+
     });
 
     $("#none").click(function(e){
         e.preventDefault();
+        $('#xmlTableContenu1').html("");
+        $('#xmlTable').hide();
         $("#cols").multiSelect('deselect_all');
     });
 
@@ -785,6 +821,25 @@ $('#form1').submit(function (e) {
                 .siblings('input').prop('checked',true)
                 .siblings('.img-radio').css('opacity','1');
         });
+    });
+
+
+    $('#xmlTable').on('click','input[type="checkbox"]', function(e) {
+        var id =  $(this).closest('tr').data('id');
+        var rowCount = $('#xmlTable tr').length;
+
+        var c = "attributes["+id+"]";
+        //console.log("type= "+ $('#type\\['+id+'\\] option:selected').text());
+        //if($('#type\\['+id+'\\] option:selected').text() != 'INT'){
+        if($(this).val() == c){
+            $('#elements\\['+id+'\\]').prop('checked', false);
+        }else{
+            $('#attributes\\['+id+'\\]').prop('checked', false);
+        }
+        //
+
+        //$('#autoIncrement\\[' + i + '\\]').prop('checked', false);
+
     });
 
     /*$('#table2').on('click', '.glyphicon-pencil', function(e){

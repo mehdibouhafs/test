@@ -12,6 +12,8 @@ public class ParamFormData1 {
 
     public String tableName;
 
+    public String typeXML;
+
     public List<String> primaryKey;
 
     public List<String> type;
@@ -51,16 +53,22 @@ public class ParamFormData1 {
         this.primaryKey = primaryKey;
     }
 
+    public String getTypeXML() {
+        return typeXML;
+    }
 
+    public void setTypeXML(String typeXML) {
+        this.typeXML = typeXML;
+    }
 
     @Override
     public String toString() {
         return "ParamFormData1{" +
-                "table='" + tableName + '\'' +
+                "tableName='" + tableName + '\'' +
+                ", typeXML='" + typeXML + '\'' +
+                ", primaryKey=" + primaryKey +
                 ", type=" + type +
                 ", size=" + size +
                 '}';
     }
-
-
 }

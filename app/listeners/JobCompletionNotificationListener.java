@@ -13,7 +13,6 @@ import javassist.NotFoundException;
 import model.App;
 import model.ReaderGenerique;
 import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.listener.JobExecutionListenerSupport;

@@ -1,7 +1,5 @@
 package processor;
 
-import com.avaje.ebean.Model;
-import model.App;
 import model.Generator;
 import org.springframework.batch.item.database.ItemPreparedStatementSetter;
 import org.springframework.context.ApplicationContext;
@@ -11,10 +9,6 @@ import java.lang.reflect.Field;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Locale;
 import java.util.Map;
 
 /**
