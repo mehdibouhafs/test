@@ -17,7 +17,7 @@
 
 		<property name="resource" value="file:#{jobParameters['input.file.name']}" />
 
-		<property name="fragmentRootElementName" value="user" />
+		<property name="fragmentRootElementName" value="Person" />
 
 		<property name="unmarshaller">
 			<bean class="org.springframework.oxm.jaxb.Jaxb2Marshaller">

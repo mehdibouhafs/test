@@ -179,75 +179,58 @@ public class Application extends Controller {
                 typeSizes.append(s);
             }
             attribute.setType(type);
-
-            Object o;
+            Class o;
             switch (type) {
                 case "INT":
-                    int c = 0;
-                    o = c;
+                    o = Integer.class;
                     break;
                 case "TINYINT":
-                    int c00 = 0;
-                    o = c00;
+                    o = Integer.class;
                     break;
                 case "SMALLINT":
-                    int c01 = 0;
-                    o = c01;
+                    o = Integer.class;
                     break;
                 case "BLOB":
-                    Blob c01782 = null;
-                    o = c01782;
+                    o = Blob.class;
                     break;
                 case "DOUBLE":
-                    Double c001 = 0.0;
-                    o = c001;
+                    o = Double.class;
                     break;
                 case "DECIMAL":
-                    Double c0019 = 0.0;
-                    o = c0019;
+                    o = Double.class;
                     break;
                 case "REAL":
-                    float p = 2;
-                    o = p;
+                    o = Float.class;
                     break;
                 case "BIT":
-                    Byte p1 = 2;
-                    o = p1;
+                    o = Byte.class;
                     break;
                 case "BOOLEAN":
-                    Boolean b = true;
-                    o = b;
+                    o = Boolean.class;
                     break;
                 case "MEDIUMINT":
-                    int c02 = 0;
-                    o = c02;
+                    o = Integer.class;
                     break;
                 case "BIGINT":
-                    int c03 = 0;
-                    o = c03;
+                    o = Integer.class;
                     break;
                 case "VARCHAR":
-                    String c1 = "";
-                    o = c1;
+                    o = String.class;
                     break;
                 case "TEXT":
-                    String c10 = "";
-                    o = c10;
+                    o = String.class;
                     break;
                 case "DATETIME":
-                    //DateTime c11= new DateTime();
-                    Date c11 = new Date();
-                    o = c11;
+                    o = Date.class;
                     break;
                 case "DATE":
-                    Date d = new Date();
-                    o = d;
+                    o = Date.class;
                     break;
                 default:
                     o = null;
                     break;
             }
-            properties.put(col.getValue(), o.getClass());
+            properties.put(col.getValue(), o);
             columnsTable.put(col.getValue(), typeSizes.toString());
             //String colCap = cols[i].substring(0, 1).toUpperCase() + cols[i].substring(1);
            /* beanGenerator.getClass().getMethod("set"+colCap,o.getClass());

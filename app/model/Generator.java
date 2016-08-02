@@ -22,7 +22,6 @@ public class Generator {
 	public Generator() {
 		// TODO Auto-generated constructor stub
 	}
-	
 	   public Class<?> generator(String name, String typeXml, List<String> attributes,List<String> elements) throws CannotCompileException, NotFoundException{
 		   ApplicationContext applicationContext = Global.getApplicationContext();
 		   ReaderGenerique readerGenerique = applicationContext.getBean("readerGenerique", ReaderGenerique.class);

@@ -544,7 +544,24 @@ $('#form1').submit(function (e) {
                                 "<option title='Un nombre entier de 3 octets. La fourchette des nombres avec signe est de -8 388 608 à 8 388 607. Pour les nombres sans signe, c est de 0 à 16 777 215'>MEDIUMINT</option>" +
                                 "<option title='Un nombre entier de 4 octets. La fourchette des entiers relatifs est de -2 147 483 648 à 2 147 483 647. Pour les entiers positifs, c est de 0 à 4 294 967 295'>INT</option>" +
                                 "<option title='Un nombre entier de 8 octets. La fourchette des nombres avec signe est de -9 223 372 036 854 775 808 à 9 223 372 036 854 775 807. Pour les nombres sans signe, c est de 0 à 18 446 744 073 709 551 615'>BIGINT</option>" +
-                                "</optgroup></select>" +
+                                "</option><option disabled='disabled'>-</option>"+
+                                "<option title='DECIMAL'>DECIMAL</option>" +
+                                "<option title='FLOAT'>FLOAT</option>" +
+                                "<option title='DOUBLE'>DOUBLE</option>" +
+                                "<option title='REAL'>REAL</option>" +
+                                "</option><option disabled='disabled'>-</option>"+
+                                "<option title='BIT'>BIT</option>" +
+                                "<option title='BOOLEAN'>BOOLEAN</option>" +
+                                "<option title='SERIAL'>SERIAL</option>" +
+                                "</optgroup>"+
+                                "<optgroup label='Contient la date et I'>" +
+                                "<option title='DATE'>DATE</option>" +
+                                "<option title='DATETIME'>DATETIME</option>" +
+                                "<option title='TIMESTAMP'>TIMESTAMP</option>" +
+                                "<option title='TIMESTAMP'>TIMESTAMP</option>" +
+                                "<option title='YEAR'>YEAR</option>" +
+                                "</optgroup>"+
+                                "</select>"+
                                 "</td>" +
                                 "<td><input type='number' id='data[i].id' name='" + size + "' size='4' value='5'/> </td>";
                             /*s = "<td><select class='form-control' id='type' name='" + type + "'>" +

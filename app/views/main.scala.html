@@ -21,7 +21,6 @@
 
         <![endif]-->
 
-
         @* Here's where we render the page title `String`. *@
         <title>@title</title>
 
@@ -41,6 +40,9 @@
 
         <!-- The main CSS file -->
         <link href=" @routes.Assets.versioned("stylesheets/assets/css/style.css")" rel="stylesheet" />
+        <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/assets/css/pageguide.min.css")"/>
+
+
 
         <script src="@routes.Assets.versioned("javascripts/hello.js")" type="text/javascript"></script>
     </head>
@@ -77,6 +79,64 @@
                 </div> <!-- / .modal-content -->
             </div> <!-- / .modal-dialog -->
         </div>
+
+
+    <ul id="tlyPageGuide" data-tourtitle="Guide MBS || MIMO" style="background-color: #0e6f5c;color: white">
+        <li class="tlypageguide_left" data-tourtarget=".first_element_to_target">
+            <div>
+          Ici vous allez suivre les étapes pour configurer votre fichier selon son format de fichier le formulaire va changer dynamiquement.
+            </div>
+        </li>
+        <li class="tlypageguide_left" data-tourtarget=".second_element_to_target">
+            <div>
+          Ici vous devez nous fournir le chemin de votre fichier Csv où XML en réseau après vous cliquer n'importe où en dehors de l'input.
+            </div>
+        </li>
+        <li class="tlypageguide_left" data-tourtarget=".third_element_to_target" >
+            <div>
+         Ici vous devez nous fournir le séparateur de votre fichier csv champ obligatoire !
+            </div>
+        </li>
+        <li class="tlypageguide_left" data-tourtarget=".fourth_element_to_target">
+            <div>
+          Ici vous devez nous fournir le nombre de ligne que vous voulez zapper de votre fichier csv  ce champ est obligatoire !
+            </div>
+        </li>
+        <li class="tlypageguide_left" data-tourtarget=".fifth_element_to_target">
+            <div>
+          Ici vous devez nous fournir les attributs de votre table que vous allez créer !
+            </div>
+        </li>
+
+        <li class="tlypageguide_left" data-tourtarget=".sixth_element_to_target">
+            <div>
+          Ici vous devez nous fournir le type des colonnes choisis dans votre fichier xml  ce champ est obligatoire si vous un fichier xml correspondant au type 3 !
+            </div>
+        </li>
+
+        <li class="tlypageguide_left" data-tourtarget=".seve_element_to_target">
+            <div>
+          Ici vous devez nous fournir le nom de votre table dans le cas où le fichier est de type csv sinon vous spécifier le XMLRootElement de votre fichier Xml ce champ est obligatoire !
+            </div>
+        </li>
+
+        <li class="tlypageguide_left" data-tourtarget=".eight_element_to_target">
+            <div>
+          Ici vous devez cliquer si vous voulez que le traitement de votre fichier commencera et extraire les colonnes !
+            </div>
+        </li>
+
+        <li class="tlypageguide_left" data-tourtarget=".nine_element_to_target">
+            <div>
+          Vous cliquez ici si vous voulez revenir à l'étape précedente !
+            </div>
+        </li>
+        <li class="tlypageguide_left" data-tourtarget=".ten_element_to_target">
+            <div>
+            Vous cliquez ici si vous voulez passer cette étape  !
+            </div>
+        </li>
+    </ul>
 
 
     <!-- Footer -->
@@ -138,8 +198,10 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 
         <script src="@routes.Assets.versioned("javascripts/jquery.js")" type="text/javascript"></script>
-    <script src="@routes.Assets.versioned("stylesheets/assets/js/step.js")" type="text/javascript"></script>
 
+    <script src="@routes.Assets.versioned("stylesheets/assets/js/step.js")" type="text/javascript"></script>
+    <script src="@routes.Assets.versioned("stylesheets/assets/js/pageguide.js")" type="text/javascript"></script>
+    <script src="@routes.Assets.versioned("stylesheets/assets/js/pageguide.min.js")" type="text/javascript"></script>
         <!-- Bootstrap Core JavaScript -->
         <script src="@routes.Assets.versioned("javascripts/bootstrap.min.js")" type="text/javascript"></script>
 
@@ -174,6 +236,12 @@
                     $("[rel='tooltip']").tooltip()
                 });
         </script>
+
+    <script>
+    $(document).ready(function() {
+    tl.pg.init();
+    });
+    </script>
 
 
 

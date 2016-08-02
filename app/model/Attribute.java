@@ -4,14 +4,12 @@ package model;
  * Created by MBS on 15/07/2016.
  */
 public class Attribute {
-
     private int id;
     private String type;
     private String name;
     private String size;
     private String primaryKey;
     private boolean autoIncrement;
-
 
     public Attribute() {
     }
