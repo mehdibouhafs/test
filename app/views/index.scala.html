@@ -11,7 +11,7 @@
         separators : List[String]
         )
 @import views.html.bootstrap3._
-@main("TITLE") {
+@main("ITN SPRING BATCH - PLAY") {
 @*
 * Get an `Html` object by calling the built-in Play welcome
 * template and passing a `String` message.
@@ -238,10 +238,14 @@
                                             <span id="tableSpan" class="help-block" style="color:#ffffff;" > Please enter the table Name . (required)</span>
                                         </div>
                                         <div class="col-sm-offset-0  col-sm-3">
-                                            <span class="help-block" style="color:red;"></span>
+                                            <span class="help-block">
+                                                <label style="color: beige;margin-right: 20px;">Drop Table</label>
+                                                <input id="dropTable" type="checkbox" checked="">
+                                            </span>
                                         </div>
                                     </div>
-                                    </div>
+                                </div>
+
                            <div class="table-responsive" style="margin-top: 20px">
                             <table class="table table-bordered" id="table1" name="table1">
                                 <thead style="background: #18bc9c">

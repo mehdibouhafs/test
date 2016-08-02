@@ -475,6 +475,11 @@ public class Application extends Controller {
         ApplicationContext context = Global.getApplicationContext();
         ReaderGenerique readerGenerique = context.getBean("readerGenerique", ReaderGenerique.class);
         ObjectDao objectDao = context.getBean("ObjectDao", ObjectDaoJdbc.class);
+        Form<ParamFormData3> formData = Form.form(ParamFormData3.class).bindFromRequest();
+        String dropeTable = formData.get().getDropeTable();
+        if(dropeTable.equals("true")){
+            objectDao.dropTable(readerGenerique.getTable());
+        }
         Boolean create = objectDao.createTable(readerGenerique.getTable(), readerGenerique.getColumnsTable());
         System.out.println("Validate");
         if (create) {

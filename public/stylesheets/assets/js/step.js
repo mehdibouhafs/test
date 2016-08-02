@@ -706,10 +706,11 @@ $('#form1').submit(function (e) {
             //envoyer les donnees avec ajax
         e.preventDefault();
             if($("#tableaucontenus2").children().length>0) {//&& $("#form1").valid() && ($("#form0").valid() && ($("#form01").valid()||$("#form02").valid()))) {
+                var data0=  "dropeTable="+$("#dropTable").bootstrapSwitch('state');
                 $.ajax({
                     type: "POST",//la method à utiliser soit POST ou GET
                     url: "/validate", //lien de la servlet qui exerce le traitement sur les données// sign_in c'est l'id du form qui contient le bouton submit et toutes les champs à envoyer
-
+                    data:data0,
                     success: function (data) {// le cas ou la requete est bien execute en reçoi les données serialiser par JSON dans la variable msg
                         //recuperation de la valeur stock dans l'attribut desactive
                         $('#modal-body').append("Total time that job takes in millis ="+data.time);
@@ -820,6 +821,19 @@ $('#form1').submit(function (e) {
         }
     });
 
+    $('#dropTable').on('click', function () {
+        $.confirm({
+            title: 'Confirmation !',
+            content: 'Voulez vous vraiment supprimer la table ?',
+            confirm: function () {
+                $.alert('Votre table sera supprimé une fois vous validez toutes les étapes!');
+            },
+            cancel: function () {
+                $.alert('Annuler!');
+            }
+        });
+    });
+
     $('#table1').on('click','input[type="checkbox"]', function(e) {
         var id =  $(this).closest('tr').data('id');
         var rowCount = $('#table1 tr').length;
@@ -865,6 +879,10 @@ $('#form1').submit(function (e) {
         //$('#autoIncrement\\[' + i + '\\]').prop('checked', false);
 
     });
+
+
+    $("#dropTable").bootstrapSwitch('state', true);
+
 
     /*$('#table2').on('click', '.glyphicon-pencil', function(e){
         //var id = $(this).closest('tr').data('id');

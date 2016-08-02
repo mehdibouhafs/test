@@ -85,8 +85,8 @@ public class App
 			}
 			if(entry.getValue()== Date.class){
 				Annotation annota1 = new Annotation("javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter", constPool);
-				annota1.addMemberValue("type", new ClassMemberValue("model.LocalDateAdapter",classFile.getConstPool()));
-				annota1.addMemberValue("value", new ClassMemberValue("model.LocalDateAdapter",classFile.getConstPool()));
+				annota1.addMemberValue("type", new ClassMemberValue("model.adapters.LocalDateAdapter",classFile.getConstPool()));
+				annota1.addMemberValue("value", new ClassMemberValue("model.adapters.LocalDateAdapter",classFile.getConstPool()));
 				attra.addAnnotation(annota1);
 			}
 			field.getFieldInfo().addAttribute(attra);

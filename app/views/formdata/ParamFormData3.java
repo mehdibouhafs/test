@@ -13,6 +13,8 @@ public class ParamFormData3 {
 
     public List<String> size;
 
+    public String dropeTable;
+
     public ParamFormData3() {
         table="";
     }
@@ -40,6 +42,14 @@ public class ParamFormData3 {
 
     public void setType(List<String> type) {
         this.type = type;
+    }
+
+    public String getDropeTable() {
+        return dropeTable;
+    }
+
+    public void setDropeTable(String dropeTable) {
+        this.dropeTable = dropeTable;
     }
 
     @Override
