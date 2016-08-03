@@ -3,8 +3,12 @@ package dao;
 import model.ReaderGenerique;
 import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DataSourceUtils;
 import running.Global;
 
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -150,6 +154,7 @@ public class ObjectDaoJdbc extends JdbcTemplate implements ObjectDao{
         }
 
         public boolean dropTable(String table) {
+            System.out.println("Drop Table "+table);
             String q = "DROP TABLE " + table;
             try {
                execute(q);
@@ -160,5 +165,75 @@ public class ObjectDaoJdbc extends JdbcTemplate implements ObjectDao{
             }
         }
 
+   public Map<String,String > dataTable(String table) {
+       Map<String,String > map = new LinkedHashMap<>();
+       String query = "SELECT * FROM " + table;
+       Connection con = DataSourceUtils.getConnection(getDataSource()); // your datasource
+       Statement s = null;
+       ResultSet rs = null;
+       ResultSetMetaData rsmd = null;
+       try {
+            s = con.createStatement();
+            rs = s.executeQuery(query); // your query
+            rsmd = rs.getMetaData();
 
-}
+           int colCount = rsmd.getColumnCount();
+
+           System.out.println("Number Of Columns : " + colCount);
+           System.out.println("column Details :");
+
+           for (int i = 1; i <= colCount; i++) {
+               //getting column name of index 'i'
+               String colName = rsmd.getColumnName(i);
+               //getting column's data type of index 'i'
+               String colType = rsmd.getColumnTypeName(i);
+               map.put(colName,colType);
+           }
+       } catch (SQLException e) {
+           e.printStackTrace();
+       }finally
+       {
+           //Closing The DB Resources
+           //Closing the ResultSet object
+           try
+           {
+               if(rs!=null)
+               {
+                   rs.close();
+                   rs=null;
+               }
+           }
+           catch (SQLException e)
+           {
+               e.printStackTrace();
+           }
+           //Closing the Statement object
+           try
+           {
+               if(s!=null)
+               {
+                   s.close();
+                   s=null;
+               }
+           }
+           catch (SQLException e)
+           {
+               e.printStackTrace();
+           }
+           //Closing the Connection object
+           try
+           {
+               if(con!=null)
+               {
+                   con.close();
+                   con=null;
+               }
+           }
+           catch (SQLException e)
+           {
+               e.printStackTrace();
+           }
+       }
+       return map;
+   }
+   }

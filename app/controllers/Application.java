@@ -471,6 +471,28 @@ public class Application extends Controller {
         return ok("removed");
     }
 
+
+    public Result metadata(){
+        ApplicationContext context = Global.getApplicationContext();
+        ObjectDao objectDao = context.getBean("ObjectDao", ObjectDaoJdbc.class);
+        String[] table = request().body().asFormUrlEncoded().get("tableName");
+        System.out.println("metada table"+table[0]);
+        Map<String,String> metadats =  objectDao.dataTable(table[0]);
+        ObjectNode result;
+        //JsonArrayBuilder jsa =  Json.createArrayBuilder();
+        ArrayNode resuls = play.libs.Json.newArray();
+        //Object o;
+        for(Map.Entry<String,String> metada:metadats.entrySet())
+        {
+            result = play.libs.Json.newObject();
+            result.put("col", metada.getKey());
+            result.put("type", metada.getValue());
+            resuls.add(result);
+        }
+
+        return ok(Json.toJson(resuls));
+    }
+
     public Result validate() {
         ApplicationContext context = Global.getApplicationContext();
         ReaderGenerique readerGenerique = context.getBean("readerGenerique", ReaderGenerique.class);
@@ -478,6 +500,9 @@ public class Application extends Controller {
         Form<ParamFormData3> formData = Form.form(ParamFormData3.class).bindFromRequest();
         String dropeTable = formData.get().getDropeTable();
         if(dropeTable.equals("true")){
+            System.out.println("****************************************");
+
+            System.out.println("****************************************");
             objectDao.dropTable(readerGenerique.getTable());
         }
         Boolean create = objectDao.createTable(readerGenerique.getTable(), readerGenerique.getColumnsTable());

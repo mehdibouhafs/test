@@ -39,6 +39,22 @@ $(document).ready(function() {
         $(this).remove();
 
     })*/
+    
+    $('#tableName').change(function (e) {
+        $('#tableNameValidation').val($(this).val());
+        if($('#tableName').val()=="" || $('#tableName').val()==" "){
+            $('#consulter').prop("disabled", true);
+            $("#dropTable").bootstrapSwitch('state', false);
+            $("#dropTable").bootstrapSwitch('toggleDisabled',true,true);
+        }else {
+            $('#consulter').prop("disabled", false);
+            $('#dropTab').show();
+            $("#dropTable").bootstrapSwitch('disabled',false);
+            $("#dropTable").bootstrapSwitch('state', true);
+        }
+    })
+    
+    
     $('#filePath').change(function (e) {
         $('#csv').hide();
         $('#xml').hide();
@@ -641,7 +657,10 @@ $('#form1').submit(function (e) {
 
     $("#activate-step-3").click(function(e) {
             e.preventDefault();
+            $('#table2').DataTable().destroy();
             $("#tableaucontenus2").html("");
+
+            $("#tableNameValidation").val($("#tableName").val());
             if($("#form1").valid())
             {
                 if ($("#tableaucontenus1").children().length > 0) {
@@ -742,16 +761,32 @@ $('#form1').submit(function (e) {
                     var elements = 'elements[' + i+ ']';
                     $('#xmlTableContenu1').append("<tr style='background-color: white'  data-id='"+i+"'><td>" + tabCols[i] + "</td><td><input type='checkbox' id='"+attributes+"' name='"+attributes+"' value='"+attributes+"'></td><td><input type='checkbox' id='"+elements+"' name='"+elements+"' value='"+elements+"' ></td></tr>");
                 }
-                $('#xmlTable').show();
+                $('#type3').show();
                 console.log("val cols "+ $('#cols').val());
                 console.log("length cols"+$('#cols :selected').length);
             }
             $('#validate').hide();
         }else {
-            $('#xmlTable').hide();
+            $('#type3').hide();
             $('#activate-step-2').hide();
         }
     });
+
+    $('#dropTable1').bootstrapSwitch('disabled',true);
+
+    $('#dropTable').on('switchChange.bootstrapSwitch', function(event, state){
+        //event.preventDefault();
+
+        if(state == true){
+            $('#dropTable1').bootstrapSwitch('disabled',false);
+            $("#dropTable1").bootstrapSwitch('state',true);
+            $('#dropTable1').bootstrapSwitch('disabled',true);
+        }else{
+            $('#dropTable1').bootstrapSwitch('disabled',false);
+            $("#dropTable1").bootstrapSwitch('state',false);
+            $('#dropTable1').bootstrapSwitch('disabled',true);
+        }
+    })
 
     $('#precedent').click(function (e) {
         e.preventDefault();
@@ -765,7 +800,10 @@ $('#form1').submit(function (e) {
     $("#thanks").click(function (e) {
         location.reload();
     })
-    $('#xmlTable').hide();
+    
+    $('#type3').hide();
+    $('#columns').hide();
+    $('#dropTab').hide();
     $('#xml').hide();
     $('#csv').hide();
     $("#cols").hide();
@@ -782,7 +820,7 @@ $('#form1').submit(function (e) {
     $("#none").click(function(e){
         e.preventDefault();
         $('#xmlTableContenu1').html("");
-        $('#xmlTable').hide();
+        $('#type3').hide();
         $("#cols").multiSelect('deselect_all');
     });
 
@@ -821,18 +859,6 @@ $('#form1').submit(function (e) {
         }
     });
 
-    $('#dropTable').on('click', function () {
-        $.confirm({
-            title: 'Confirmation !',
-            content: 'Voulez vous vraiment supprimer la table ?',
-            confirm: function () {
-                $.alert('Votre table sera supprimé une fois vous validez toutes les étapes!');
-            },
-            cancel: function () {
-                $.alert('Annuler!');
-            }
-        });
-    });
 
     $('#table1').on('click','input[type="checkbox"]', function(e) {
         var id =  $(this).closest('tr').data('id');
@@ -881,7 +907,44 @@ $('#form1').submit(function (e) {
     });
 
 
-    $("#dropTable").bootstrapSwitch('state', true);
+
+    $('.consulter').on('click',function(e){
+        e.preventDefault();
+        var tableName=$('#tableName').val();
+        $.ajax({
+            type : "post",
+            url : "metadata", //process to mail
+            data :{
+                tableName:tableName
+            },
+            success : function(response) {
+                console.log(response);
+                $("#titreModal").html("Information sur la table "+tableName);
+                var contenu="";
+                contenu += "<fieldset>" +
+                    "<table id='infoTable' width='100%' class='table table-bordered'>" +
+                    "<thead><tr><th style='color: blue;'><b>Colonne</b></th><th style='color: blue';><b>Type</b></th></thead><tbody>";
+                for(var i=0;i<response.length;i++){
+                        contenu+="<tr><td>"+response[i].col+"</td><td>"+response[i].type+"</td></tr>";
+                }
+                contenu += "</tbody></table>" +
+                    "</fieldset>";
+
+                $("#contenu").html(contenu);
+                $('#infoTable').DataTable({
+                    'fnClearTable':true,
+                    "scrollY":        "500px",
+                    "scrollCollapse": true
+                });
+            },
+            error : function() {
+                console.log("erreur");
+            }
+        });
+        $('#Modalx').modal("show");
+    });
+    
+    
 
 
     /*$('#table2').on('click', '.glyphicon-pencil', function(e){
