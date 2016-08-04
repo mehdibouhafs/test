@@ -106,12 +106,12 @@ $(document).ready(function() {
     
     
     $('#filePath').change(function (e) {
+        e.preventDefault();
         $('#csv').hide();
         $('#xml').hide();
         if($('#filePath').val()=="" || $('#filePath').val()==" "){
             location.reload();
         }else {
-            e.preventDefault();
             $.ajax({
                 type: "POST",//la method à utiliser soit POST ou GET
                 url: "/path", //lien de la servlet qui exerce le traitement sur les données
@@ -167,17 +167,22 @@ $(document).ready(function() {
         }
     });
 
-    $('#form0').validate({ // initialize the plugin
+    $('#form00').validate({ // initialize the plugin
         rules: {
             filePath: {
                 required: true
             } 	        	
         },
+        messages: {
+            filePath: "Enter your File Path !"
+        },
         highlight: function (element) {
             $(element).closest('.form-group').addClass('has-error');
+            $('#step111').css('background-color','#ff0000');
         },
         unhighlight: function (element) {
             $(element).closest('.form-group').removeClass('has-error');
+            $('#step111').css('background-color','');
         },
         errorElement: 'span',
         errorClass: 'help-block',
@@ -195,14 +200,20 @@ $(document).ready(function() {
                     required: true
                 },  	        	
                 numberLine: {
-                    required: false
+                    required: true
                 }
+            },
+            messages: {
+                separator: "Enter your separtor !",
+                numberLine: "Enter the number of Lines that you will be skipped in your file"
             },
             highlight: function (element) {
                 $(element).closest('.form-group').addClass('has-error');
+                $('#step111').css('background-color','#ff0000');
             },
             unhighlight: function (element) {
                 $(element).closest('.form-group').removeClass('has-error');
+                $('#step111').css('background-color','');
             },
             errorElement: 'span',
             errorClass: 'help-block',
@@ -220,18 +231,15 @@ $(document).ready(function() {
                 required: true,
                 maxlength:1
             },
-            messages: {
-                'xml[]': {
-                    required: "You must check at least 1 box",
-                    maxlength: "Check no more than {0} boxes"
-                }
-            },
         },
+
         highlight: function (element) {
             $(element).closest('.form-group').addClass('has-error');
+            $('#step111').css('background-color','#ff0000');
         },
         unhighlight: function (element) {
             $(element).closest('.form-group').removeClass('has-error');
+            $('#step111').css('background-color','');
         },
         errorElement: 'span',
         errorClass: 'help-block',
@@ -244,7 +252,6 @@ $(document).ready(function() {
         }
     });
         
-    
 
     $('#form1').validate({ // initialize the plugin
         rules: {
@@ -252,11 +259,16 @@ $(document).ready(function() {
                 required: true
             }
         },
+        messages: {
+            tableName: "Enter your tableName  !"
+        },
         highlight: function (element) {
             $(element).closest('.form-group').addClass('has-error');
+            $('#step222').css('background-color','#ff0000');
         },
         unhighlight: function (element) {
             $(element).closest('.form-group').removeClass('has-error');
+            $('#step222').css('background-color','');
         },
         errorElement: 'span',
         errorClass: 'help-block',
@@ -270,48 +282,51 @@ $(document).ready(function() {
     });
 
 
-
     $(function() {
         $("#form01").submit(
             function (e) {
                 //envoyer les donnees avec ajax
                 e.preventDefault();
-                $.ajax({
-                    type: "POST",//la method à utiliser soit POST ou GET
-                    url: "/cols", //lien de la servlet qui exerce le traitement sur les données
-                    data: $('#form01').serialize(),// sign_in c'est l'id du form qui contient le bouton submit et toutes les champs à envoyer
-                    dataType: 'json',
-                    success: function (data) {// le cas ou la requete est bien execute en reçoi les données serialiser par JSON dans la variable msg
-                        //recuperation de la valeur stock dans l'attribut desactive
-                        var obj = JSON.parse(JSON.stringify(data));
-                        var s = parseInt(data.length);
-                        var sal;
-                        for (var i = 0;i<s; i++) {
-                            sal = obj[i].name;
-                            //$("#cols").append($('<option>', {value:"ok"}).text("ok"));
-                            //$("#cols").append("<option value='" + data[i].name + "'>" + data[i].name + "</option>");
-                            $('#cols').show();
-                            $('#all').show();
-                            $('#none').show();
-                            $('#cols').multiSelect({
-                                selectableHeader: "<div class='custom-header'>Columns</div>",
-                                selectionHeader: "<div class='custom-header'>Columns Selected</div>",
-                                selectableFooter: "<div class='custom-header'>Columns</div>",
-                                selectionFooter: "<div class='custom-header'>Columns Selected footer</div>"
-                            });
-                            $('#cols').multiSelect('addOption', {
-                                value: sal,
-                                text: sal,
-                                selected: 'true'
-                            });
-                            $('#cols').multiSelect('refresh');
-                            $('#columns').show();
+                if($('#form00').valid() && $('#form01').valid()) {
+                    $.ajax({
+                        type: "POST",//la method à utiliser soit POST ou GET
+                        url: "/cols", //lien de la servlet qui exerce le traitement sur les données
+                        data: $('#form01').serialize(),// sign_in c'est l'id du form qui contient le bouton submit et toutes les champs à envoyer
+                        dataType: 'json',
+                        success: function (data) {// le cas ou la requete est bien execute en reçoi les données serialiser par JSON dans la variable msg
+                            //recuperation de la valeur stock dans l'attribut desactive
+                            var obj = JSON.parse(JSON.stringify(data));
+                            var s = parseInt(data.length);
+                            var sal;
+                            for (var i = 0; i < s; i++) {
+                                sal = obj[i].name;
+                                //$("#cols").append($('<option>', {value:"ok"}).text("ok"));
+                                //$("#cols").append("<option value='" + data[i].name + "'>" + data[i].name + "</option>");
+                                $('#cols').show();
+                                $('#all').show();
+                                $('#none').show();
+                                $('#cols').multiSelect({
+                                    selectableHeader: "<div class='custom-header'>Columns</div>",
+                                    selectionHeader: "<div class='custom-header'>Columns Selected</div>",
+                                    selectableFooter: "<div class='custom-header'>Columns</div>",
+                                    selectionFooter: "<div class='custom-header'>Columns Selected footer</div>"
+                                });
+                                $('#cols').multiSelect('addOption', {
+                                    value: sal,
+                                    text: sal,
+                                    selected: 'true'
+                                });
+                                $('#cols').multiSelect('refresh');
+                                $('#columns').show();
+                            }
+                        },
+                        error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
+                            console.log("error");
                         }
-                    },
-                    error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
-                        console.log("error");
-                    }
-                });
+                    });
+                }else{
+                    alert("form01 not valid ");
+                }
 
             });
     });
@@ -323,50 +338,52 @@ $(document).ready(function() {
                 //envoyer les donnees avec ajax
                 e.preventDefault();
                 //console.log($("input[name='xml[]']").val());
-                $.ajax({
-                    type: "POST",//la method à utiliser soit POST ou GET
-                    url: "/colsxml", //lien de la servlet qui exerce le traitement sur les données
-                    data: $('#form02').serialize(),// sign_in c'est l'id du form qui contient le bouton submit et toutes les champs à envoyer
-                    dataType: 'json',
-                    success: function (data) {// le cas ou la requete est bien execute en reçoi les données serialiser par JSON dans la variable msg
-                        //recuperation de la valeur stock dans l'attribut desactive
-                        var obj = JSON.parse(JSON.stringify(data));
-                        var s = parseInt(data.length);
-                        var sal;
-                        for (var i = 0;i<s; i++) {
-                            sal = obj[i].name;
-                            //$("#cols").append($('<option>', {value:"ok"}).text("ok"));
-                            //$("#cols").append("<option value='" + data[i].name + "'>" + data[i].name + "</option>");
-                            $('#cols').show();
-                            $('#all').show();
-                            $('#none').show();
-                            $('#cols').multiSelect({
-                                selectableHeader: "<div class='custom-header'>Columns</div>",
-                                selectionHeader: "<div class='custom-header'>Columns Selected</div>",
-                                selectableFooter: "<div class='custom-header'>Columns</div>",
-                                selectionFooter: "<div class='custom-header'>Columns Selected footer</div>"
-                            });
-                            $('#cols').multiSelect('addOption', {
-                                value: sal,
-                                text: sal,
-                                selected: 'true'
-                            });
-                            $('#cols').multiSelect('refresh');
-                            $('#columns').show();
-                        }
-
-
-                        $('[name="xml[]"]').each( function (){
-                            if($(this).prop('checked') == true){
-                                typeXMl = $(this).val();
+                if($('#form00').valid()&& $('#form02').valid()) {
+                    $.ajax({
+                        type: "POST",//la method à utiliser soit POST ou GET
+                        url: "/colsxml", //lien de la servlet qui exerce le traitement sur les données
+                        data: $('#form02').serialize(),// sign_in c'est l'id du form qui contient le bouton submit et toutes les champs à envoyer
+                        dataType: 'json',
+                        success: function (data) {// le cas ou la requete est bien execute en reçoi les données serialiser par JSON dans la variable msg
+                            //recuperation de la valeur stock dans l'attribut desactive
+                            var obj = JSON.parse(JSON.stringify(data));
+                            var s = parseInt(data.length);
+                            var sal;
+                            for (var i = 0; i < s; i++) {
+                                sal = obj[i].name;
+                                //$("#cols").append($('<option>', {value:"ok"}).text("ok"));
+                                //$("#cols").append("<option value='" + data[i].name + "'>" + data[i].name + "</option>");
+                                $('#cols').show();
+                                $('#all').show();
+                                $('#none').show();
+                                $('#cols').multiSelect({
+                                    selectableHeader: "<div class='custom-header'>Columns</div>",
+                                    selectionHeader: "<div class='custom-header'>Columns Selected</div>",
+                                    selectableFooter: "<div class='custom-header'>Columns</div>",
+                                    selectionFooter: "<div class='custom-header'>Columns Selected footer</div>"
+                                });
+                                $('#cols').multiSelect('addOption', {
+                                    value: sal,
+                                    text: sal,
+                                    selected: 'true'
+                                });
+                                $('#cols').multiSelect('refresh');
+                                $('#columns').show();
                             }
-                        });
 
-                    },
-                    error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
-                        console.log("error");
-                    }
-                });
+
+                            $('[name="xml[]"]').each(function () {
+                                if ($(this).prop('checked') == true) {
+                                    typeXMl = $(this).val();
+                                }
+                            });
+
+                        },
+                        error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
+                            console.log("error");
+                        }
+                    });
+                }
 
             });
     });
@@ -702,7 +719,7 @@ $('#form1').submit(function (e) {
                     },
                     error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
                         console.log("error");
-                        alert("Error Mapping ! make sure that you have selected a good type for the columns");
+                        alert("Error Mapping ! make sure that you have selecte for all columns attributes or elements");
                     }
                 });
         });

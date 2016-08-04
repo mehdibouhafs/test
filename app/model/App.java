@@ -117,7 +117,7 @@ public class App
 				CtField field = new CtField(ClassPool.getDefault().get(entry.getValue().getName()), entry.getKey(), result);
 				CtMethod setter =  CtNewMethod.setter("set"+entry.getKey(), field);
 				CtMethod getter =  CtNewMethod.getter("get"+entry.getKey(), field);
-				result.addField(field);
+
 				AnnotationsAttribute attra = new AnnotationsAttribute(constPool, AnnotationsAttribute.visibleTag);
 				if(elements.contains(entry.getKey())) {
 					Annotation annota = new Annotation("javax.xml.bind.annotation.XmlElement", constPool);
@@ -130,11 +130,12 @@ public class App
 				}
 				if(entry.getValue()== Date.class){
 					Annotation annota1 = new Annotation("javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter", constPool);
-					annota1.addMemberValue("type", new ClassMemberValue("model.LocalDateAdapter",classFile.getConstPool()));
-					annota1.addMemberValue("value", new ClassMemberValue("model.LocalDateAdapter",classFile.getConstPool()));
+					annota1.addMemberValue("type", new ClassMemberValue("model.adapters.LocalDateAdapter",classFile.getConstPool()));
+					annota1.addMemberValue("value", new ClassMemberValue("model.adapters.LocalDateAdapter",classFile.getConstPool()));
 					attra.addAnnotation(annota1);
 				}
 				field.getFieldInfo().addAttribute(attra);
+				result.addField(field);
 			}
 			classFile.setVersionToJava5();
 			result.writeFile();

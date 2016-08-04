@@ -25,6 +25,7 @@ public class FieldSetItemPreparedStatementSetter implements ItemPreparedStatemen
         int i=1;
         for (Map.Entry<String, Class<?>> entry : generator.getProperties().entrySet()) {
             try {
+                System.out.println("keyyyyyyyyyyyyyyyyyyyyyyyy = "+entry.getKey()+ "val = "+entry.getValue().getSimpleName());
                 Field f = item.getClass().getDeclaredField(entry.getKey());
                 f.setAccessible(true);
                 switch (entry.getValue().getSimpleName()){
@@ -40,7 +41,7 @@ public class FieldSetItemPreparedStatementSetter implements ItemPreparedStatemen
                         break;
                     case "Date":
                         System.out.println("Date");
-                        System.out.println("Date"+i+":"+((java.util.Date)(f.get(item))).getTime());
+                        //System.out.println("Date"+i+":"+((java.util.Date)(f.get(item))).getTime());
                        /* final String NEW_FORMAT = "dd/MM/yyyy";
                         SimpleDateFormat sdf = new SimpleDateFormat("EE MMM dd HH:mm:ss z yyyy", Locale.ENGLISH);
                         java.util.Date date = null;

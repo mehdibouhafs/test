@@ -46,7 +46,7 @@ input.chk-btn:checked + label {
 }
 
 .nav>li.disabled>a {
-    color: #ffffff;
+    color: rgb(255, 142, 142);
 }
 
 .nav-pills>li.active>a {
@@ -61,7 +61,7 @@ input.chk-btn:checked + label {
 
 a, a:visited {
     outline:none;
-    color:#18bc9c;
+    color:rgb(0, 255, 85);
 }
 
 a:hover{

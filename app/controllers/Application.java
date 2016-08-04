@@ -259,11 +259,11 @@ public class Application extends Controller {
         classNew = c.generator(formData.get().getTableName(), typeXml, attributtes, elements);
         System.out.println("Classe New " + classNew);
         c.setClassGenerate(classNew);
-        Object c1 = context.getBean("firstBe");
         String sp = classNew.toString();
         String[] a= sp.split(" ");
         System.out.println("classe XML "+a[1]);
         readerGenerique.setClassXml(a[1]);
+        Object c1 = context.getBean("firstBe");
         System.out.println("classsssssssssssssssssssss   "+c1.getClass());
         ObjectNode result;
         //JsonArrayBuilder jsa =  Json.createArrayBuilder();
@@ -316,7 +316,7 @@ public class Application extends Controller {
         ReaderGenerique readerGenerique = context.getBean("readerGenerique", ReaderGenerique.class);
         Form<ParamformData01> formData01 = Form.form(ParamformData01.class).bindFromRequest();
         File destination = new File(this.filePath);
-        if (formData01.hasErrors()) {
+        /*if (formData01.hasErrors()) {
             // Don't call formData.get() when there are errors, pass 'null' to helpers instead.
             flash("error", "Please correct errors above.");
             return badRequest(index.render(null,
@@ -326,7 +326,7 @@ public class Application extends Controller {
                     null,
                     null
             ));
-        }
+        }*/
             System.out.println("csv File cols");
             if (formData01.get().getSeparator() != null) {
                 cols = firstLine(destination, formData01.get().getSeparator());
