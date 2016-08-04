@@ -48,9 +48,6 @@ import java.util.*;
 public class Application extends Controller {
 
     private String[] cols;
-
-    private Map<Integer, String> colsSelectedMap;
-
     private List<String> elements;
     private List<String> attributtes;
 
@@ -116,15 +113,12 @@ public class Application extends Controller {
 
         ObjectNode result;
         //JsonArrayBuilder jsa =  Json.createArrayBuilder();
-        colsSelectedMap = new HashMap<>();
         ArrayNode resuls = Json.newArray();
         int i = 0;
         for (String s : ss) {
             result = Json.newObject();
             result.put("id", i + "");
             result.put("name", s);
-
-            colsSelectedMap.put(i, s);
             i++;
             resuls.add(result);
         }
@@ -135,8 +129,12 @@ public class Application extends Controller {
         Attribute attribute;
         attributes = new ArrayList<>();
         Form<ParamFormData1> formData = Form.form(ParamFormData1.class).bindFromRequest();
-        System.out.println(formData.get().toString());
+        //System.out.println(formData.get().toString());
         String typeXml =formData.get().getTypeXML();
+        List<String> ss = formData.get().getCols();
+        List<Integer> ids = formData.get().getId();
+        System.out.println("id :" +ids);
+        System.out.println("COls :"+ ss);
         //System.out.println(formData.toString());
        /* if (formData.hasErrors()) {
             // Don't call formData.get() when there are errors, pass 'null' to helpers instead.
@@ -152,95 +150,98 @@ public class Application extends Controller {
         properties = new LinkedHashMap<>();
         StringBuffer typeSizes;
         final Map<String, String> columnsTable = new LinkedHashMap<>();
-        for (Map.Entry<Integer, String> col : colsSelectedMap.entrySet()) {
-            attribute = new Attribute();
-            String type = formData.get().getType().get(col.getKey());
-            String typeSize = type + "(" + formData.get().getSize().get(col.getKey()) + "),"+formData.get().getPrimaryKey().get(col.getKey())+",";
-            typeSizes = new StringBuffer(typeSize);
-            String size = formData.get().getSize().get(col.getKey());
-            String primarykey = formData.get().getPrimaryKey().get(col.getKey());
-            System.out.println("KEY"+col.getKey());
-
+        for (int i = 0 ; i <ss.size();i++) {
             try {
-               // boolean autoIncrement = formData.get().getAutoIncrement().get(col.getKey());
-                String[] autoIncrement = request().body().asFormUrlEncoded().get("autoIncrement["+col.getKey()+"]");
-                if(autoIncrement[0].equals("autoIncrement")){
-                    System.out.println("FDP TRUE" + col.getKey() +"val = " +col.getValue());
-                    String s = "AUTO_INCREMENT";
+                attribute = new Attribute();
+                String type = formData.get().getType().get(ids.get(i));
+                String typeSize = type + "(" + formData.get().getSize().get(i) + ")," + formData.get().getPrimaryKey().get(ids.get(i)) + ",";
+                typeSizes = new StringBuffer(typeSize);
+                String size = formData.get().getSize().get(ids.get(i));
+                String primarykey = formData.get().getPrimaryKey().get(ids.get(i));
+                System.out.println("KEY" + ids.get(i));
+                try {
+                    // boolean autoIncrement = formData.get().getAutoIncrement().get(col.getKey());
+                    String[] autoIncrement = request().body().asFormUrlEncoded().get("autoIncrement[" + ids.get(i) + "]");
+                    if (autoIncrement[0].equals("autoIncrement")) {
+                        System.out.println("FDP TRUE" + i + "val = " + ss.get(i));
+                        String s = "AUTO_INCREMENT";
+                        typeSizes.append(s);
+                        attribute.setAutoIncrement(true);
+                    } else {
+                        System.out.println("FDP false" + i + "val = " + ss.get(i));
+                    }
+                } catch (Exception e) {
+                    System.out.println("Exception try" + i + "val = " + ss.get(i));
+                    String s = "walou";
+                    attribute.setAutoIncrement(false);
                     typeSizes.append(s);
-                    attribute.setAutoIncrement(true);
-                }else{
-                    System.out.println("FDP false" + col.getKey() +"val = " +col.getValue());
                 }
-            }catch (Exception e){
-                System.out.println("Exception try" + col.getKey() +"val = " +col.getValue());
-                String s = "walou";
-                attribute.setAutoIncrement(false);
-                typeSizes.append(s);
-            }
-            attribute.setType(type);
-            Class o;
-            switch (type) {
-                case "INT":
-                    o = Integer.class;
-                    break;
-                case "TINYINT":
-                    o = Integer.class;
-                    break;
-                case "SMALLINT":
-                    o = Integer.class;
-                    break;
-                case "BLOB":
-                    o = Blob.class;
-                    break;
-                case "DOUBLE":
-                    o = Double.class;
-                    break;
-                case "DECIMAL":
-                    o = Double.class;
-                    break;
-                case "REAL":
-                    o = Float.class;
-                    break;
-                case "BIT":
-                    o = Byte.class;
-                    break;
-                case "BOOLEAN":
-                    o = Boolean.class;
-                    break;
-                case "MEDIUMINT":
-                    o = Integer.class;
-                    break;
-                case "BIGINT":
-                    o = Integer.class;
-                    break;
-                case "VARCHAR":
-                    o = String.class;
-                    break;
-                case "TEXT":
-                    o = String.class;
-                    break;
-                case "DATETIME":
-                    o = Date.class;
-                    break;
-                case "DATE":
-                    o = Date.class;
-                    break;
-                default:
-                    o = null;
-                    break;
-            }
-            properties.put(col.getValue(), o);
-            columnsTable.put(col.getValue(), typeSizes.toString());
-            //String colCap = cols[i].substring(0, 1).toUpperCase() + cols[i].substring(1);
+                attribute.setType(type);
+                Class o;
+                switch (type) {
+                    case "INT":
+                        o = Integer.class;
+                        break;
+                    case "TINYINT":
+                        o = Integer.class;
+                        break;
+                    case "SMALLINT":
+                        o = Integer.class;
+                        break;
+                    case "BLOB":
+                        o = Blob.class;
+                        break;
+                    case "DOUBLE":
+                        o = Double.class;
+                        break;
+                    case "DECIMAL":
+                        o = Double.class;
+                        break;
+                    case "REAL":
+                        o = Float.class;
+                        break;
+                    case "BIT":
+                        o = Byte.class;
+                        break;
+                    case "BOOLEAN":
+                        o = Boolean.class;
+                        break;
+                    case "MEDIUMINT":
+                        o = Integer.class;
+                        break;
+                    case "BIGINT":
+                        o = Integer.class;
+                        break;
+                    case "VARCHAR":
+                        o = String.class;
+                        break;
+                    case "TEXT":
+                        o = String.class;
+                        break;
+                    case "DATETIME":
+                        o = Date.class;
+                        break;
+                    case "DATE":
+                        o = Date.class;
+                        break;
+                    default:
+                        o = null;
+                        break;
+                }
+                properties.put(ss.get(i), o);
+                columnsTable.put(ss.get(i), typeSizes.toString());
+                //String colCap = cols[i].substring(0, 1).toUpperCase() + cols[i].substring(1);
            /* beanGenerator.getClass().getMethod("set"+colCap,o.getClass());
             System.out.println("set"+colCap);
             beanGenerator.getClass().getMethod("get"+colCap);*/
-            attribute.setId(col.getKey());
-            attribute.setSize(size);
-            attribute.setName(col.getValue());
-            attribute.setPrimaryKey(primarykey);
-            attributes.add(attribute);
+                attribute.setId(ids.get(i));
+                attribute.setSize(size);
+                attribute.setName(ss.get(i));
+                attribute.setPrimaryKey(primarykey);
+                attributes.add(attribute);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
         }
         for (String s : cols) {
             Class<?> val = properties.get(s);
@@ -467,7 +468,8 @@ public class Application extends Controller {
     }
 
     public Result delete(int id){
-        colsSelectedMap.remove(id);
+        //colsSelectedMap.remove(id);
+        //attributtes.remove(id);
         return ok("removed");
     }
 
@@ -609,14 +611,6 @@ public class Application extends Controller {
 
     public void setCols(String[] cols) {
         this.cols = cols;
-    }
-
-    public Map<Integer, String> getColsSelectedMap() {
-        return colsSelectedMap;
-    }
-
-    public void setColsSelectedMap(Map<Integer, String> colsSelectedMap) {
-        this.colsSelectedMap = colsSelectedMap;
     }
 
     public List<Attribute> getAttributes() {

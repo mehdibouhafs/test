@@ -12,6 +12,10 @@ public class ParamFormData1 {
 
     public String tableName;
 
+    public List<String> cols;
+
+    public List<Integer> id;
+
     public String typeXML;
 
     public List<String> primaryKey;
@@ -61,12 +65,28 @@ public class ParamFormData1 {
         this.typeXML = typeXML;
     }
 
+    public List<Integer> getId() {
+        return id;
+    }
 
+    public void setId(List<Integer> id) {
+        this.id = id;
+    }
+
+    public List<String> getCols() {
+        return cols;
+    }
+
+    public void setCols(List<String> cols) {
+        this.cols = cols;
+    }
 
     @Override
     public String toString() {
         return "ParamFormData1{" +
                 "tableName='" + tableName + '\'' +
+                ", cols=" + cols +
+                ", id=" + id +
                 ", typeXML='" + typeXML + '\'' +
                 ", primaryKey=" + primaryKey +
                 ", type=" + type +

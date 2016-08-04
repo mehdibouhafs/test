@@ -19,7 +19,7 @@ public class FieldSetItemPreparedStatementSetter implements ItemPreparedStatemen
 
     @Override
     public void setValues(Object item, PreparedStatement ps) throws SQLException {
-        System.out.println(item);
+
         ApplicationContext context = Global.getApplicationContext();
         Generator generator = (Generator) context.getBean("generator");
         int i=1;

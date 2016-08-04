@@ -172,22 +172,28 @@ public class ObjectDaoJdbc extends JdbcTemplate implements ObjectDao{
        Statement s = null;
        ResultSet rs = null;
        ResultSetMetaData rsmd = null;
+       ResultSet rstab = null;
        try {
-            s = con.createStatement();
-            rs = s.executeQuery(query); // your query
-            rsmd = rs.getMetaData();
+           DatabaseMetaData dbm = con.getMetaData();
+           rstab = dbm.getTables(null,null,table,null);
+           if(rstab.next()) {
+               s = con.createStatement();
+               rs = s.executeQuery(query); // your query
+               rsmd = rs.getMetaData();
+               int colCount = rsmd.getColumnCount();
 
-           int colCount = rsmd.getColumnCount();
+               System.out.println("Number Of Columns : " + colCount);
+               System.out.println("column Details :");
 
-           System.out.println("Number Of Columns : " + colCount);
-           System.out.println("column Details :");
-
-           for (int i = 1; i <= colCount; i++) {
-               //getting column name of index 'i'
-               String colName = rsmd.getColumnName(i);
-               //getting column's data type of index 'i'
-               String colType = rsmd.getColumnTypeName(i);
-               map.put(colName,colType);
+               for (int i = 1; i <= colCount; i++) {
+                   //getting column name of index 'i'
+                   String colName = rsmd.getColumnName(i);
+                   //getting column's data type of index 'i'
+                   String colType = rsmd.getColumnTypeName(i);
+                   map.put(colName, colType);
+               }
+           }else{
+               map.put("existe","notExiste");
            }
        } catch (SQLException e) {
            e.printStackTrace();
@@ -197,32 +203,20 @@ public class ObjectDaoJdbc extends JdbcTemplate implements ObjectDao{
            //Closing the ResultSet object
            try
            {
+               if(rstab != null){
+                   rstab.close();
+                   rstab=null;
+               }
                if(rs!=null)
                {
                    rs.close();
                    rs=null;
                }
-           }
-           catch (SQLException e)
-           {
-               e.printStackTrace();
-           }
-           //Closing the Statement object
-           try
-           {
                if(s!=null)
                {
                    s.close();
                    s=null;
                }
-           }
-           catch (SQLException e)
-           {
-               e.printStackTrace();
-           }
-           //Closing the Connection object
-           try
-           {
                if(con!=null)
                {
                    con.close();
@@ -233,6 +227,7 @@ public class ObjectDaoJdbc extends JdbcTemplate implements ObjectDao{
            {
                e.printStackTrace();
            }
+
        }
        return map;
    }

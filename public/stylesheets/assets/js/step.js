@@ -51,6 +51,56 @@ $(document).ready(function() {
             $('#dropTab').show();
             $("#dropTable").bootstrapSwitch('disabled',false);
             $("#dropTable").bootstrapSwitch('state', true);
+            var tableName=$('#tableName').val();
+            $.ajax({
+                type : "post",
+                url : "metadata", //process to mail
+                data :{
+                    tableName:tableName
+                },
+                success : function(response) {
+                    console.log(response[0].col);
+                    if(response[0].col == "existe" ){
+                        $('#consulter').css("background-color","#ff010f");
+                        $('#consulter1').css("background-color","#ff010f");
+                        $('#tableSpan').text("Table ( "+$('#tableName').val() +" ) valide");
+                        $('#tableSpan').css('color','#18bc9c');
+                        $('#tableSpan1').text("Table ( "+$('#tableName').val() +" ) valide");
+                        $('#tableSpan1').css('color','#18bc9c');
+                        $("#dropTable").bootstrapSwitch('state', false);
+                        $("#dropTable").bootstrapSwitch('toggleDisabled',true,true);
+                    }else {
+                        $('#consulter').css("background-color","#1eff00");
+                        $('#consulter1').css("background-color","#1eff00");
+                        $('#tableSpan').text("Table ( "+ $('#tableName').val()+" ) existe dejà veuillez consulter sa structure !");
+                        $('#tableSpan').css('color','#ff0000');
+                        $('#tableSpan1').text("Table ( "+ $('#tableName').val()+" ) existe dejà veuillez consulter sa structure !");
+                        $('#tableSpan1').css('color','#ff0000');
+                        $("#titreModal").html("Information sur la table " + tableName);
+                        $("#dropTable").bootstrapSwitch('disabled',false);
+                        $("#dropTable").bootstrapSwitch('state', true);
+                        var contenu = "";
+                        contenu += "<fieldset>" +
+                            "<table id='infoTable' width='100%' class='table table-bordered'>" +
+                            "<thead><tr><th style='color: blue;'><b>Colonne</b></th><th style='color: blue';><b>Type</b></th></thead><tbody>";
+                        for (var i = 0; i < response.length; i++) {
+                            contenu += "<tr><td>" + response[i].col + "</td><td>" + response[i].type + "</td></tr>";
+                        }
+                        contenu += "</tbody></table>" +
+                            "</fieldset>";
+
+                        $("#contenu").html(contenu);
+                        $('#infoTable').DataTable({
+                            'fnClearTable': true,
+                            "scrollY": "500px",
+                            "scrollCollapse": true
+                        });
+                    }
+                },
+                error : function() {
+                    console.log("erreur");
+                }
+            });
         }
     })
     
@@ -356,6 +406,8 @@ $('#form1').submit(function (e) {
                         var obj = JSON.parse(JSON.stringify(data));
                         var le = parseInt(data.length);
                         for (var i = 0; i < le; i++) {
+                            var ids =  'id['+data[i].id+']';
+                            var cols = 'cols[' + data[i].id + ']';
                             var type = 'type[' + data[i].id + ']';
                             var size = 'size[' + data[i].id + ']';
                             var primaryKey = 'primaryKey[' + data[i].id + ']';
@@ -628,7 +680,7 @@ $('#form1').submit(function (e) {
                              "</td>" +
                              "<td><input type='number' id='data[i].id' name='" + size + "' size='4' value='5'/> </td>";*/
                             // }
-                            $("#tableaucontenus1").append("<tr data-id='" + data[i].id + "'><td style='color: #63aef9;'>" + data[i].id + "</td><td>" + data[i].name + "</td>" + s + "<td><select name='" + primaryKey + "' id='" + primaryKey + "'><option value='none'>---</option>" +
+                            $("#tableaucontenus1").append("<tr data-id='" + data[i].id + "'><td style='color: #63aef9;'>" + data[i].id + "<input type='hidden' id='"+ids+"' name='"+ids+"' value='"+data[i].id+"'/></td><td>"+data[i].name+"<input type='hidden' id='"+cols+"' name='"+cols+"' value='"+data[i].name+"'/></td>" + s + "<td><select name='" + primaryKey + "' id='" + primaryKey + "'><option value='none'>---</option>" +
                                 "<option value='PRIMARY' title='Primaire'>PRIMARY</option>" +
                                 "<option value='UNIQUE' title='Unique'>UNIQUE</option>" +
                                 "<option value='INDEX' title='Index'>INDEX</option>" +
@@ -641,11 +693,11 @@ $('#form1').submit(function (e) {
                             "scrollY":        "500px",
                             "scrollCollapse": true
                         });
-                        $('#table1_info').css("color","#63aef9");
+                        /*$('#table1_info').css("color","#63aef9");
                         $('#table1_next').css("background-color","#18bc9c");
                         $('#table1_previous').css("background-color","#18bc9c");
                         $('#table1_filter').css("background-color","#18bc9c","color","beige");
-                        $('#table1_length').css("background-color","#18bc9c","color","beige");
+                        $('#table1_length').css("background-color","#18bc9c","color","beige");*/
 
                     },
                     error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
@@ -659,7 +711,6 @@ $('#form1').submit(function (e) {
             e.preventDefault();
             $('#table2').DataTable().destroy();
             $("#tableaucontenus2").html("");
-
             $("#tableNameValidation").val($("#tableName").val());
             if($("#form1").valid())
             {
@@ -836,11 +887,12 @@ $('#form1').submit(function (e) {
 
     })*/
 
-    $('#table1').on('click', '.glyphicon-remove-sign', function(e){
+    /*$('#table1').on('click', '.glyphicon-remove-sign', function(e){
         var r = confirm("Voulez vous vraiement supprimer ?");
         if (r == true) {
             $(this).closest('tr').remove();
             var id =  $(this).closest('tr').data('id');
+            document.getElementById("table1").deleteRow(id);
             console.log("id = "+id);
             $.ajax({
                 type : "GET",//la method à utiliser soit POST ou GET
@@ -857,7 +909,15 @@ $('#form1').submit(function (e) {
         } else {
             console.log("ss");
         }
-    });
+    });*/
+
+    $('#table1').on( 'click', '.glyphicon-remove-sign', function () {
+        var table = $('#table1').DataTable();
+        table
+            .row( $(this).parents('tr') )
+            .remove()
+            .draw();
+    } );
 
 
     $('#table1').on('click','input[type="checkbox"]', function(e) {
@@ -918,31 +978,42 @@ $('#form1').submit(function (e) {
                 tableName:tableName
             },
             success : function(response) {
-                console.log(response);
-                $("#titreModal").html("Information sur la table "+tableName);
-                var contenu="";
-                contenu += "<fieldset>" +
-                    "<table id='infoTable' width='100%' class='table table-bordered'>" +
-                    "<thead><tr><th style='color: blue;'><b>Colonne</b></th><th style='color: blue';><b>Type</b></th></thead><tbody>";
-                for(var i=0;i<response.length;i++){
-                        contenu+="<tr><td>"+response[i].col+"</td><td>"+response[i].type+"</td></tr>";
+                console.log(response[0].col);
+                if(response[0].col == "existe" ){
+                }else {
+                    $('#Modalx').modal("show");
                 }
-                contenu += "</tbody></table>" +
-                    "</fieldset>";
-
-                $("#contenu").html(contenu);
-                $('#infoTable').DataTable({
-                    'fnClearTable':true,
-                    "scrollY":        "500px",
-                    "scrollCollapse": true
-                });
             },
             error : function() {
                 console.log("erreur");
             }
         });
-        $('#Modalx').modal("show");
+
     });
+
+    $('.consulter1').on('click',function(e){
+        e.preventDefault();
+        var tableName=$('#tableName').val();
+        $.ajax({
+            type : "post",
+            url : "metadata", //process to mail
+            data :{
+                tableName:tableName
+            },
+            success : function(response) {
+                console.log(response[0].col);
+                if(response[0].col == "existe" ){
+                }else {
+                    $('#Modalx').modal("show");
+                }
+            },
+            error : function() {
+                console.log("erreur");
+            }
+        });
+
+    });
+
     
     
 

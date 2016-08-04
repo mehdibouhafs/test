@@ -17,7 +17,7 @@
 * template and passing a `String` message.
 *@
 <!-- Navigation -->
-    <div class="container" style="margin-bottom: 200px;">
+    <div class="container">
             <!--<div class="col-sm-10 col-md-4"></div>
                 <div class="col-sm-10 col-md-4">
             <img src="@routes.Assets.versioned("images/logo.png")" class="img-responsive" alt="Responsive image"/>
@@ -238,14 +238,14 @@
                             <form id="form1" name="form1" action="@routes.Application.getTypes" method="POST">
                                 <div class="panel-body well">
                                     <div class="form-group seve_element_to_target">
-                                        <label id="table" class="control-label col-xs-12 col-sm-2" style="color: black;" for="tableName">Table</label>
+                                        <label id="table" class="control-label col-xs-12 col-sm-offset-1 col-sm-1" style="color: black;" for="tableName">Table</label>
                                         <div class="col-xs-12 col-sm-3">
                                             <div class='input-group'>
                                                 <span class='input-group-addon'> <i class="fa fa-table"></i></span>
                                                 <input type="text" class="form-control" id="tableName" name="tableName" value="" placeholder="Table Name">
                                             </div>
                                         </div>
-                                        <div class="col-sm-offset-0  col-sm-2">
+                                        <div class="col-sm-offset-0  col-sm-3">
                                             <span id="tableSpan" class="" style="color:black;" > Please enter the table Name . (required)</span>
                                         </div>
 
@@ -319,14 +319,15 @@
 
                         <div class="panel-body well">
                             <div class="form-group seve_element_to_target">
-                                <label id="table" class="control-label col-xs-12 col-sm-2" style="color: beige;" for="tableName">Table</label>
+                                <label id="table" class="control-label col-xs-12 col-sm-offset-1 col-sm-1" style="color: black;" for="tableName">Table</label>
                                 <div class="col-xs-12 col-sm-3">
                                     <div class='input-group'>
                                         <span class='input-group-addon'> <i class="fa fa-table"></i></span>
                                         <input type="text" class="form-control" id="tableNameValidation" name="tableNameValidation" disabled/>
                                     </div>
                                 </div>
-                                <div class="col-sm-offset-0  col-sm-2">
+                                <div class="col-sm-offset-0  col-sm-3">
+                                    <span id="tableSpan1" class="" style="color:black;" > </span>
                                 </div>
 
                                 <div class="col-sm-offset-0  col-sm-1">
