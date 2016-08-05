@@ -103,7 +103,7 @@
 				processor="processor"
 				writer="cvsFileItemWriter"
 				skip-policy="FileVerificationSkipper"
-				commit-interval="100000">
+				commit-interval="1">
 				</chunk>
 			</tasklet>
 		</batch:step>
