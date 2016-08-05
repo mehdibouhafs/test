@@ -100,7 +100,7 @@
 			<tasklet>
 				<chunk
 				reader="cvsFileItemReader"
-				processor="processor"rr
+				processor="processor"
 				writer="cvsFileItemWriter"
 				skip-policy="FileVerificationSkipper"
 				commit-interval="1">
