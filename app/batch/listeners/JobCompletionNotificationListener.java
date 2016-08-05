@@ -1,4 +1,4 @@
-package listeners;
+package batch.listeners;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -13,6 +13,8 @@ import javassist.NotFoundException;
 import model.App;
 import model.ReaderGenerique;
 import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.listener.JobExecutionListenerSupport;
@@ -25,6 +27,9 @@ import running.Global;
 public class JobCompletionNotificationListener extends JobExecutionListenerSupport {
 
 	//private static final Logger log = LoggerFactory.getLogger(JobCompletionNotificationListener.class);
+
+
+	private static final Logger log = LoggerFactory.getLogger(JobCompletionNotificationListener.class);
 
 	private final JdbcTemplate jdbcTemplate;
 
@@ -45,12 +50,13 @@ public class JobCompletionNotificationListener extends JobExecutionListenerSuppo
 
 	@Override
 	public void afterJob(JobExecution jobExecution) {
-
+		ApplicationContext context = Global.getApplicationContext();
 		stopTime = new DateTime();
-
+		ReaderGenerique readerGenerique = context.getBean("readerGenerique",ReaderGenerique.class);
+		log.trace("Loading the data in Process");
 		if(jobExecution.getStatus() == BatchStatus.COMPLETED) {
-			ApplicationContext context = Global.getApplicationContext();
-			ReaderGenerique readerGenerique = context.getBean("readerGenerique",ReaderGenerique.class);
+
+
 			//log.info("!!! JOB FINISHED! Time to verify the results");
 			System.out.println("ExamResult Job stops at :"+stopTime);
 			System.out.println("Total time take in millis :"+getTimeInMillis(startTime , stopTime));
@@ -66,7 +72,6 @@ public class JobCompletionNotificationListener extends JobExecutionListenerSuppo
 					cols.append(", " + prop.getKey());
 				}
 			}
-
 			final String select = "SELECT "+cols.toString()+" From "+readerGenerique.getTable();
 			List<Object> results = jdbcTemplate.query(select, new RowMapper<Object>() {
 				@Override
@@ -97,6 +102,7 @@ public class JobCompletionNotificationListener extends JobExecutionListenerSuppo
 							}
 						}
 						System.out.println(App.reflectToString(o));
+						log.debug("Succes writing {} Object", App.reflectToString(o));
 						return o;
 
 					} catch (IllegalAccessException e) {
@@ -121,8 +127,11 @@ public class JobCompletionNotificationListener extends JobExecutionListenerSuppo
 		}else if(jobExecution.getStatus() == BatchStatus.FAILED){
 		System.out.println("ExamResult job failed with following exceptions ");
 		List<Throwable> exceptionList = jobExecution.getAllFailureExceptions();
+			int i =0;
 		for(Throwable th : exceptionList){
-			System.err.println("exception :" +th.getLocalizedMessage());
+			readerGenerique.getErrors().put("exception"+i,th.getLocalizedMessage());
+			System.err.println("exceptionsJOBLISTENER :" +th.getLocalizedMessage());
+			System.err.println("Message :" +th.getMessage());
 		}
 	}
 	}

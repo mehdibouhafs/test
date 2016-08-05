@@ -3,13 +3,6 @@
  * argument is a `String` with the title of the page, the second
  * argument is an `Html` object containing the body of the page.
  *@
-@(paramForm: Form[views.formdata.ParamFormData],
-        paramForm1: Form[views.formdata.ParamFormData1],
-        paramForm2: Form[views.formdata.ParamFormData2],
-        cols :List[String],
-        types :List[String],
-        separators : List[String]
-        )
 @import views.html.bootstrap3._
 @main("ITN SPRING BATCH - PLAY") {
 @*
@@ -103,6 +96,8 @@
                                     name="numberLine"
                                     value=""
                                     placeholder="Number of lines to Switch"
+                                    min="1"
+                                    max="99999"
                                     style="width: 120px;"
                                     />
                                 </div>
@@ -388,6 +383,22 @@
                             </div>
                         </div>
         </div>
+
+    <div id="modal-danger" class="modal modal-message modal-danger fade" style="padding-top: 250px;" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <i class="glyphicon glyphicon-exclamation-sign"></i>
+                </div>
+                <div class="modal-title">ERROR</div>
+                <div id="modal-body-danger" class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button id="thanks" type="button" class="btn btn-danger" data-dismiss="modal">Try Again</button>
+                </div>
+            </div> <!-- / .modal-content -->
+        </div> <!-- / .modal-dialog -->
+    </div>
     </div>
 }
 

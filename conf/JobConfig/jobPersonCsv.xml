@@ -72,23 +72,26 @@
 		<property name="strict" value="false" />
 	</bean>
 
+	<bean id="FileVerificationSkipper" class="batch.FileVerificationSkipper"/>
 
-	<bean id="readerGenerique" class="model.ReaderGenerique" />
+	<bean id="readerGenerique" class="model.ReaderGenerique"/>
 
 
 	<bean id="generator" class="model.Generator"  lazy-init="true" />
 
+	<bean id="processor" class="processor.ObjectItemProcessor"/>
+
 	<bean id="firstBe" class="#{generator.getClassGenerate()}" lazy-init="true" ></bean>
 
 
-	<bean id="recordSeperatorPolicy " class="handle.BlankLineRecordSeparatorPolicy"/>
+	<bean id="recordSeperatorPolicy " class="batch.BlankLineRecordSeparatorPolicy"/>
 
 
 	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
 		<constructor-arg ref ="dataSource"/>
 	</bean>
 
-	<bean id="listener" class="listeners.JobCompletionNotificationListener">
+	<bean id="listener" class="batch.listeners.JobCompletionNotificationListener">
 		<constructor-arg ref="jdbcTemplate"/>
 	</bean>
 
@@ -97,8 +100,10 @@
 			<tasklet>
 				<chunk
 				reader="cvsFileItemReader"
+				processor="processor"
 				writer="cvsFileItemWriter"
-				commit-interval="1">
+				skip-policy="FileVerificationSkipper"
+				commit-interval="100000">
 				</chunk>
 			</tasklet>
 		</batch:step>

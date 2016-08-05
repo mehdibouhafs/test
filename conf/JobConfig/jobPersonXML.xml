@@ -33,8 +33,9 @@
 			<tasklet>
 				<chunk
 						reader="xmlItemReader"
+						processor="processor"
 						writer="cvsFileItemWriter"
-						commit-interval="1">
+						commit-interval="100000">
 				</chunk>
 			</tasklet>
 		</batch:step>

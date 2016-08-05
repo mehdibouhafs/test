@@ -1,0 +1,45 @@
+@*
+ * Call the `main` template with two arguments. The first
+ * argument is a `String` with the title of the page, the second
+ * argument is an `Html` object containing the body of the page.
+ *@
+@(message: String)
+@import views.html.bootstrap3._
+@*
+* Get an `Html` object by calling the built-in Play welcome
+* template and passing a `String` message.
+*@
+<!-- Navigation -->
+    <div class="container">
+        <br>
+        <br>
+        <br>
+        <br>
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <div class="panel panel-danger">
+                    <div class="panel-heading">
+                        <h3 class="text-center">
+                            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> ITN Oops :
+                            <small>Error found - <b> 404 error </b></small>
+                        </h3>
+                    </div>
+                    <div class="panel-body">
+                        <p>Problem discovered :</p>
+
+                        <p>@(message)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+
+            </div>
+        </div>
+        <p>JOKE: <a href="http://www.popwebdesign.net/junk.html"target="_blank">Funny 404 page.</a></p>
+        <a href="http://validator.w3.org/check?uri=http%3A%2F%2Fbootsnipp.com%2Fiframe%2FeNAXy" target="_blank">
+            <small>HTML</small><sup>5</sup>
+        </a>
+    </div>
+
+

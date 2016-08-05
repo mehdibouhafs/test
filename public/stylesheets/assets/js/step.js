@@ -800,11 +800,22 @@ $('#form1').submit(function (e) {
                     data:data0,
                     success: function (data) {// le cas ou la requete est bien execute en reçoi les données serialiser par JSON dans la variable msg
                         //recuperation de la valeur stock dans l'attribut desactive
-                        $('#modal-body').append("Total time that job takes in millis ="+data.time);
-                        $('#modal-success').modal('show');
+                        if(data.time > 0 ) {
+                            $('#modal-body').append("Total time that job takes  =" + data.time + " secondes !");
+                            $('#modal-success').modal('show');
+
+                        }
+                        else{
+                            var errors;
+                            for (var i = 0; i < data.length; i++) {
+                                errors = errors + data[i].erreur +"=> "+ data[i].value;
+                            }
+                            $('#modal-body-danger').append("job Failed try again resolve this "+errors);
+                            $('#modal-danger').modal('show');
+                        }
                     },
                     error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
-                        console.log("error");
+                        $('#modal-danger').modal('show');
                     }
                 });
             }else{
@@ -866,7 +877,7 @@ $('#form1').submit(function (e) {
     });
 
     $("#thanks").click(function (e) {
-        location.reload();
+        //location.reload();
     })
     
     $('#type3').hide();

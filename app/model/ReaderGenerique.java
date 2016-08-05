@@ -5,12 +5,14 @@ import org.joda.time.DateTime;
 
 import javax.persistence.Entity;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
  * Created by MBS on 05/07/2016.
  */
+
 
 public class ReaderGenerique extends Model {
 
@@ -27,6 +29,8 @@ public class ReaderGenerique extends Model {
     private String filePath;
 
     private String table;
+
+    private Map<String,String> errors = new LinkedHashMap<>();
 
     private Class<?> classs = Object.class;
 
@@ -163,5 +167,13 @@ public class ReaderGenerique extends Model {
 
     public void setClassXml(String classXml) {
         this.classXml = classXml;
+    }
+
+    public Map<String, String> getErrors() {
+        return errors;
+    }
+
+    public void setErrors(Map<String, String> errors) {
+        this.errors = errors;
     }
 }

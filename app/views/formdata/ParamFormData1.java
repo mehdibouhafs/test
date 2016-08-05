@@ -14,6 +14,10 @@ public class ParamFormData1 {
 
     public List<String> cols;
 
+    //public List<String> columns;
+
+    //public String filePath;
+
     public List<Integer> id;
 
     public String typeXML;
@@ -72,6 +76,7 @@ public class ParamFormData1 {
     public void setId(List<Integer> id) {
         this.id = id;
     }
+
 
     public List<String> getCols() {
         return cols;

@@ -1,12 +1,11 @@
 package controllers;
-import akka.dispatch.Foreach;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import dao.ObjectDao;
 import dao.ObjectDaoJdbc;
 import javassist.CannotCompileException;
 import javassist.NotFoundException;
-import listeners.JobCompletionNotificationListener;
+import batch.listeners.JobCompletionNotificationListener;
 import model.Attribute;
 import model.Generator;
 import model.ReaderGenerique;
@@ -16,6 +15,7 @@ import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
+import org.springframework.batch.item.file.FlatFileParseException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
@@ -47,7 +47,7 @@ import java.util.*;
 @Component("application")
 public class Application extends Controller {
 
-    private String[] cols;
+
     private List<String> elements;
     private List<String> attributtes;
 
@@ -76,14 +76,13 @@ public class Application extends Controller {
         ParamFormData paramData = new ParamFormData();
         Form<ParamFormData> formData = Form.form(ParamFormData.class).fill(paramData);
 
-
         return ok("ApplicationController");
     }
 
     public Result upload() throws IOException {
-        Form<ParamFormData2> formData = Form.form(ParamFormData2.class).bindFromRequest();
         ApplicationContext context = Global.getApplicationContext();
-        List<String> list = new ArrayList<String>(Arrays.asList(getCols()));
+        ReaderGenerique readerGenerique = context.getBean("readerGenerique", ReaderGenerique.class);
+        Form<ParamFormData2> formData = Form.form(ParamFormData2.class).bindFromRequest();
         String dateParam = new Date().toString();
         List<String> ss = formData.get().getCols();
         String type =formData.get().getTypeXML();
@@ -103,6 +102,8 @@ public class Application extends Controller {
                     if(attribute[0].equals("attributes[" + i + "]")){
                         attributtes.add(ss.get(i));
                     }
+
+                    readerGenerique.getErrors().put("uploadException",e.getMessage());
                     System.out.println(e.getMessage());
                 }
             }
@@ -129,12 +130,11 @@ public class Application extends Controller {
         Attribute attribute;
         attributes = new ArrayList<>();
         Form<ParamFormData1> formData = Form.form(ParamFormData1.class).bindFromRequest();
-        //System.out.println(formData.get().toString());
         String typeXml =formData.get().getTypeXML();
         List<String> ss = formData.get().getCols();
         List<Integer> ids = formData.get().getId();
         System.out.println("id :" +ids);
-        System.out.println("COls :"+ ss);
+        System.out.println("COls Selected:"+ ss);
         //System.out.println(formData.toString());
        /* if (formData.hasErrors()) {
             // Don't call formData.get() when there are errors, pass 'null' to helpers instead.
@@ -230,10 +230,6 @@ public class Application extends Controller {
                 }
                 properties.put(ss.get(i), o);
                 columnsTable.put(ss.get(i), typeSizes.toString());
-                //String colCap = cols[i].substring(0, 1).toUpperCase() + cols[i].substring(1);
-           /* beanGenerator.getClass().getMethod("set"+colCap,o.getClass());
-            System.out.println("set"+colCap);
-            beanGenerator.getClass().getMethod("get"+colCap);*/
                 attribute.setId(ids.get(i));
                 attribute.setSize(size);
                 attribute.setName(ss.get(i));
@@ -243,7 +239,7 @@ public class Application extends Controller {
                 System.out.println(e.getMessage());
             }
         }
-        for (String s : cols) {
+        for (String s : readerGenerique.getColumns()) {
             Class<?> val = properties.get(s);
             if (val == null) {
                 properties.put(s, Object.class);
@@ -252,7 +248,6 @@ public class Application extends Controller {
         readerGenerique.setColumnsTable(columnsTable);
         readerGenerique.setTable(formData.get().getTableName());
         readerGenerique.setProperties(properties);
-
         Generator c = context.getBean("generator", Generator.class);
         c.setProperties(properties);
         Class<?> classNew = null;
@@ -298,20 +293,14 @@ public class Application extends Controller {
         if (formData.hasErrors()) {
             // Don't call formData.get() when there are errors, pass 'null' to helpers instead.
             flash("error", "Please correct errors above.");
-            return badRequest(index.render(formData,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null
-            ));
+            return badRequest(index.render());
         }
         return ok("path"+filePath);
-
     }
 
 
     public Result cols() throws IOException {
+         String[] cols;
         ApplicationContext context = Global.getApplicationContext();
         ReaderGenerique readerGenerique = context.getBean("readerGenerique", ReaderGenerique.class);
         Form<ParamformData01> formData01 = Form.form(ParamformData01.class).bindFromRequest();
@@ -337,7 +326,7 @@ public class Application extends Controller {
             readerGenerique.setLineToSkip(nbLineToEscape);
             readerGenerique.setSeparator(formData01.get().getSeparator());
             readerGenerique.setColumns(cols);
-        ObjectNode result;
+             ObjectNode result;
             //JsonArrayBuilder jsa =  Json.createArrayBuilder();
             ArrayNode resuls = play.libs.Json.newArray();
             //Object o;
@@ -350,10 +339,12 @@ public class Application extends Controller {
                 i++;
                 resuls.add(result);
             }
+
             return ok(Json.toJson(resuls));
 }
 
     public Result colsxml() throws IOException {
+        String[] cols;
         ApplicationContext context = Global.getApplicationContext();
         ReaderGenerique readerGenerique = context.getBean("readerGenerique", ReaderGenerique.class);
         Form<ParamFormData02> formData = Form.form(ParamFormData02.class).bindFromRequest();
@@ -361,12 +352,7 @@ public class Application extends Controller {
         if (formData.hasErrors()) {
             // Don't call formData.get() when there are errors, pass 'null' to helpers instead.
             flash("error", "Please correct errors above.");
-            return badRequest(index.render(null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null
+            return badRequest(index.render(
             ));
         }
             System.out.println("xml File cols");
@@ -415,6 +401,8 @@ public class Application extends Controller {
     }
 
     public String[] firstLine1(File f,String typeXml){
+        ApplicationContext context = Global.getApplicationContext();
+        ReaderGenerique readerGenerique = context.getBean("readerGenerique", ReaderGenerique.class);
         DocumentBuilder dBuilder = null;
         try {
             dBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -457,10 +445,13 @@ public class Application extends Controller {
             }
         } catch (ParserConfigurationException e) {
             e.printStackTrace();
+            readerGenerique.getErrors().put("colsXmlParserException",e.getMessage());
         } catch (SAXException e) {
             e.printStackTrace();
+            readerGenerique.getErrors().put("colsXmlSAXException",e.getMessage());
         } catch (IOException e) {
             e.printStackTrace();
+            readerGenerique.getErrors().put("colsXmlIOException",e.getMessage());
         }
 
         return null;
@@ -509,14 +500,15 @@ public class Application extends Controller {
         }
         Boolean create = objectDao.createTable(readerGenerique.getTable(), readerGenerique.getColumnsTable());
         System.out.println("Validate");
+        ObjectNode resultEchec = play.libs.Json.newObject();
         if (create) {
             File destination = new File(filePath);
             JobParameters param = new JobParametersBuilder()
                     .addString("input.file.name", destination.getPath())
                     .addLong("time", System.currentTimeMillis()).toJobParameters();
             JobLauncher jobLauncher = (JobLauncher) context.getBean("jobLauncher");
+
             if(extFile.equals("csv")) {
-                System.out.println("CSV JOB");
                 Job job = (Job) context.getBean("importUserJob");
                 try {
                     JobExecution jobExecution = jobLauncher.run(job, param);
@@ -528,17 +520,28 @@ public class Application extends Controller {
                         System.out.println(c1.getClass());
 
                         ObjectNode result = play.libs.Json.newObject();
-                        result.put("time", readerGenerique.getDateTime());
+
+                        Double time = readerGenerique.getDateTime() / 1000.0;
+                        System.out.println("time in seconde" + time + "time in mili" + readerGenerique.getDateTime());
+
+                        result.put("time", time);
                         return ok(Json.toJson(result));
                     }
+                }catch (FlatFileParseException e){
+                        System.out.println("CATCH IT ");
+                    e.printStackTrace();
+
                 } catch (JobExecutionAlreadyRunningException e) {
                     e.printStackTrace();
                 } catch (JobRestartException e) {
                     e.printStackTrace();
+
                 } catch (JobInstanceAlreadyCompleteException e) {
                     e.printStackTrace();
+
                 } catch (JobParametersInvalidException e) {
                     e.printStackTrace();
+
                 }
             }else if(extFile.equals("xml")){
                 System.out.println("XML JOB");
@@ -550,24 +553,40 @@ public class Application extends Controller {
                         Generator c = context.getBean("generator", Generator.class);
                         c.setClassGenerate(null);
                         ObjectNode result = play.libs.Json.newObject();
-                        result.put("time", readerGenerique.getDateTime());
+                        Double time = readerGenerique.getDateTime() / 1000.0;
+                        System.out.println("time in seconde"+time+"time in mili"+readerGenerique.getDateTime());
+                        result.put("time", time);
                         return ok(Json.toJson(result));
                     }
                 } catch (JobExecutionAlreadyRunningException e) {
                     e.printStackTrace();
+                    resultEchec.put("time", e.getMessage());
+
+
                 } catch (JobRestartException e) {
                     e.printStackTrace();
+                    resultEchec.put("time", e.getMessage());
+
+
                 } catch (JobInstanceAlreadyCompleteException e) {
-                    e.printStackTrace();
+                    resultEchec.put("time", e.getMessage());
+
+
                 } catch (JobParametersInvalidException e) {
                     e.printStackTrace();
+
+                } catch (FlatFileParseException e){
+                    System.out.println("CATCH IT " + e.getMessage());
+
                 }
             }
 
         } else {
-            return ok("Table Not Created");
+            readerGenerique.getErrors().put("SQLError","table not created sql error");
+            return ok(Json.toJson(getErrors()));
         }
-        return ok("Job not completed");
+        //readerGenerique.getErrors().put("imcompleted","Job not completed");
+        return ok(Json.toJson(getErrors()));
     }
 
     /*public List<Integer> getPositons(List<String> s){
@@ -580,18 +599,12 @@ public class Application extends Controller {
         return  poss;
     }*/
 
-
-
     public Result index() {
         String[] seps = {";", ",", ".", "|", ":"," "};
         List<String> sep = new ArrayList<>(Arrays.asList(seps));
         ParamFormData paramData =  new ParamFormData();
         Form<ParamFormData> formData = Form.form(ParamFormData.class).fill(paramData);
-        return ok(index.render(formData,null,null,
-                null,
-                null,
-                sep
-        ));
+        return ok(index.render());
     }
 
 
@@ -605,12 +618,18 @@ public class Application extends Controller {
         return  extension;
     }
 
-    public String[] getCols() {
-        return cols;
-    }
-
-    public void setCols(String[] cols) {
-        this.cols = cols;
+    public ArrayNode getErrors(){
+        ApplicationContext context = Global.getApplicationContext();
+        ReaderGenerique readerGenerique = context.getBean("readerGenerique", ReaderGenerique.class);
+        ObjectNode result;
+        ArrayNode resuls = play.libs.Json.newArray();
+        for(Map.Entry<String,String> error:readerGenerique.getErrors().entrySet()) {
+            result = play.libs.Json.newObject();
+            result.put("erreur", error.getKey());
+            result.put("value", error.getValue());
+            resuls.add(result);
+        }
+        return resuls;
     }
 
     public List<Attribute> getAttributes() {
