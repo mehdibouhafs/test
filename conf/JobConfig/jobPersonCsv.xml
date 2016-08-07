@@ -25,10 +25,10 @@
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
 		<property name="url" value="jdbc:mysql://localhost:3306/test3?autoReconnect=true&amp;useSSL=false" />
 		<property name="username" value="root" />
-		<property name="password" value="" />
+		<property name="password" value="root" />
 	</bean>
 
-	<bean id="ObjectDao" class="dao.ObjectDaoJdbc">
+	<bean id="ObjectDao" class="batch.dao.ObjectDaoJdbc">
 		<property name="dataSource" ref="dataSource" />
 	</bean>
 
@@ -74,12 +74,12 @@
 
 	<bean id="FileVerificationSkipper" class="batch.FileVerificationSkipper"/>
 
-	<bean id="readerGenerique" class="model.ReaderGenerique"/>
+	<bean id="readerGenerique" class="batch.model.ReaderGenerique"/>
 
 
-	<bean id="generator" class="model.Generator"  lazy-init="true" />
+	<bean id="generator" class="batch.model.Generator" lazy-init="true" />
 
-	<bean id="processor" class="processor.ObjectItemProcessor"/>
+	<bean id="processor" class="batch.processor.ObjectItemProcessor"/>
 
 	<bean id="firstBe" class="#{generator.getClassGenerate()}" lazy-init="true" ></bean>
 
@@ -118,7 +118,7 @@
 		<property name="dataSource" ref="dataSource" />
 		<property name="sql" value="#{readerGenerique.cData}"/>
 		<property name="itemPreparedStatementSetter">
-			<bean class="processor.FieldSetItemPreparedStatementSetter"/>
+			<bean class="batch.processor.FieldSetItemPreparedStatementSetter"/>
 		</property>
 	</bean>
 

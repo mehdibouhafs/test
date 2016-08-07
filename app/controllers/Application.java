@@ -1,14 +1,14 @@
 package controllers;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import dao.ObjectDao;
-import dao.ObjectDaoJdbc;
+import batch.dao.ObjectDao;
+import batch.dao.ObjectDaoJdbc;
 import javassist.CannotCompileException;
 import javassist.NotFoundException;
 import batch.listeners.JobCompletionNotificationListener;
-import model.Attribute;
-import model.Generator;
-import model.ReaderGenerique;
+import batch.model.Attribute;
+import batch.model.Generator;
+import batch.model.ReaderGenerique;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.batch.core.*;
 import org.springframework.batch.core.launch.JobLauncher;
@@ -25,7 +25,7 @@ import play.libs.Json;
 import play.mvc.*;
 import play.mvc.Controller;
 import running.Global;
-import util.ReadXMLFile2;
+import batch.util.ReadXMLFile2;
 import views.formdata.*;
 import views.html.index;
 

@@ -1,15 +1,5 @@
 package views.formdata;
 
-import model.ReaderGenerique;
-import org.springframework.context.ApplicationContext;
-import play.data.validation.ValidationError;
-import running.Global;
-
-import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 /**
  * Created by MBS on 07/07/2016.
  */
