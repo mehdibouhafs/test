@@ -1,15 +1,13 @@
-package dao;
+package batch.dao;
 
-import model.ReaderGenerique;
+import batch.model.ReaderGenerique;
 import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import running.Global;
 
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 /**

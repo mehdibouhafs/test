@@ -1,14 +1,11 @@
-package dao;
+package batch.business;
 
-import java.util.List;
 import java.util.Map;
 
 /**
- * Created by MBS on 20/07/2016.
+ * Created by MBS on 08/08/2016.
  */
-
-
-public interface ObjectDao {
+public interface ObjectService {
     public boolean createTable(String name, Map<String,String> columnsTable);
     public boolean dropTable(String name);
     public Map<String,String > dataTable(String table);

@@ -25,7 +25,11 @@
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
 		<property name="url" value="jdbc:mysql://localhost:3306/test3?autoReconnect=true&amp;useSSL=false" />
 		<property name="username" value="root" />
-		<property name="password" value="root" />
+		<property name="password" value="" />
+	</bean>
+
+
+	<bean id="BatchService" class="batch.business.BatchServiceImpl">
 	</bean>
 
 	<bean id="ObjectDao" class="batch.dao.ObjectDaoJdbc">
@@ -72,19 +76,19 @@
 		<property name="strict" value="false" />
 	</bean>
 
-	<bean id="FileVerificationSkipper" class="batch.FileVerificationSkipper"/>
+	<bean id="FileVerificationSkipper" class="batch.policy.FileVerificationSkipper"/>
 
 	<bean id="readerGenerique" class="batch.model.ReaderGenerique"/>
 
 
-	<bean id="generator" class="batch.model.Generator" lazy-init="true" />
+	<bean id="app" class="batch.util.App" lazy-init="true" />
 
 	<bean id="processor" class="batch.processor.ObjectItemProcessor"/>
 
-	<bean id="firstBe" class="#{generator.getClassGenerate()}" lazy-init="true" ></bean>
+	<bean id="firstBe" class="#{app.getClassGenerate()}" lazy-init="true" ></bean>
 
 
-	<bean id="recordSeperatorPolicy " class="batch.BlankLineRecordSeparatorPolicy"/>
+	<bean id="recordSeperatorPolicy " class="batch.policy.BlankLineRecordSeparatorPolicy"/>
 
 
 	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">

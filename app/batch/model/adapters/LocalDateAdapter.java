@@ -1,4 +1,4 @@
-package model.adapters;
+package batch.model.adapters;
 
 
 

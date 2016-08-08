@@ -18,8 +18,8 @@ public class Global extends GlobalSettings {
     private static ConfigurableApplicationContext applicationContext;
     String[] springConfig  =
             {
-                    "JobConfig/jobPersonCsv.xml",
-                    "JobConfig/jobPersonXML.xml"
+                    "JobConfig/jobCsv.xml",
+                    "JobConfig/jobXML.xml"
 
             };
 

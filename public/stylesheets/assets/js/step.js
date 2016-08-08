@@ -769,7 +769,7 @@ $('#form1').submit(function (e) {
                                     console.log("FALSEE");
                                     q = "<td> <input type='checkbox' name='"+autoIncrement+"' disabled></td>";
                                 }
-                                $("#tableaucontenus2").append("<tr data-id='" + data[i].id + "'><td>" + data[i].id + "</td><td>" + data[i].name + "</td><td>"+ data[i].type+"</td><td>"+data[i].primaryKey+"</td><td>"+data[i].size+"</td>"+q+"</tr>");
+                                $("#tableaucontenus2").append("<tr data-id='" + data[i].id + "'><td>" + data[i].id + "</td><td>" + data[i].name + "</td><td>"+ data[i].type+"</td><td>"+data[i].size+"</td><td>"+data[i].primaryKey+"</td>"+q+"</tr>");
                             }
                             $('#table2').DataTable({
                                 "scrollY":        "500px",

@@ -1,4 +1,4 @@
-package model;
+package batch.model;
 
 /**
  * Created by MBS on 15/07/2016.

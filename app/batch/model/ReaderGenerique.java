@@ -1,10 +1,7 @@
-package model;
+package batch.model;
 
 import com.avaje.ebean.Model;
-import org.joda.time.DateTime;
 
-import javax.persistence.Entity;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +45,12 @@ public class ReaderGenerique extends Model {
 
 
     private Map<String, Class<?>> properties;
+
+
+    private List<String> attributes;
+
+
+    private List<String> elements;
 
     public ReaderGenerique() {
     }
@@ -175,5 +178,22 @@ public class ReaderGenerique extends Model {
 
     public void setErrors(Map<String, String> errors) {
         this.errors = errors;
+    }
+
+
+    public List<String> getAttributes() {
+        return attributes;
+    }
+
+    public void setAttributes(List<String> attributes) {
+        this.attributes = attributes;
+    }
+
+    public List<String> getElements() {
+        return elements;
+    }
+
+    public void setElements(List<String> elements) {
+        this.elements = elements;
     }
 }

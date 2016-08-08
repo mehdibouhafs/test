@@ -1,4 +1,4 @@
-package model.adapters;
+package batch.model.adapters;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import java.math.BigDecimal;

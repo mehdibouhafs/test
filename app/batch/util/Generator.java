@@ -1,4 +1,4 @@
-package model;
+package batch.util;
 
 import javassist.*;
 import javassist.bytecode.AnnotationsAttribute;
@@ -20,9 +20,9 @@ import java.util.Map;
  * Hello world!
  *
  */
-public class App
+public class Generator
 	{
-		public App() {
+		public Generator() {
 		}
 		private static int counter1 = 0;
 		private static int counter2 = 0;
@@ -30,7 +30,7 @@ public class App
 		public static Class<?> buildCSVClassName(Map<String, Class<?>> properties,String classeName) throws CannotCompileException, NotFoundException, IOException {
 			System.out.println("BUILD CLASSNAME CSV NORMAL");
 			ClassPool pool = new ClassPool(true);//ClassPool.getDefault();
-			CtClass result = pool.makeClass("app.generate."+classeName+"csv$" + (counter1));
+			CtClass result = pool.makeClass("app.batch.generate."+classeName+"csv$" + (counter1));
 			counter1++;
 			result.setSuperclass(pool.get((Serializable.class).getName()));
 			ClassFile classFile = result.getClassFile();
@@ -54,7 +54,7 @@ public class App
 		public static Class<?> buildCSVClassNamexml(Map<String, Class<?>> properties,String classeName,String typeXml) throws CannotCompileException, NotFoundException, IOException {
 		System.out.println("BUILD XML CLASSNAME XML");
 		ClassPool pool = new ClassPool(true);//ClassPool.getDefault();
-		CtClass result = pool.makeClass("app.generate."+classeName+"xml$" + (counter2));
+		CtClass result = pool.makeClass("app.batch.generate."+classeName+"xml$" + (counter2));
 		counter2++;
 		result.setSuperclass(pool.get((Serializable.class).getName()));
 		ClassFile classFile = result.getClassFile();
@@ -85,8 +85,8 @@ public class App
 			}
 			if(entry.getValue()== Date.class){
 				Annotation annota1 = new Annotation("javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter", constPool);
-				annota1.addMemberValue("type", new ClassMemberValue("model.adapters.LocalDateAdapter",classFile.getConstPool()));
-				annota1.addMemberValue("value", new ClassMemberValue("model.adapters.LocalDateAdapter",classFile.getConstPool()));
+				annota1.addMemberValue("type", new ClassMemberValue("batch.model.adapters.LocalDateAdapter",classFile.getConstPool()));
+				annota1.addMemberValue("value", new ClassMemberValue("batch.model.adapters.LocalDateAdapter",classFile.getConstPool()));
 				attra.addAnnotation(annota1);
 			}
 			field.getFieldInfo().addAttribute(attra);
@@ -102,7 +102,7 @@ public class App
 		public static Class<?> buildCSVClassNamexmlType3(Map<String, Class<?>> properties, String classeName, List<String> attributes, List<String> elements) throws CannotCompileException, NotFoundException, IOException {
 			System.out.println("BUILD XML CLASSNAME XML");
 			ClassPool pool = new ClassPool(true);//ClassPool.getDefault();
-			CtClass result = pool.makeClass("app.generate."+classeName+"xml$" + (counter2));
+			CtClass result = pool.makeClass("app.batch.generate."+classeName+"xml$" + (counter2));
 			counter2++;
 			result.setSuperclass(pool.get((Serializable.class).getName()));
 			ClassFile classFile = result.getClassFile();
@@ -130,8 +130,8 @@ public class App
 				}
 				if(entry.getValue()== Date.class){
 					Annotation annota1 = new Annotation("javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter", constPool);
-					annota1.addMemberValue("type", new ClassMemberValue("model.adapters.LocalDateAdapter",classFile.getConstPool()));
-					annota1.addMemberValue("value", new ClassMemberValue("model.adapters.LocalDateAdapter",classFile.getConstPool()));
+					annota1.addMemberValue("type", new ClassMemberValue("batch.model.adapters.LocalDateAdapter",classFile.getConstPool()));
+					annota1.addMemberValue("value", new ClassMemberValue("batch.model.adapters.LocalDateAdapter",classFile.getConstPool()));
 					attra.addAnnotation(annota1);
 				}
 				field.getFieldInfo().addAttribute(attra);
@@ -145,7 +145,7 @@ public class App
 		}
 
 		public static Object generatorBean(Map<String,Class<?>> properties,String className) throws IOException, CannotCompileException, NotFoundException, IllegalAccessException {
-			Class<?> cla = App.buildCSVClassName(properties,className);
+			Class<?> cla = Generator.buildCSVClassName(properties,className);
 			Object o = null;
 			try {
 				o = cla.newInstance();

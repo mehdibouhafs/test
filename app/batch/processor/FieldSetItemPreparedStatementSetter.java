@@ -1,8 +1,8 @@
-package processor;
+package batch.processor;
 
-import model.App;
-import model.Generator;
-import model.ReaderGenerique;
+import batch.util.App;
+import batch.model.ReaderGenerique;
+import batch.util.Generator;
 import org.springframework.batch.item.database.ItemPreparedStatementSetter;
 import org.springframework.context.ApplicationContext;
 import running.Global;
@@ -25,11 +25,11 @@ public class FieldSetItemPreparedStatementSetter implements ItemPreparedStatemen
         ApplicationContext context = Global.getApplicationContext();
         ReaderGenerique readerGenerique = context.getBean("readerGenerique", ReaderGenerique.class);
         try {
-            System.out.println("FIELDSET"+ App.reflectToString(item));
+            System.out.println("FIELDSET"+ Generator.reflectToString(item));
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
-        Generator generator = (Generator) context.getBean("generator");
+        App generator = (App) context.getBean("app");
         int i=1;
         for (Map.Entry<String, Class<?>> entry : generator.getProperties().entrySet()) {
             try {
@@ -66,16 +66,16 @@ public class FieldSetItemPreparedStatementSetter implements ItemPreparedStatemen
                         break;
                     case "Date":
                         System.out.println("Date");
-                        //System.out.println("Date"+i+":"+((java.util.Date)(f.get(item))).getTime());
+                        //System.out.println("Date"+i+":"+((java.batch.util.Date)(f.get(item))).getTime());
                        /* final String NEW_FORMAT = "dd/MM/yyyy";
                         SimpleDateFormat sdf = new SimpleDateFormat("EE MMM dd HH:mm:ss z yyyy", Locale.ENGLISH);
-                        java.util.Date date = null;
+                        java.batch.util.Date date = null;
                         try {
                             date = sdf.parse((f.get(item)).toString());
                             sdf.applyPattern(NEW_FORMAT);
                             String s = sdf.format(date);
                             SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-                            java.util.Date date1 = formatter.parse(s);
+                            java.batch.util.Date date1 = formatter.parse(s);
                             System.out.println("Date :"+ date1.toString());*/
                         try {
                             ps.setDate(i,  new Date(((java.util.Date)(f.get(item))).getTime()));

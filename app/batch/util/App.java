@@ -1,25 +1,24 @@
-package model;
+package batch.util;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import batch.model.ReaderGenerique;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
 import javassist.CannotCompileException;
 import javassist.NotFoundException;
 import running.Global;
 
 
-public class Generator {
+public class App {
 	
 	private Map<String, Class<?>> properties = new LinkedHashMap<>();
 	
 	private Class<?> classGenerate = Object.class;
 	
-	public Generator() {
+	public App() {
 		// TODO Auto-generated constructor stub
 	}
 	   public Class<?> generator(String name, String typeXml, List<String> attributes,List<String> elements) throws CannotCompileException, NotFoundException{
@@ -29,15 +28,15 @@ public class Generator {
 		   try {
 			   if(readerGenerique.getExt().equals("csv")) {
 				   System.out.println(" buildCsvClassName CSV ");
-				   rowObjectClass = App.buildCSVClassName(this.properties, name);
+				   rowObjectClass = Generator.buildCSVClassName(this.properties, name);
 				   classGenerate = rowObjectClass;
 			   }else if(readerGenerique.getExt().equals("xml")){
-				   System.out.println(" buildXmlClassName XML ");
+				   System.out.println(" buildXmlClassName XML " + this.properties);
 				   if(!typeXml.equals("type3")){
-					   rowObjectClass = App.buildCSVClassNamexml(this.properties, name, typeXml);
+					   rowObjectClass = Generator.buildCSVClassNamexml(this.properties, name, typeXml);
 					   classGenerate = rowObjectClass;
 				   }else {
-					   rowObjectClass = App.buildCSVClassNamexmlType3(this.properties, name,attributes,elements);
+					   rowObjectClass = Generator.buildCSVClassNamexmlType3(this.properties, name,attributes,elements);
 					   classGenerate = rowObjectClass;
 				   }
 			   }

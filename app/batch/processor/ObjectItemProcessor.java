@@ -1,15 +1,13 @@
-package processor;
+package batch.processor;
 
-import model.App;
-import model.Generator;
-import model.ReaderGenerique;
-import org.springframework.batch.core.job.flow.Flow;
+import batch.util.App;
+import batch.model.ReaderGenerique;
+import batch.util.Generator;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.context.ApplicationContext;
 import running.Global;
 
 import java.lang.reflect.Field;
-import java.sql.Date;
 import java.util.Map;
 
 /**
@@ -21,7 +19,7 @@ public class ObjectItemProcessor implements ItemProcessor<Object,Object> {
 
         ApplicationContext context = Global.getApplicationContext();
         ReaderGenerique readerGenerique = context.getBean("readerGenerique", ReaderGenerique.class);
-        Generator generator = (Generator) context.getBean("generator");
+        App generator = (App) context.getBean("app");
         for (Map.Entry<String, Class<?>> entry : generator.getProperties().entrySet()) {
             try {
                 Field f = item.getClass().getDeclaredField(entry.getKey());
@@ -65,7 +63,7 @@ public class ObjectItemProcessor implements ItemProcessor<Object,Object> {
                 e.printStackTrace();
             }
         }
-        System.out.println("PROCESSSSSSSSSSS"+ App.reflectToString(item));
+        System.out.println("PROCESSSSSSSSSSS"+ Generator.reflectToString(item));
         return item;
     }
 
