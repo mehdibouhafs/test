@@ -171,7 +171,7 @@ public class BatchServiceImpl implements BatchService {
         c.setProperties(properties);
         Class<?> classNew = null;
         try {
-            classNew = c.generator(formData.get().getTableName(), typeXml, readerGenerique.getAttributes(), readerGenerique.getElements());
+            classNew = c.generator(formData.get().getTableName(), typeXml);
         } catch (CannotCompileException e) {
             e.printStackTrace();
         } catch (NotFoundException e) {

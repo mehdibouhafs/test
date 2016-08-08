@@ -1,12 +1,16 @@
 package batch.util;
 
+import batch.model.ReaderGenerique;
 import javassist.*;
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.annotation.Annotation;
+import javassist.bytecode.annotation.BooleanMemberValue;
 import javassist.bytecode.annotation.ClassMemberValue;
 import javassist.bytecode.annotation.StringMemberValue;
+import org.springframework.context.ApplicationContext;
+import running.Global;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -28,7 +32,6 @@ public class Generator
 		private static int counter2 = 0;
 
 		public static Class<?> buildCSVClassName(Map<String, Class<?>> properties,String classeName) throws CannotCompileException, NotFoundException, IOException {
-			System.out.println("BUILD CLASSNAME CSV NORMAL");
 			ClassPool pool = new ClassPool(true);//ClassPool.getDefault();
 			CtClass result = pool.makeClass("app.batch.generate."+classeName+"csv$" + (counter1));
 			counter1++;
@@ -52,8 +55,9 @@ public class Generator
 		}
 
 		public static Class<?> buildCSVClassNamexml(Map<String, Class<?>> properties,String classeName,String typeXml) throws CannotCompileException, NotFoundException, IOException {
-		System.out.println("BUILD XML CLASSNAME XML");
-		ClassPool pool = new ClassPool(true);//ClassPool.getDefault();
+			ApplicationContext context = Global.getApplicationContext();
+			ReaderGenerique readerGenerique = context.getBean("readerGenerique", ReaderGenerique.class);
+			ClassPool pool = new ClassPool(true);//ClassPool.getDefault();
 		CtClass result = pool.makeClass("app.batch.generate."+classeName+"xml$" + (counter2));
 		counter2++;
 		result.setSuperclass(pool.get((Serializable.class).getName()));
@@ -71,16 +75,27 @@ public class Generator
 			CtMethod getter =  CtNewMethod.getter("get"+entry.getKey(), field);
 			AnnotationsAttribute attra = new AnnotationsAttribute(constPool, AnnotationsAttribute.visibleTag);
 			if(typeXml.equals("type1")) {
-				System.out.println("TYPE 1");
 				Annotation annota = new Annotation("javax.xml.bind.annotation.XmlElement", constPool);
 				annota.addMemberValue("name", new StringMemberValue(entry.getKey(), classFile.getConstPool()));
 				attra.addAnnotation(annota);
 			}else{
 				if(typeXml.equals("type2")){
-					System.out.println("TYPE 2");
 					Annotation annota = new Annotation("javax.xml.bind.annotation.XmlAttribute", constPool);
 					annota.addMemberValue("name", new StringMemberValue(entry.getKey(), classFile.getConstPool()));
 					attra.addAnnotation(annota);
+				}else{
+					if(typeXml.equals("type3")){
+						if(readerGenerique.getElements().contains(entry.getKey())) {
+							Annotation annota = new Annotation("javax.xml.bind.annotation.XmlElement", constPool);
+							annota.addMemberValue("name", new StringMemberValue(entry.getKey(), classFile.getConstPool()));
+							attra.addAnnotation(annota);
+						}else {
+							Annotation annota = new Annotation("javax.xml.bind.annotation.XmlAttribute", constPool);
+							annota.addMemberValue("name", new StringMemberValue(entry.getKey(), classFile.getConstPool()));
+							annota.addMemberValue("nillable",new BooleanMemberValue(true,classFile.getConstPool()));
+							attra.addAnnotation(annota);
+						}
+					}
 				}
 			}
 			if(entry.getValue()== Date.class){
@@ -99,8 +114,10 @@ public class Generator
 		return result.toClass();
 	}
 
-		public static Class<?> buildCSVClassNamexmlType3(Map<String, Class<?>> properties, String classeName, List<String> attributes, List<String> elements) throws CannotCompileException, NotFoundException, IOException {
+		public static Class<?> buildCSVClassNamexmlType3(Map<String, Class<?>> properties, String classeName) throws CannotCompileException, NotFoundException, IOException {
 			System.out.println("BUILD XML CLASSNAME XML");
+			ApplicationContext context = Global.getApplicationContext();
+			ReaderGenerique readerGenerique = context.getBean("readerGenerique", ReaderGenerique.class);
 			ClassPool pool = new ClassPool(true);//ClassPool.getDefault();
 			CtClass result = pool.makeClass("app.batch.generate."+classeName+"xml$" + (counter2));
 			counter2++;
@@ -119,7 +136,7 @@ public class Generator
 				CtMethod getter =  CtNewMethod.getter("get"+entry.getKey(), field);
 
 				AnnotationsAttribute attra = new AnnotationsAttribute(constPool, AnnotationsAttribute.visibleTag);
-				if(elements.contains(entry.getKey())) {
+				if(readerGenerique.getElements().contains(entry.getKey())) {
 					Annotation annota = new Annotation("javax.xml.bind.annotation.XmlElement", constPool);
 					annota.addMemberValue("name", new StringMemberValue(entry.getKey(), classFile.getConstPool()));
 					attra.addAnnotation(annota);

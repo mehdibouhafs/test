@@ -21,7 +21,7 @@ public class App {
 	public App() {
 		// TODO Auto-generated constructor stub
 	}
-	   public Class<?> generator(String name, String typeXml, List<String> attributes,List<String> elements) throws CannotCompileException, NotFoundException{
+	   public Class<?> generator(String name, String typeXml) throws CannotCompileException, NotFoundException{
 		   ApplicationContext applicationContext = Global.getApplicationContext();
 		   ReaderGenerique readerGenerique = applicationContext.getBean("readerGenerique", ReaderGenerique.class);
 		   Class<?> rowObjectClass = null;
@@ -29,15 +29,15 @@ public class App {
 			   if(readerGenerique.getExt().equals("csv")) {
 				   System.out.println(" buildCsvClassName CSV ");
 				   rowObjectClass = Generator.buildCSVClassName(this.properties, name);
-				   classGenerate = rowObjectClass;
+				   this.classGenerate = rowObjectClass;
 			   }else if(readerGenerique.getExt().equals("xml")){
 				   System.out.println(" buildXmlClassName XML " + this.properties);
 				   if(!typeXml.equals("type3")){
 					   rowObjectClass = Generator.buildCSVClassNamexml(this.properties, name, typeXml);
-					   classGenerate = rowObjectClass;
+					   this.classGenerate = rowObjectClass;
 				   }else {
-					   rowObjectClass = Generator.buildCSVClassNamexmlType3(this.properties, name,attributes,elements);
-					   classGenerate = rowObjectClass;
+					   rowObjectClass = Generator.buildCSVClassNamexml(this.properties, name,typeXml);
+					   this.classGenerate = rowObjectClass;
 				   }
 			   }
 			   return rowObjectClass;

@@ -87,10 +87,10 @@ public class Application extends Controller {
         List<String> ss = formData.get().getCols();
         String type = formData.get().getTypeXML();
 
-        elements = new ArrayList<>();
-        attributtes = new ArrayList<>();
+        //elements = new ArrayList<>();
+        //attributtes = new ArrayList<>();
 
-        if (type.equals("type3")) {
+        /*if (type.equals("type3")) {
             for (int i = 0; i < ss.size(); i++) {
                 try {
                     String[] element = request().body().asFormUrlEncoded().get("elements[" + i + "]");
@@ -107,10 +107,10 @@ public class Application extends Controller {
                     System.out.println(e.getMessage());
                 }
             }
-        }
+        }*/
 
-        System.out.println("Element = " + elements);
-        System.out.println("Attributes = " + attributtes);
+        System.out.println("Element = " + readerGenerique.getElements());
+        System.out.println("Attributes = " + readerGenerique.getAttributes());
 
         ObjectNode result;
         //JsonArrayBuilder jsa =  Json.createArrayBuilder();
@@ -243,7 +243,7 @@ public class Application extends Controller {
         App c = context.getBean("app", App.class);
         c.setProperties(properties);
         Class<?> classNew = null;
-        classNew = c.generator(formData.get().getTableName(), typeXml, attributtes, elements);
+        classNew = c.generator(formData.get().getTableName(), typeXml);
         System.out.println("Classe New " + classNew);
         c.setClassGenerate(classNew);
         String sp = classNew.toString();
@@ -366,7 +366,6 @@ public class Application extends Controller {
         return ok(Json.toJson(resuls));
     }
 
-
     public String[] firstLine(File f, String delimiter) throws IOException {
         //String result = new ArrayList<>(); // !!!
         //Rows rows = new Rows();
@@ -423,11 +422,14 @@ public class Application extends Controller {
                         for (int i = 2; i < readXMLFile2.getS().size(); i++) {
                             ss[j] = readXMLFile2.getS().get(i);
                             j++;
+
                         }
+                        readerGenerique.setElements(Arrays.asList(ss));
                         String[] att = new String[readXMLFile2.getAtt().size()];
                         for (int i = 0; i < readXMLFile2.getAtt().size(); i++) {
                             att[i] = readXMLFile2.getAtt().get(i);
                         }
+                        readerGenerique.setAttributes(Arrays.asList(att));
                         String[] both = (String[]) ArrayUtils.addAll(ss, att);
                         return both;
                     }

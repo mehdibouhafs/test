@@ -831,7 +831,7 @@ $('#form1').submit(function (e) {
         e.preventDefault();
         if($("#cols").val()!=null) {
             $('#activate-step-2').show();
-            if(typeXMl=="type3") {
+            /*if(typeXMl=="type3") {
                 var cols = $('#cols').val()+'';
                 var tabCols = cols.split(",");
                 $('#xmlTableContenu1').html("");
@@ -843,7 +843,7 @@ $('#form1').submit(function (e) {
                 $('#type3').show();
                 console.log("val cols "+ $('#cols').val());
                 console.log("length cols"+$('#cols :selected').length);
-            }
+            }*/
             $('#validate').hide();
         }else {
             $('#type3').hide();

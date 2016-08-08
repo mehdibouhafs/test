@@ -17,7 +17,7 @@
 
 		<property name="resource" value="file:#{jobParameters['input.file.name']}" />
 
-		<property name="fragmentRootElementName" value="Person" />
+		<property name="fragmentRootElementName" value="user" />
 
 		<property name="unmarshaller">
 			<bean class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
@@ -35,7 +35,7 @@
 						reader="xmlItemReader"
 						processor="processor"
 						writer="cvsFileItemWriter"
-						commit-interval="100000">
+						commit-interval="1">
 				</chunk>
 			</tasklet>
 		</batch:step>
