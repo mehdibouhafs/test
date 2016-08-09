@@ -25,7 +25,7 @@
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
 		<property name="url" value="jdbc:mysql://localhost:3306/test3?autoReconnect=true&amp;useSSL=false" />
 		<property name="username" value="root" />
-		<property name="password" value="root" />
+		<property name="password" value="" />
 	</bean>
 
 
@@ -85,7 +85,7 @@
 
 	<bean id="processor" class="batch.processor.ObjectItemProcessor"/>
 
-	<bean id="firstBe" class="#{app.getClassGenerate()}" lazy-init="true" ></bean>
+	<bean id="firstBe" class="#{readerGenerique.getClassGenerate()}" lazy-init="true" scope="prototype"></bean>
 
 
 	<bean id="recordSeperatorPolicy " class="batch.policy.BlankLineRecordSeparatorPolicy"/>

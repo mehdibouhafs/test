@@ -26,21 +26,10 @@ public class App {
 		   ReaderGenerique readerGenerique = applicationContext.getBean("readerGenerique", ReaderGenerique.class);
 		   Class<?> rowObjectClass = null;
 		   try {
-			   if(readerGenerique.getExt().equals("csv")) {
-				   System.out.println(" buildCsvClassName CSV ");
-				   rowObjectClass = Generator.buildCSVClassName(this.properties, name);
-				   this.classGenerate = rowObjectClass;
-			   }else if(readerGenerique.getExt().equals("xml")){
-				   System.out.println(" buildXmlClassName XML " + this.properties);
-				   if(!typeXml.equals("type3")){
-					   rowObjectClass = Generator.buildCSVClassNamexml(this.properties, name, typeXml);
-					   this.classGenerate = rowObjectClass;
-				   }else {
-					   rowObjectClass = Generator.buildCSVClassNamexml(this.properties, name,typeXml);
-					   this.classGenerate = rowObjectClass;
-				   }
-			   }
+			   rowObjectClass = Generator.buildCSVClassNamexml(this.properties, name,typeXml);
+			   this.classGenerate = rowObjectClass;
 			   return rowObjectClass;
+
 		   } catch (IOException e) {
 			   e.printStackTrace();
 		   }

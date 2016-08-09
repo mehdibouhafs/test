@@ -104,7 +104,6 @@ $(document).ready(function() {
         }
     })
     
-    
     $('#filePath').change(function (e) {
         e.preventDefault();
         $('#csv').hide();
@@ -339,7 +338,7 @@ $(document).ready(function() {
                 e.preventDefault();
                 //console.log($("input[name='xml[]']").val());
                 if($('#form00').valid()&& $('#form02').valid()) {
-                    $.ajax({
+                    /*$.ajax({
                         type: "POST",//la method à utiliser soit POST ou GET
                         url: "/colsxml", //lien de la servlet qui exerce le traitement sur les données
                         data: $('#form02').serialize(),// sign_in c'est l'id du form qui contient le bouton submit et toutes les champs à envoyer
@@ -372,7 +371,7 @@ $(document).ready(function() {
                             }
 
 
-                            $('[name="xml[]"]').each(function () {
+                           $('[name="xml[]"]').each(function () {
                                 if ($(this).prop('checked') == true) {
                                     typeXMl = $(this).val();
                                 }
@@ -382,7 +381,8 @@ $(document).ready(function() {
                         error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
                             console.log("error");
                         }
-                    });
+                    });*/
+                    $("#activate-step-2").trigger('click');
                 }
 
             });
@@ -798,12 +798,34 @@ $('#form1').submit(function (e) {
                     type: "POST",//la method à utiliser soit POST ou GET
                     url: "/validate", //lien de la servlet qui exerce le traitement sur les données// sign_in c'est l'id du form qui contient le bouton submit et toutes les champs à envoyer
                     data:data0,
+                    xhr: function () {
+                        var xhr = new window.XMLHttpRequest();
+                        //Download progress
+                        xhr.addEventListener("progress", function (evt) {
+                            console.log(evt.lengthComputable);
+                            if (evt.lengthComputable) {
+                                var percentComplete = evt.loaded / evt.total;
+                                console.log("match = "+Math.round(percentComplete * 100) + "%");
+                            }
+                            //$('#pleaseWaitDialog').show();
+                        }, false);
+                        return xhr;
+                    },
+                    beforeSend: function () {
+                        //$('#pleaseWaitDialog').show();
+                        console.log("besfore send");
+                    },
+                    complete: function () {
+                        //$('#pleaseWaitDialog').hide();
+                        console.log("complet");
+                    },
                     success: function (data) {// le cas ou la requete est bien execute en reçoi les données serialiser par JSON dans la variable msg
                         //recuperation de la valeur stock dans l'attribut desactive
+                        console.log("sucess");
                         if(data.time > 0 ) {
                             $('#modal-body').append("Total time that job takes  =" + data.time + " secondes !");
-                            $('#modal-success').modal('show');
-
+                            //$('#modal-success').modal('show');
+                            $('#pleaseWaitDialog').show();
                         }
                         else{
                             var errors;
@@ -811,12 +833,13 @@ $('#form1').submit(function (e) {
                                 errors = errors + data[i].erreur +"=> "+ data[i].value;
                             }
                             $('#modal-body-danger').append("job Failed try again resolve this "+errors);
-                            $('#modal-danger').modal('show');
+                            //$('#modal-danger').modal('show');
                         }
                     },
                     error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
                         $('#modal-danger').modal('show');
                     }
+
                 });
             }else{
                 //alert("Veuillez ajouter une column");
@@ -879,7 +902,7 @@ $('#form1').submit(function (e) {
     $("#thanks").click(function (e) {
         //location.reload();
     })
-    
+
     $('#type3').hide();
     $('#columns').hide();
     $('#dropTab').hide();
@@ -1042,8 +1065,8 @@ $('#form1').submit(function (e) {
 
     });
 
-    
-    
+
+
 
 
     /*$('#table2').on('click', '.glyphicon-pencil', function(e){

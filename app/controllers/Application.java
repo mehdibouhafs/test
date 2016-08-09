@@ -47,21 +47,6 @@ import java.util.*;
 @Component("application")
 public class Application extends Controller {
 
-
-    private List<String> elements;
-    private List<String> attributtes;
-
-
-    private List<Attribute> attributes;
-
-    private Map<String, Class<?>> properties;
-
-    private String extFile;
-
-    //String cheminMac = "/Users/bouhafs/Documents/sample-data.csv";
-    //String cheminWin = "C:/Users/MBS/Desktop/complete/src/main/resources/sample-data.csv";
-    private String filePath;
-
     public Application() {
         System.out.println(" -----------------------------Demarage application Construct------------------by Mehdi Bouhafs Encadre by - MIMO");
     }
@@ -84,9 +69,16 @@ public class Application extends Controller {
         ReaderGenerique readerGenerique = context.getBean("readerGenerique", ReaderGenerique.class);
         Form<ParamFormData2> formData = Form.form(ParamFormData2.class).bindFromRequest();
         String dateParam = new Date().toString();
-        List<String> ss = formData.get().getCols();
+        List<String> ss = null;
         String type = formData.get().getTypeXML();
-
+        readerGenerique.setTypeXml(type);
+        if(type.equals("type3") || type.equals("type2")){
+            String[] cols = firstLine1(new File(readerGenerique.getFilePath()), type);
+            ss = Arrays.asList(cols);
+            readerGenerique.setColumns(cols);
+        }else{
+            ss = formData.get().getCols();
+        }
         //elements = new ArrayList<>();
         //attributtes = new ArrayList<>();
 
@@ -128,7 +120,7 @@ public class Application extends Controller {
 
     public Result getTypes() throws NoSuchMethodException, IllegalAccessException, ClassNotFoundException, InstantiationException, CannotCompileException, NotFoundException {
         Attribute attribute;
-        attributes = new ArrayList<>();
+        List<Attribute> attributes = new ArrayList<>();
         Form<ParamFormData1> formData = Form.form(ParamFormData1.class).bindFromRequest();
         String typeXml = formData.get().getTypeXML();
         List<String> ss = formData.get().getCols();
@@ -138,7 +130,7 @@ public class Application extends Controller {
 
         ApplicationContext context = Global.getApplicationContext();
         ReaderGenerique readerGenerique = context.getBean("readerGenerique", ReaderGenerique.class);
-        properties = new LinkedHashMap<>();
+        Map<String, Class<?>> properties = new LinkedHashMap<>();
         StringBuffer typeSizes;
         final Map<String, String> columnsTable = new LinkedHashMap<>();
         for (int i = 0; i < ss.size(); i++) {
@@ -245,13 +237,14 @@ public class Application extends Controller {
         Class<?> classNew = null;
         classNew = c.generator(formData.get().getTableName(), typeXml);
         System.out.println("Classe New " + classNew);
-        c.setClassGenerate(classNew);
+        //c.setClassGenerate(classNew);
+        readerGenerique.setClassGenerate(classNew);
         String sp = classNew.toString();
         String[] a = sp.split(" ");
         System.out.println("classe XML " + a[1]);
         readerGenerique.setClassXml(a[1]);
         Object c1 = context.getBean("firstBe");
-        System.out.println("classsssssssssssssssssssss   " + c1.getClass());
+        System.out.println("classsssssssssssssssssssss   " + c1.getClass() +"reader clss "+readerGenerique.getClassGenerate());
         ObjectNode result;
         //JsonArrayBuilder jsa =  Json.createArrayBuilder();
         ArrayNode resuls = play.libs.Json.newArray();
@@ -278,16 +271,16 @@ public class Application extends Controller {
         ApplicationContext context = Global.getApplicationContext();
         ReaderGenerique readerGenerique = context.getBean("readerGenerique", ReaderGenerique.class);
         Form<ParamFormData> formData = Form.form(ParamFormData.class).bindFromRequest();
-        this.filePath = formData.get().getFilePath();
-        readerGenerique.setFilePath(this.filePath);
-        this.extFile = getExtension(filePath);
+        String filePath = formData.get().getFilePath();
+        readerGenerique.setFilePath(filePath);
+        String extFile = getExtension(readerGenerique.getFilePath());
         readerGenerique.setExt(extFile);
         if (formData.hasErrors()) {
             // Don't call formData.get() when there are errors, pass 'null' to helpers instead.
             flash("error", "Please correct errors above.");
             return badRequest(index.render());
         }
-        return ok("path" + filePath);
+        return ok("path" + readerGenerique.getFilePath());
     }
 
 
@@ -296,7 +289,7 @@ public class Application extends Controller {
         ApplicationContext context = Global.getApplicationContext();
         ReaderGenerique readerGenerique = context.getBean("readerGenerique", ReaderGenerique.class);
         Form<ParamformData01> formData01 = Form.form(ParamformData01.class).bindFromRequest();
-        File destination = new File(this.filePath);
+        File destination = new File(readerGenerique.getFilePath());
         /*if (formData01.hasErrors()) {
             // Don't call formData.get() when there are errors, pass 'null' to helpers instead.
             flash("error", "Please correct errors above.");
@@ -339,7 +332,7 @@ public class Application extends Controller {
         ApplicationContext context = Global.getApplicationContext();
         ReaderGenerique readerGenerique = context.getBean("readerGenerique", ReaderGenerique.class);
         Form<ParamFormData02> formData = Form.form(ParamFormData02.class).bindFromRequest();
-        File destination = new File(this.filePath);
+        File destination = new File(readerGenerique.getFilePath());
         if (formData.hasErrors()) {
             // Don't call formData.get() when there are errors, pass 'null' to helpers instead.
             flash("error", "Please correct errors above.");
@@ -398,9 +391,7 @@ public class Application extends Controller {
             Document doc = dBuilder.parse(f);
             if (doc.hasChildNodes()) {
                 ReadXMLFile2 readXMLFile2 = new ReadXMLFile2();
-
                 readXMLFile2.printNote(doc.getChildNodes());
-
                 if (typeXml.equals("type1")) {
                     String[] ss = new String[readXMLFile2.getS().size() - 2];
                     int j = 0;
@@ -419,10 +410,10 @@ public class Application extends Controller {
                     } else if (typeXml.equals("type3")) {
                         String[] ss = new String[readXMLFile2.getS().size() - 2];
                         int j = 0;
+                        readerGenerique.setFragmentRootElementName(readXMLFile2.getS().get(1));
                         for (int i = 2; i < readXMLFile2.getS().size(); i++) {
                             ss[j] = readXMLFile2.getS().get(i);
                             j++;
-
                         }
                         readerGenerique.setElements(Arrays.asList(ss));
                         String[] att = new String[readXMLFile2.getAtt().size()];
@@ -493,13 +484,13 @@ public class Application extends Controller {
         System.out.println("Validate");
         ObjectNode resultEchec = play.libs.Json.newObject();
         if (create) {
-            File destination = new File(filePath);
+            File destination = new File(readerGenerique.getFilePath());
             JobParameters param = new JobParametersBuilder()
                     .addString("input.file.name", destination.getPath())
                     .addLong("time", System.currentTimeMillis()).toJobParameters();
             JobLauncher jobLauncher = (JobLauncher) context.getBean("jobLauncher");
 
-            if (extFile.equals("csv")) {
+            if (readerGenerique.getExt().equals("csv")) {
                 Job job = (Job) context.getBean("importUserJob");
                 try {
                     JobExecution jobExecution = jobLauncher.run(job, param);
@@ -534,7 +525,7 @@ public class Application extends Controller {
                     e.printStackTrace();
 
                 }
-            } else if (extFile.equals("xml")) {
+            } else if (readerGenerique.getExt().equals("xml")) {
                 System.out.println("XML JOB");
                 Job job = (Job) context.getBean("importXML");
                 try {
@@ -623,52 +614,5 @@ public class Application extends Controller {
         return resuls;
     }
 
-    public List<Attribute> getAttributes() {
-        return attributes;
-    }
 
-    public void setAttributes(List<Attribute> attributes) {
-        this.attributes = attributes;
-    }
-
-    public Map<String, Class<?>> getProperties() {
-        return properties;
-    }
-
-    public void setProperties(Map<String, Class<?>> properties) {
-        this.properties = properties;
-    }
-
-    public List<String> getElements() {
-        return elements;
-    }
-
-    public void setElements(List<String> elements) {
-        this.elements = elements;
-    }
-
-    public List<String> getAttributtes() {
-        return attributtes;
-    }
-
-    public void setAttributtes(List<String> attributtes) {
-        this.attributtes = attributtes;
-    }
-
-    public String getFilePath() {
-        return filePath;
-    }
-
-    public void setFilePath(String filePath) {
-        System.out.println(filePath);
-        this.filePath = filePath;
-    }
-
-    public String getExtFile() {
-        return extFile;
-    }
-
-    public void setExtFile(String extFile) {
-        this.extFile = extFile;
-    }
 }

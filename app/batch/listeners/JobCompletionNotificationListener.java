@@ -11,6 +11,7 @@ import java.util.Map;
 import batch.util.Generator;
 import javassist.CannotCompileException;
 import javassist.NotFoundException;
+import batch.util.App;
 import batch.model.ReaderGenerique;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -48,6 +49,19 @@ public class JobCompletionNotificationListener extends JobExecutionListenerSuppo
 		System.out.println("ExamResult Job starts at :"+startTime);
 	}
 
+
+	/*public Long getProgress() {
+
+		double jobComplete = (Double) jobE.
+				getExecutionContext().
+				get("jobComplete");
+		double reads = 0;
+		for (StepExecution step : jobE.getStepExecutions()) {
+			reads = reads + step.getReadCount();
+		}
+		return Math.round(reads / jobComplete * 100);
+	}*/
+
 	@Override
 	public void afterJob(JobExecution jobExecution) {
 		ApplicationContext context = Global.getApplicationContext();
@@ -77,7 +91,9 @@ public class JobCompletionNotificationListener extends JobExecutionListenerSuppo
 				@Override
 				public Object mapRow(ResultSet rs, int row) throws SQLException {
 					try {
-						Object o = Generator.buildCSVClassName(readerGenerique.getProperties(),readerGenerique.getTable()).newInstance();
+							Object o = Generator.buildCSVClassNamexml(readerGenerique.getProperties(),readerGenerique.getTable(),readerGenerique.getTypeXml()).newInstance();
+							System.out.println("CLASSE GENERE: o " + o.getClass());
+
 						Field c;
 						int i=1;
 						for (Field f : o.getClass().getDeclaredFields()
@@ -94,6 +110,18 @@ public class JobCompletionNotificationListener extends JobExecutionListenerSuppo
 									c.set(o, rs.getInt(i));
 									i++;
 									break;
+								case "Long":
+									c.setAccessible(true);
+									c.set(o, rs.getLong(i));
+									i++;
+								case "Float":
+									c.setAccessible(true);
+									c.set(o, rs.getFloat(i));
+									i++;
+								case "Double":
+									c.setAccessible(true);
+									c.set(o, rs.getDouble(i));
+									i++;
 								case "Date":
 									c.setAccessible(true);
 									c.set(o, rs.getDate(i));

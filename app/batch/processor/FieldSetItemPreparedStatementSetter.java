@@ -86,7 +86,6 @@ public class FieldSetItemPreparedStatementSetter implements ItemPreparedStatemen
                         }
                         break;
                     default:
-                        System.out.println("DEFAULT");
                         break;
                 }
 

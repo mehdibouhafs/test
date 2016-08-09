@@ -25,6 +25,8 @@ public class ReaderGenerique extends Model {
 
     private String filePath;
 
+    private String typeXml;
+
     private String table;
 
     private Map<String,String> errors = new LinkedHashMap<>();
@@ -35,7 +37,6 @@ public class ReaderGenerique extends Model {
 
     public  String cData ;
 
-
     private String classXml;
 
     private String fragmentRootElementName;
@@ -43,14 +44,14 @@ public class ReaderGenerique extends Model {
 
     private Long dateTime;
 
-
     private Map<String, Class<?>> properties;
-
 
     private List<String> attributes;
 
 
     private List<String> elements;
+
+    private Class<?> classGenerate = Object.class;
 
     public ReaderGenerique() {
     }
@@ -180,6 +181,21 @@ public class ReaderGenerique extends Model {
         this.errors = errors;
     }
 
+    public Class<?> getClassGenerate() {
+        return classGenerate;
+    }
+
+    public String getTypeXml() {
+        return typeXml;
+    }
+
+    public void setTypeXml(String typeXml) {
+        this.typeXml = typeXml;
+    }
+
+    public void setClassGenerate(Class<?> classGenerate) {
+        this.classGenerate = classGenerate;
+    }
 
     public List<String> getAttributes() {
         return attributes;
