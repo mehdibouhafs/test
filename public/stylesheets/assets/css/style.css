@@ -7,6 +7,27 @@
     General Styles
 --------------------------*/
 
+
+.ui-progressbar .ui-progressbar-value {
+    margin: 0px;
+    height: 100%;
+    width: 600px;
+}
+
+.ui-progressbar {
+    position: relative;
+}
+.progress-label {
+    position: absolute;
+    left: 40%;
+    top: 0px;
+    font-weight: bold;
+}
+
+#progressbar .ui-progressbar-value {
+    background-color: #18bc9c;
+}
+
 h1{
     color: #ffffff;
     background-color: #18bc9c;
@@ -104,7 +125,7 @@ a:hover{
 
 .modal-message .modal-title {
     font-size: 17px;
-    color: #737373;
+    color: #18bc9c;
     margin-bottom: 3px;
 }
 

@@ -25,8 +25,9 @@
         @* Here's where we render the page title `String`. *@
         <title>@title</title>
 
-
-
+        <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/jquery-ui.css")"/>
+        <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/dataTables.jqueryui.min.css")"/>
+        <link rel="stylesheet" href="http://code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
         <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/freelancer.css")">
         <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/bootstrap.min.css")">
         <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/bootstrap-switch.css")">
@@ -82,26 +83,30 @@
             </div> <!-- / .modal-dialog -->
         </div>
 
-
-        <div id="pleaseWaitDialog" class="modal-message modal-success fade" style="padding-top: 250px;">
-            <div class="modal-dialog">
+        <div id="pleaseWaitDialog" class="modal modal-message fade" style="padding-top: 250px;" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+            <div class="modal-dialog" style="width:600px;">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <i class="glyphicon glyphicon-check"></i>
-                        Processing...
+                        <i class="glyphicon glyphicon-time"></i>
                     </div>
-                    <div class="modal-title">Success</div>
+                    <div class="modal-title">Progress JOB</div>
                     <div id="modal-body" class="modal-body">
+
                         <div class="progress">
-                        <div id="progressbar"><div class="progress-label">Loading...</div></div>
+                            <div id="progressbar">
+                                <div class="progress-label">Loading...</div>
                             </div>
+                        </div>
+
+
                     </div>
-                    <div class="modal-footer">
-                        <button id="thanks" type="button" class="btn btn-success" data-dismiss="modal">Thank you</button>
-                    </div>
+                    <div class="modal-footer"></div>
+
                 </div> <!-- / .modal-content -->
             </div> <!-- / .modal-dialog -->
         </div>
+
+
 
 
 

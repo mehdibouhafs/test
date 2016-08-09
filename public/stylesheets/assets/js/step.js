@@ -806,17 +806,25 @@ $('#form1').submit(function (e) {
                             if (evt.lengthComputable) {
                                 var percentComplete = evt.loaded / evt.total;
                                 console.log("match = "+Math.round(percentComplete * 100) + "%");
+
+                                var progressbar = $( "#progressbar" ),
+                                    progressLabel = $( ".progress-label" );
+
+                                progressbar.progressbar({
+                                    value: false,
+
+                                });
                             }
-                            //$('#pleaseWaitDialog').show();
+
                         }, false);
                         return xhr;
                     },
                     beforeSend: function () {
-                        //$('#pleaseWaitDialog').show();
+                        $('#pleaseWaitDialog').modal('show');
                         console.log("besfore send");
                     },
                     complete: function () {
-                        //$('#pleaseWaitDialog').hide();
+                        $('#pleaseWaitDialog').modal('hide');
                         console.log("complet");
                     },
                     success: function (data) {// le cas ou la requete est bien execute en reçoi les données serialiser par JSON dans la variable msg
@@ -824,8 +832,7 @@ $('#form1').submit(function (e) {
                         console.log("sucess");
                         if(data.time > 0 ) {
                             $('#modal-body').append("Total time that job takes  =" + data.time + " secondes !");
-                            //$('#modal-success').modal('show');
-                            $('#pleaseWaitDialog').show();
+                            $('#modal-success').modal('show');
                         }
                         else{
                             var errors;
@@ -833,7 +840,7 @@ $('#form1').submit(function (e) {
                                 errors = errors + data[i].erreur +"=> "+ data[i].value;
                             }
                             $('#modal-body-danger').append("job Failed try again resolve this "+errors);
-                            //$('#modal-danger').modal('show');
+                            $('#modal-danger').modal('show');
                         }
                     },
                     error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
