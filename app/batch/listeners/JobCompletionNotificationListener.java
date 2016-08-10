@@ -70,7 +70,6 @@ public class JobCompletionNotificationListener extends JobExecutionListenerSuppo
 		log.trace("Loading the data in Process");
 		if(jobExecution.getStatus() == BatchStatus.COMPLETED) {
 
-
 			//log.info("!!! JOB FINISHED! Time to verify the results");
 			System.out.println("ExamResult Job stops at :"+stopTime);
 			System.out.println("Total time take in millis :"+getTimeInMillis(startTime , stopTime));
@@ -91,13 +90,19 @@ public class JobCompletionNotificationListener extends JobExecutionListenerSuppo
 				@Override
 				public Object mapRow(ResultSet rs, int row) throws SQLException {
 					try {
-							Object o = Generator.buildCSVClassNamexml(readerGenerique.getProperties(),readerGenerique.getTable(),readerGenerique.getTypeXml()).newInstance();
-							System.out.println("CLASSE GENERE: o " + o.getClass());
-
+							Object o=new Object(); //Object o = Generator.buildCSVClassNamexml(readerGenerique.getProperties(),readerGenerique.getTable(),readerGenerique.getTypeXml()).newInstance();
+						Class<?> act = null;
+						String nameClasse;
+						  if(readerGenerique.getExt().equals("csv")){
+							   nameClasse = "app.batch.generate."+readerGenerique.getTable()+"csv$"+(Generator.getCounter2()-1);
+						  }else{
+							  nameClasse = "app.batch.generate."+readerGenerique.getFragmentRootElementName()+"xml$"+(Generator.getCounter2()-1);
+						  }
+							act = Class.forName(nameClasse);
+							o = act.newInstance();
 						Field c;
 						int i=1;
-						for (Field f : o.getClass().getDeclaredFields()
-								) {
+						for (Field f : o.getClass().getDeclaredFields()) {
 							c = o.getClass().getDeclaredField(f.getName());
 							switch (f.getType().getSimpleName()) {
 								case "String":
@@ -129,17 +134,13 @@ public class JobCompletionNotificationListener extends JobExecutionListenerSuppo
 									break;
 							}
 						}
-						System.out.println(Generator.reflectToString(o));
+						//System.out.println(Generator.reflectToString(o));
 						log.debug("Succes writing {} Object", Generator.reflectToString(o));
 						return o;
+					} catch (ClassNotFoundException e) {
+						e.printStackTrace();
 
 					} catch (IllegalAccessException e) {
-						e.printStackTrace();
-					} catch (IOException e) {
-						e.printStackTrace();
-					} catch (CannotCompileException e) {
-						e.printStackTrace();
-					} catch (NotFoundException e) {
 						e.printStackTrace();
 					} catch (NoSuchFieldException e) {
 						e.printStackTrace();

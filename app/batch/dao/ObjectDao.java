@@ -9,6 +9,7 @@ import java.util.Map;
 
 public interface ObjectDao {
     public boolean createTable(String name, Map<String,String> columnsTable);
+    public boolean createTableOracle(String name, Map<String,String> columnsTable);
     public boolean dropTable(String name);
     public Map<String,String > dataTable(String table);
 }

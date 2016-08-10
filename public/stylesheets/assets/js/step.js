@@ -1,4 +1,14 @@
 $(document).ready(function() {
+    $('#type3').hide();
+    $('#columns').hide();
+    $('#dropTab').hide();
+    $('#xml').hide();
+    $('#csv').hide();
+    $("#cols").hide();
+    $("#all").hide();
+    $("#none").hide();
+    $('#activate-step-2').hide();
+
     var navListItems = $('ul.setup-panel li a'),
         allWells = $('.setup-content');
     allWells.hide();
@@ -617,7 +627,7 @@ $('#form1').submit(function (e) {
                              "<td><input type='number' id='data[i].id' name='" + size + "' size='4' value='255'/> </td>";*/
                             // }
                             // if (i == 3) {
-                            s = "<td><select class='form-control' id='" + type + "' name='" + type + "'>" +
+                           /* s = "<td><select class='form-control' id='" + type + "' name='" + type + "'>" +
                                 "<option class='blank'  value=''>Please select a value</option>" +
                                 "<option title='Un nombre entier de 4 octets. La fourchette des entiers relatifs est de -2 147 483 648 à 2 147 483 647. Pour les entiers positifs, cest de 0 à 4 294 967 295' selected>INT</option>" +
                                 "<option title='Une chaîne de longueur variable (0-65,535), la longueur effective réelle dépend de la taille maximum d une ligne'>VARCHAR</option>" +
@@ -648,7 +658,27 @@ $('#form1').submit(function (e) {
                                 "</optgroup>"+
                                 "</select>"+
                                 "</td>" +
-                                "<td><input type='number' id='data[i].id' name='" + size + "' size='4' value='5'/> </td>";
+                                "<td><input type='number' id='data[i].id' name='" + size + "' size='4' value='5'/> </td>";*/
+
+                            s = "<td><select class='form-control' id='" + type + "' name='" + type + "'>" +
+                                "<option class='blank'  value=''>Please select a value</option>" +
+                                "<option title='Un nombre entier de 4 octets. La fourchette des entiers relatifs est de -2 147 483 648 à 2 147 483 647. Pour les entiers positifs, cest de 0 à 4 294 967 295' selected>NUMBER</option>" +
+                                "<option title='Une chaîne de longueur variable (0-65,535), la longueur effective réelle dépend de la taille maximum d une ligne'>VARCHAR2</option>" +
+                                "<option title='DATE'>DATE</option>" +
+                                "<option title='CHAR'>CHAR</option>" +
+                                "<option title='Une date, la fourchette est de «1000-01-01» à «9999-12-31»'>DATE</option>" +
+                                "<option disabled='disabled'>-</option>"+
+                                "<option title='FLOAT(24)'>FLOAT</option>" +
+                                "</option><option disabled='disabled'>-</option>"+
+                                "<option title='BLOB'>BLOB</option>" +
+                                "<option title='RAW'>RAW</option>" +
+                                "<option title='CLOB'>CLOB</option>" +
+                                "</optgroup>"+
+                                "</select>"+
+                                "</td>" +
+                                "<td><input type='number' id='data[i].id' name='" + size + "'/> </td>";
+
+
                             /*s = "<td><select class='form-control' id='type' name='" + type + "'>" +
                              "<option class='blank'  value=''>Please select a value</option>" +
                              "<option title='Un nombre entier de 4 octets. La fourchette des entiers relatifs est de -2 147 483 648 à 2 147 483 647. Pour les entiers positifs, cest de 0 à 4 294 967 295'>INT</option>" +
@@ -805,21 +835,16 @@ $('#form1').submit(function (e) {
                             console.log(evt.lengthComputable);
                             if (evt.lengthComputable) {
                                 var percentComplete = evt.loaded / evt.total;
-                                console.log("match = "+Math.round(percentComplete * 100) + "%");
-
-                                var progressbar = $( "#progressbar" ),
-                                    progressLabel = $( ".progress-label" );
-
-                                progressbar.progressbar({
-                                    value: false,
-
-                                });
                             }
-
                         }, false);
                         return xhr;
                     },
                     beforeSend: function () {
+                        var progressbar = $( "#progressbar" ),
+                            progressLabel = $( ".progress-label" );
+                        progressbar.progressbar({
+                            value: false,
+                        });
                         $('#pleaseWaitDialog').modal('show');
                         console.log("besfore send");
                     },
@@ -831,7 +856,21 @@ $('#form1').submit(function (e) {
                         //recuperation de la valeur stock dans l'attribut desactive
                         console.log("sucess");
                         if(data.time > 0 ) {
-                            $('#modal-body').append("Total time that job takes  =" + data.time + " secondes !");
+                            var message;
+                            if(data.time >= 60 && data.time < 3600){
+                                var minute = data.time / 60;
+                                message = minute + " min (s) !"
+                            }else{
+                                if(data.time >= 3600){
+                                    var heure = data.time / 3600;
+                                    message =  heure + " heure (s)";
+                                }else{
+                                    if(data.time < 60){
+                                        message =  data.time + " seconde (s)";
+                                    }
+                                }
+                            }
+                            $('#modal-body').append("Total time that job takes  =" + message);
                             $('#modal-success').modal('show');
                         }
                         else{
@@ -907,18 +946,9 @@ $('#form1').submit(function (e) {
     });
 
     $("#thanks").click(function (e) {
-        //location.reload();
+        location.reload();
     })
 
-    $('#type3').hide();
-    $('#columns').hide();
-    $('#dropTab').hide();
-    $('#xml').hide();
-    $('#csv').hide();
-    $("#cols").hide();
-    $("#all").hide();
-    $("#none").hide();
-    $('#activate-step-2').hide();
 
     $("#all").click(function (e) {
         e.preventDefault();

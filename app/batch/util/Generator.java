@@ -28,7 +28,6 @@ public class Generator
 	{
 		public Generator() {
 		}
-		private static int counter1 = 0;
 		private static int counter2 = 0;
 
 		/*public static Class<?> buildCSVClassName(Map<String, Class<?>> properties,String classeName) throws CannotCompileException, NotFoundException, IOException {
@@ -60,9 +59,9 @@ public class Generator
 			ClassPool pool = new ClassPool(true);//ClassPool.getDefault();
 			CtClass result;
 			if(!classeName.equals("")){
-				result = pool.makeClass("app.batch.generate."+classeName+"csv$" + (counter2));
+				result = pool.makeClass("app.batch.generate."+classeName+"csv$"+counter2);
 			}else {
-				result = pool.makeClass("app.batch.generate." + readerGenerique.getFragmentRootElementName() + "xml$" + (counter2));
+				result = pool.makeClass("app.batch.generate." + readerGenerique.getFragmentRootElementName() + "xml$"+counter2);
 			}
 		counter2++;
 		result.setSuperclass(pool.get((Serializable.class).getName()));
@@ -180,7 +179,11 @@ public class Generator
 			}
 			return  null;
 		}
-		
 
-}
+		public static int getCounter2() {
+			return counter2;
+		}
+
+
+	}
 

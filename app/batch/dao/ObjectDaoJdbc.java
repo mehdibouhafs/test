@@ -16,6 +16,7 @@ import java.util.Map;
 public class ObjectDaoJdbc extends JdbcTemplate implements ObjectDao{
 
     public ObjectDaoJdbc() {
+
     }
 
     @Override
@@ -151,7 +152,69 @@ public class ObjectDaoJdbc extends JdbcTemplate implements ObjectDao{
         }
         }
 
-        public boolean dropTable(String table) {
+    @Override
+    public boolean createTableOracle(String name, Map<String, String> columnsTable) {
+        ApplicationContext context = Global.getApplicationContext();
+        ReaderGenerique readerGenerique = context.getBean("readerGenerique",ReaderGenerique.class);
+        int i=0;
+        StringBuffer query = new StringBuffer();
+        StringBuffer query2 = new StringBuffer();
+        StringBuffer query3 = new StringBuffer();
+
+        if (columnsTable.size() <= 0 || name.equals("")) {
+            System.out.println("Columns < 0");
+            return false;
+        }
+
+        for (Map.Entry<String,String> entry : columnsTable.entrySet()) {
+            String[] typeSize = entry.getValue().split("-");
+            if (i == 0) {
+                System.out.println(typeSize[0]);
+                if(typeSize[1].equals("")){
+                    System.out.println("Containe NUmber or Float");
+                    query = new StringBuffer("CREATE TABLE IF NOT EXISTS " + name + " ("
+                            + entry.getKey() + " " + typeSize[0] );
+                }else{
+                    System.out.println("Containe NUmber or Float");
+                    query = new StringBuffer("CREATE TABLE IF NOT EXISTS " + name + " ("
+                            + entry.getKey() + " " + typeSize[0] + "(" + typeSize[1] + ")");
+                }
+                query2 = new StringBuffer("INSERT INTO "+ name+ " ("
+                        + entry.getKey() );
+                query3 = new StringBuffer("(?");
+                i++;
+            } else {
+                if(typeSize[1].equals("")){
+                    query.append(", " + entry.getKey() + " " + typeSize[0]);
+
+                }else{
+                    query.append(", " + entry.getKey() + " " + typeSize[0]+"("+typeSize[1]+")");
+                }
+                query2.append(", "+entry.getKey());
+                query3.append(",?");
+            }
+        }
+
+
+        query.append(")");
+        query2.append(") VALUES ");
+        query3.append(")");
+        try {
+            System.out.println("Query"+query.toString());
+            System.out.println("Query"+query2.toString());
+            System.out.println("Query"+query3.toString());
+            String cData = (query2.append(query3)).toString();
+            execute(query.toString());
+            readerGenerique.setcData(cData);
+            return true;
+        }catch (Exception e){
+            System.out.println("CALS");
+            return false;
+        }
+    }
+
+
+    public boolean dropTable(String table) {
             System.out.println("Drop Table "+table);
             String q = "DROP TABLE " + table;
             try {

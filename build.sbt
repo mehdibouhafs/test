@@ -26,8 +26,8 @@ libraryDependencies ++= Seq(
 "com.sun.xml.bind" % "jaxb-core" % "2.2.11",
 "commons-io" % "commons-io" % "2.4",
 "org.jdom" % "jdom" % "2.0.2",
-"org.apache.jena" % "jena-jdbc-core" % "3.0.0"
-
+"org.apache.jena" % "jena-jdbc-core" % "3.0.0",
+  "commons-dbcp" % "commons-dbcp" % "1.4"
 
 )
 

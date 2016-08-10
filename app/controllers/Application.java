@@ -137,7 +137,8 @@ public class Application extends Controller {
             try {
                 attribute = new Attribute();
                 String type = formData.get().getType().get(ids.get(i));
-                String typeSize = type + "(" + formData.get().getSize().get(i) + ")," + formData.get().getPrimaryKey().get(ids.get(i)) + ",";
+                //String typeSize = type + "(" + formData.get().getSize().get(i) + ")," + formData.get().getPrimaryKey().get(ids.get(i)) + ",";
+                String typeSize = type + "-"+formData.get().getSize().get(i)+"-";////hey
                 typeSizes = new StringBuffer(typeSize);
                 String size = formData.get().getSize().get(ids.get(i));
                 String primarykey = formData.get().getPrimaryKey().get(ids.get(i));
@@ -480,7 +481,8 @@ public class Application extends Controller {
             System.out.println("****************************************");
             objectDao.dropTable(readerGenerique.getTable());
         }
-        Boolean create = objectDao.createTable(readerGenerique.getTable(), readerGenerique.getColumnsTable());
+        //Boolean create = objectDao.createTable(readerGenerique.getTable(), readerGenerique.getColumnsTable());
+        Boolean create = objectDao.createTableOracle(readerGenerique.getTable(), readerGenerique.getColumnsTable());
         System.out.println("Validate");
         ObjectNode resultEchec = play.libs.Json.newObject();
         if (create) {
@@ -505,7 +507,8 @@ public class Application extends Controller {
 
                         Double time = readerGenerique.getDateTime() / 1000.0;
                         System.out.println("time in seconde" + time + "time in mili" + readerGenerique.getDateTime());
-
+                        time = (double) Math.round(time * 100);
+                        time = time/100;
                         result.put("time", time);
                         return ok(Json.toJson(result));
                     }
