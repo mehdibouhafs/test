@@ -29,9 +29,7 @@ public class JobCompletionNotificationListener extends JobExecutionListenerSuppo
 
 	//private static final Logger log = LoggerFactory.getLogger(JobCompletionNotificationListener.class);
 
-
 	private static final Logger log = LoggerFactory.getLogger(JobCompletionNotificationListener.class);
-
 	private final JdbcTemplate jdbcTemplate;
 
 

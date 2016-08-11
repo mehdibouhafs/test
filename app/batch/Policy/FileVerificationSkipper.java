@@ -1,7 +1,9 @@
 package batch.policy;
 
 import java.io.FileNotFoundException;
+import java.util.Date;
 
+import batch.model.InputError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.step.skip.SkipLimitExceededException;
@@ -26,6 +28,11 @@ public class FileVerificationSkipper implements SkipPolicy {
 			errorMessage.append("An error occured while processing the " + ffpe.getLineNumber()
 					+ " line of the file. Below was the faulty " + "input.\n");
 			errorMessage.append(ffpe.getInput() + "\n");
+			InputError inputError  = new InputError();
+			inputError.date = new Date();
+			inputError.lineNumber=ffpe.getLineNumber();
+			inputError.line = ffpe.getInput();
+			inputError.save();
 			logger.error("{}", errorMessage.toString());
 			return true;
 		} /*else {
