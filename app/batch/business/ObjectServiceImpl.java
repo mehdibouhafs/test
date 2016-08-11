@@ -18,7 +18,7 @@ public class ObjectServiceImpl implements ObjectService{
 
     @Override
     public boolean createTable(String name, Map<String, String> columnsTable) {
-        return objectDao.createTable(name,columnsTable);
+        return true;
     }
 
     @Override

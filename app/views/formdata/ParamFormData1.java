@@ -10,23 +10,19 @@ import java.util.List;
  */
 public class ParamFormData1 {
 
+
+    public String typeXML;
     public String tableName;
-
+    public List<Integer> id;
     public List<String> cols;
-
+    public List<String> type;
+    public List<String> size;
+    public List<String> defaultVal;
+    public List<String> commentaire;
     //public List<String> columns;
 
     //public String filePath;
 
-    public List<Integer> id;
-
-    public String typeXML;
-
-    public List<String> primaryKey;
-
-    public List<String> type;
-
-    public List<String> size;
 
 
     public List<String> getSize() {
@@ -53,12 +49,12 @@ public class ParamFormData1 {
         this.type = type;
     }
 
-    public List<String> getPrimaryKey() {
-        return primaryKey;
+    public List<String> getDefaultVal() {
+        return defaultVal;
     }
 
-    public void setPrimaryKey(List<String> primaryKey) {
-        this.primaryKey = primaryKey;
+    public void setDefaultVal(List<String> defaultVal) {
+        this.defaultVal = defaultVal;
     }
 
     public String getTypeXML() {
@@ -86,16 +82,25 @@ public class ParamFormData1 {
         this.cols = cols;
     }
 
+    public List<String> getCommentaire() {
+        return commentaire;
+    }
+
+    public void setCommentaire(List<String> commentaire) {
+        this.commentaire = commentaire;
+    }
+
     @Override
     public String toString() {
         return "ParamFormData1{" +
-                "tableName='" + tableName + '\'' +
-                ", cols=" + cols +
+                "typeXML='" + typeXML + '\'' +
+                ", tableName='" + tableName + '\'' +
                 ", id=" + id +
-                ", typeXML='" + typeXML + '\'' +
-                ", primaryKey=" + primaryKey +
+                ", cols=" + cols +
                 ", type=" + type +
                 ", size=" + size +
+                ", defaultVal=" + defaultVal +
+                ", commentaire=" + commentaire +
                 '}';
     }
 }

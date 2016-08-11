@@ -17,25 +17,32 @@
 
 
 
-	<bean id="dataSource"
+
+	<!--<bean id="dataSource"
 		  class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
 		<property name="url" value="jdbc:mysql://localhost:3306/test3?autoReconnect=true&amp;useSSL=false" />
 		<property name="username" value="root" />
 		<property name="password" value="" />
-	</bean>
-
-	<!--<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource" destroy-method="close">
-		<property name="driverClassName" value="oracle.jdbc.Driver.OracleDriver"/>
-		<property name="url" value="jdbc:oracle:thin:@//LAME_L01:1521/orcl"/>
-		<property name="username" value="MOA_CERTIF14"/>
-		<property name="password" value="V9"/>
 	</bean>-->
 
-
-	<bean id="BatchService" class="batch.business.BatchServiceImpl">
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="oracle.jdbc.OracleDriver"/>
+		<property name="url" value="jdbc:oracle:thin:@LAME_L01:1521:ORCL"/>
+		<property name="username" value="MOA_CERTIF14"/>
+		<property name="password" value="V9"/>
 	</bean>
+
+	<jdbc:initialize-database data-source="dataSource" enabled="true">
+		<jdbc:script location="org/springframework/batch/core/schema-drop-oracle10g.sql" />
+		<jdbc:script location="org/springframework/batch/core/schema-oracle10g.sql" />
+		<!-- <jdbc:script location="classpath:oracle10g/initial-query.sql" /> -->
+	</jdbc:initialize-database>
+
+
+	<bean id="BatchService" class="batch.business.BatchServiceImpl"/>
+
 
 	<bean id="ObjectDao" class="batch.dao.ObjectDaoJdbc">
 		<property name="dataSource" ref="dataSource" />
@@ -50,7 +57,7 @@
 		  class="org.springframework.batch.core.repository.support.JobRepositoryFactoryBean">
 		<property name="dataSource" ref="dataSource" />
 		<property name="transactionManager" ref="transactionManager" />
-		<property name="databaseType" value="mysql" />
+		<property name="databaseType" value="oracle" />
 	</bean>
 
 	<bean id="jobLauncher"

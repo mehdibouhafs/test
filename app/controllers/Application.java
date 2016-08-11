@@ -57,10 +57,8 @@ public class Application extends Controller {
         //String s = app.encadrant.getName();
         //encadrant.setName("ok");
         //this.encadrant = Global.getBean(encadrant.getClass());
-
         ParamFormData paramData = new ParamFormData();
         Form<ParamFormData> formData = Form.form(ParamFormData.class).fill(paramData);
-
         return ok("ApplicationController");
     }
 
@@ -100,10 +98,8 @@ public class Application extends Controller {
                 }
             }
         }*/
-
         System.out.println("Element = " + readerGenerique.getElements());
         System.out.println("Attributes = " + readerGenerique.getAttributes());
-
         ObjectNode result;
         //JsonArrayBuilder jsa =  Json.createArrayBuilder();
         ArrayNode resuls = Json.newArray();
@@ -125,9 +121,12 @@ public class Application extends Controller {
         String typeXml = formData.get().getTypeXML();
         List<String> ss = formData.get().getCols();
         List<Integer> ids = formData.get().getId();
+        List<String> comments = formData.get().getCommentaire();
+        List<String> valDefautl = formData.get().getDefaultVal();
+        System.out.println("val"+valDefautl);
+        System.out.println("comments"+comments);
         System.out.println("id :" + ids);
         System.out.println("COls Selected:" + ss);
-
         ApplicationContext context = Global.getApplicationContext();
         ReaderGenerique readerGenerique = context.getBean("readerGenerique", ReaderGenerique.class);
         Map<String, Class<?>> properties = new LinkedHashMap<>();
@@ -138,36 +137,43 @@ public class Application extends Controller {
                 attribute = new Attribute();
                 String type = formData.get().getType().get(ids.get(i));
                 //String typeSize = type + "(" + formData.get().getSize().get(i) + ")," + formData.get().getPrimaryKey().get(ids.get(i)) + ",";
-                String typeSize = type + "-"+formData.get().getSize().get(i)+"-";////hey
+                String typeSize = type + "-"+formData.get().getSize().get(i);////hey
                 typeSizes = new StringBuffer(typeSize);
                 String size = formData.get().getSize().get(ids.get(i));
-                String primarykey = formData.get().getPrimaryKey().get(ids.get(i));
-                System.out.println("KEY" + ids.get(i));
+                try{
+                    String[] notNull = request().body().asFormUrlEncoded().get("nonNull[" + ids.get(i) + "]");
+                    if (notNull[0].equals("notNull")) {
+                        System.out.println("NotNULL" + i + "val = " + ss.get(i));
+                        String s = "- NOT NULL";
+                        typeSizes.append(s);
+                        attribute.setNonNull(true);
+                    }
+                }catch (Exception e){
+                    attribute.setNonNull(false);
+                    typeSizes.append("-");
+                }
                 try {
                     // boolean autoIncrement = formData.get().getAutoIncrement().get(col.getKey());
-                    String[] autoIncrement = request().body().asFormUrlEncoded().get("autoIncrement[" + ids.get(i) + "]");
-                    if (autoIncrement[0].equals("autoIncrement")) {
-                        System.out.println("FDP TRUE" + i + "val = " + ss.get(i));
-                        String s = "AUTO_INCREMENT";
+                    String[] primarayKey = request().body().asFormUrlEncoded().get("pk[" + ids.get(i) + "]");
+                    if (primarayKey[0].equals("primaryKey")) {
+                        System.out.println("Primary key" + i + "val = " + ss.get(i));
+                        String s = "-PrimaryKey";
                         typeSizes.append(s);
-                        attribute.setAutoIncrement(true);
-                    } else {
-                        System.out.println("FDP false" + i + "val = " + ss.get(i));
+                        attribute.setpK(true);
                     }
                 } catch (Exception e) {
-                    System.out.println("Exception try" + i + "val = " + ss.get(i));
-                    String s = "walou";
-                    attribute.setAutoIncrement(false);
-                    typeSizes.append(s);
+                    attribute.setpK(false);
+                    typeSizes.append("-");
                 }
+
                 attribute.setType(type);
                 Class o;
                 switch (type) {
-                    case "INT":
+                    case "NUMBER":
                         o = Integer.class;
                         break;
-                    case "TINYINT":
-                        o = Integer.class;
+                    case "CHAR":
+                        o = Character.class;
                         break;
                     case "SMALLINT":
                         o = Integer.class;
@@ -196,10 +202,10 @@ public class Application extends Controller {
                     case "BIGINT":
                         o = Integer.class;
                         break;
-                    case "VARCHAR":
+                    case "VARCHAR2":
                         o = String.class;
                         break;
-                    case "TEXT":
+                    case "VARCHAR":
                         o = String.class;
                         break;
                     case "DATETIME":
@@ -213,11 +219,15 @@ public class Application extends Controller {
                         break;
                 }
                 properties.put(ss.get(i), o);
+                typeSizes.append("- DEFAULT '"+valDefautl.get(i)+"'");
+                typeSizes.append("- "+comments.get(i));
+                System.out.println("typeSize for "+ss.get(i)+" typeSizes "+typeSizes.toString());
                 columnsTable.put(ss.get(i), typeSizes.toString());
                 attribute.setId(ids.get(i));
                 attribute.setSize(size);
                 attribute.setName(ss.get(i));
-                attribute.setPrimaryKey(primarykey);
+                attribute.setCommentaire(comments.get(i));
+                attribute.setDefautlVal(valDefautl.get(i));
                 attributes.add(attribute);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
@@ -254,15 +264,20 @@ public class Application extends Controller {
                 ) {
             result = new play.libs.Json().newObject();
             result.put("id", s.getId());
+            result.put("pk",s.ispK());
             result.put("name", s.getName());
             result.put("type", s.getType());
             result.put("size", s.getSize());
-            result.put("primaryKey", s.getPrimaryKey());
+            result.put("notNull",s.isNonNull());
+            result.put("defautlVal",s.getDefautlVal());
+            result.put("comment",s.getCommentaire());
+
+            /*result.put("primaryKey", s.getPrimaryKey());
             if (s.isAutoIncrement() == true) {
                 result.put("autoIncrement", "true");
             } else {
                 result.put("autoIncrement", "false");
-            }
+            }*/
             resuls.add(result);
         }
         return ok(Json.toJson(resuls));
@@ -479,7 +494,7 @@ public class Application extends Controller {
             System.out.println("****************************************");
 
             System.out.println("****************************************");
-            objectDao.dropTable(readerGenerique.getTable());
+            //objectDao.dropTable(readerGenerique.getTable());
         }
         //Boolean create = objectDao.createTable(readerGenerique.getTable(), readerGenerique.getColumnsTable());
         Boolean create = objectDao.createTableOracle(readerGenerique.getTable(), readerGenerique.getColumnsTable());
@@ -502,9 +517,7 @@ public class Application extends Controller {
                         c.setClassGenerate(null);
                         Object c1 = context.getBean("firstBe");
                         System.out.println(c1.getClass());
-
                         ObjectNode result = play.libs.Json.newObject();
-
                         Double time = readerGenerique.getDateTime() / 1000.0;
                         System.out.println("time in seconde" + time + "time in mili" + readerGenerique.getDateTime());
                         time = (double) Math.round(time * 100);
@@ -520,13 +533,10 @@ public class Application extends Controller {
                     e.printStackTrace();
                 } catch (JobRestartException e) {
                     e.printStackTrace();
-
                 } catch (JobInstanceAlreadyCompleteException e) {
                     e.printStackTrace();
-
                 } catch (JobParametersInvalidException e) {
                     e.printStackTrace();
-
                 }
             } else if (readerGenerique.getExt().equals("xml")) {
                 System.out.println("XML JOB");
@@ -555,14 +565,14 @@ public class Application extends Controller {
 
                 } catch (JobInstanceAlreadyCompleteException e) {
                     resultEchec.put("time", e.getMessage());
-
+                    e.printStackTrace();
 
                 } catch (JobParametersInvalidException e) {
                     e.printStackTrace();
 
                 } catch (FlatFileParseException e) {
                     System.out.println("CATCH IT " + e.getMessage());
-
+                    e.printStackTrace();
                 }
             }
 

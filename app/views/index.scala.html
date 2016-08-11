@@ -3,7 +3,7 @@
  * argument is a `String` with the title of the page, the second
  * argument is an `Html` object containing the body of the page.
  *@
-@main("ITN SPRING BATCH - PLAY") {
+@main("ITN MIGRATION") {
 @*
 * Get an `Html` object by calling the built-in Play welcome
 * template and passing a `String` message.
@@ -257,24 +257,28 @@
                             <table class="table table-bordered" id="table1" name="table1">
                                 <thead style="background: #18bc9c">
                                     <tr>
-                                        <th style="color: beige; width: 26px;" class="sorting_asc" tabindex="0" aria-controls="table1" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Id: activate to sort column descending">Id</th>
-                                        <th style="color: beige; width: 72px;" class="sorting" tabindex="0" aria-controls="table1" rowspan="1" colspan="1" aria-label=" Name: activate to sort column ascending"> Name</th>
-                                        <th style="color: beige; width: 72px;" class="sorting" tabindex="0" aria-controls="table1" rowspan="1" colspan="1" aria-label=" Name: activate to sort column ascending"> Type </th>
-                                        <th style="color: beige; width: 205px;" class="sorting" tabindex="0" aria-controls="table1" rowspan="1" colspan="1" aria-label=" Taille: activate to sort column ascending"> Taille</th>
-                                        <th style="color: beige; width: 72px;" class="sorting" tabindex="0" aria-controls="table1" rowspan="1" colspan="1" aria-label=" Name: activate to sort column ascending"> Index</th>
-                                        <th style="color: beige; width: 72px;" class="sorting" tabindex="0" aria-controls="table1" rowspan="1" colspan="1" aria-label=" Name: activate to sort column ascending"> Auto Increment</th>
-                                        <th style="color: beige; width: 72px;" class="sorting" tabindex="0" aria-controls="table1" rowspan="1" colspan="1" aria-label=" Name: activate to sort column ascending">Option</th>
+                                        <th style="color: beige; width: 26px;">Id</th>
+                                        <th style="color: beige; width: 72px;"> PK</th>
+                                        <th style="color: beige; width: 72px;"> Name</th>
+                                        <th style="color: beige; width: 72px;"> Type </th>
+                                        <th style="color: beige; width: 205px;"> Taille</th>
+                                        <th style="color: beige; width: 72px;"> Non NULL</th>
+                                        <th style="color: beige; width: 72px;"> Valeur par Défaut</th>
+                                        <th style="color: beige; width: 72px;">Commentaire</th>
+                                        <th style="color: beige; width: 72px;">Option</th>
                                     </tr>
                                 </thead>
                                 <tfoot  style="background: #18bc9c">
                                 <tr>
-                                    <th style="color: beige; width: 26px;" class="sorting_asc" tabindex="0" aria-controls="table1" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Id: activate to sort column descending">Id</th>
-                                    <th style="color: beige; width: 72px;" class="sorting" tabindex="0" aria-controls="table1" rowspan="1" colspan="1" aria-label=" Name: activate to sort column ascending"> Name</th>
-                                    <th style="color: beige; width: 72px;" class="sorting" tabindex="0" aria-controls="table1" rowspan="1" colspan="1" aria-label=" Name: activate to sort column ascending"> Type </th>
-                                    <th style="color: beige; width: 205px;" class="sorting" tabindex="0" aria-controls="table1" rowspan="1" colspan="1" aria-label=" Taille: activate to sort column ascending"> Taille</th>
-                                    <th style="color: beige; width: 72px;" class="sorting" tabindex="0" aria-controls="table1" rowspan="1" colspan="1" aria-label=" Name: activate to sort column ascending"> Index</th>
-                                    <th style="color: beige; width: 72px;" class="sorting" tabindex="0" aria-controls="table1" rowspan="1" colspan="1" aria-label=" Name: activate to sort column ascending"> Auto Increment</th>
-                                    <th style="color: beige; width: 72px;" class="sorting" tabindex="0" aria-controls="table1" rowspan="1" colspan="1" aria-label=" Name: activate to sort column ascending">Option</th>
+                                    <th style="color: beige; width: 26px;">Id</th>
+                                    <th style="color: beige; width: 72px;"> PK</th>
+                                    <th style="color: beige; width: 72px;"> Name</th>
+                                    <th style="color: beige; width: 72px;"> Type </th>
+                                    <th style="color: beige; width: 205px;"> Taille</th>
+                                    <th style="color: beige; width: 72px;"> Non NULL</th>
+                                    <th style="color: beige; width: 72px;"> Valeur par Défaut</th>
+                                    <th style="color: beige; width: 72px;">Commentaire</th>
+                                    <th style="color: beige; width: 72px;">Option</th>
                                 </tr>
                                 </tfoot>
                                 <tbody id="tableaucontenus1">
@@ -305,8 +309,6 @@
                     <h1 class="text-center" style="padding-bottom: 25px"> Confirmation</h1>
                     <div class="panel panel-default">
                     <form id="form3" name="form3" action="@routes.Application.validate()" method="POST">
-
-
                         <div class="panel-body well">
                             <div class="form-group seve_element_to_target">
                                 <label id="table" class="control-label col-xs-12 col-sm-offset-1 col-sm-1" style="color: black;" for="tableName">Table</label>
@@ -319,7 +321,6 @@
                                 <div class="col-sm-offset-0  col-sm-3">
                                     <span id="tableSpan1" class="" style="color:black;" > </span>
                                 </div>
-
                                 <div class="col-sm-offset-0  col-sm-1">
                                     <button class="btn btn-default consulter" id="consulter1" tooltip="consulter"><span class="fa fa-eye"></span></button>
                                 </div>
@@ -338,23 +339,26 @@
                     <table class="table table-striped table-bordered" cellspacing="0" width="100%" id="table2" name="table2">
                         <thead style="background: #18bc9c">
                             <tr>
-                                <th style="color: beige; width: 26px;" class="sorting_asc" tabindex="0" aria-controls="table1" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Id: activate to sort column descending">Id</th>
-                                <th style="color: beige; width: 72px;" class="sorting" tabindex="0" aria-controls="table1" rowspan="1" colspan="1" aria-label=" Name: activate to sort column ascending"> Name</th>
-                                <th style="color: beige; width: 72px;" class="sorting" tabindex="0" aria-controls="table1" rowspan="1" colspan="1" aria-label=" Name: activate to sort column ascending"> Type </th>
-                                <th style="color: beige; width: 205px;" class="sorting" tabindex="0" aria-controls="table1" rowspan="1" colspan="1" aria-label=" Taille: activate to sort column ascending"> Taille</th>
-                                <th style="color: beige; width: 72px;" class="sorting" tabindex="0" aria-controls="table1" rowspan="1" colspan="1" aria-label=" Name: activate to sort column ascending"> Index</th>
-                                <th style="color: beige; width: 72px;" class="sorting" tabindex="0" aria-controls="table1" rowspan="1" colspan="1" aria-label=" Name: activate to sort column ascending"> Auto Increment</th>
-
+                                <th style="color: beige; width: 26px;">Id</th>
+                                <th style="color: beige; width: 72px;"> PK</th>
+                                <th style="color: beige; width: 72px;"> Name</th>
+                                <th style="color: beige; width: 72px;"> Type </th>
+                                <th style="color: beige; width: 205px;"> Taille</th>
+                                <th style="color: beige; width: 72px;"> Non NULL</th>
+                                <th style="color: beige; width: 72px;"> Valeur par Défaut</th>
+                                <th style="color: beige; width: 72px;">Commentaire</th>
                             </tr>
                         </thead>
                     <tfoot style="background: #18bc9c">
                         <tr>
-                            <th style="color: beige; width: 26px;" class="sorting_asc" tabindex="0" aria-controls="table1" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Id: activate to sort column descending">Id</th>
-                            <th style="color: beige; width: 72px;" class="sorting" tabindex="0" aria-controls="table1" rowspan="1" colspan="1" aria-label=" Name: activate to sort column ascending"> Name</th>
-                            <th style="color: beige; width: 72px;" class="sorting" tabindex="0" aria-controls="table1" rowspan="1" colspan="1" aria-label=" Name: activate to sort column ascending"> Type </th>
-                            <th style="color: beige; width: 205px;" class="sorting" tabindex="0" aria-controls="table1" rowspan="1" colspan="1" aria-label=" Taille: activate to sort column ascending"> Taille</th>
-                            <th style="color: beige; width: 72px;" class="sorting" tabindex="0" aria-controls="table1" rowspan="1" colspan="1" aria-label=" Name: activate to sort column ascending"> Index</th>
-                            <th style="color: beige; width: 72px;" class="sorting" tabindex="0" aria-controls="table1" rowspan="1" colspan="1" aria-label=" Name: activate to sort column ascending"> Auto Increment</th>
+                            <th style="color: beige; width: 26px;">Id</th>
+                            <th style="color: beige; width: 72px;"> PK</th>
+                            <th style="color: beige; width: 72px;"> Name</th>
+                            <th style="color: beige; width: 72px;"> Type </th>
+                            <th style="color: beige; width: 205px;"> Taille</th>
+                            <th style="color: beige; width: 72px;"> Non NULL</th>
+                            <th style="color: beige; width: 72px;"> Valeur par Défaut</th>
+                            <th style="color: beige; width: 72px;">Commentaire</th>
                         </tr>
                     </tfoot>
                         <tbody id="tableaucontenus2">

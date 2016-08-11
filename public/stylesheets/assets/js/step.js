@@ -437,8 +437,10 @@ $('#form1').submit(function (e) {
                             var cols = 'cols[' + data[i].id + ']';
                             var type = 'type[' + data[i].id + ']';
                             var size = 'size[' + data[i].id + ']';
-                            var primaryKey = 'primaryKey[' + data[i].id + ']';
-                            var autoIncrement = 'autoIncrement[' + data[i].id + ']';
+                            var pk = 'pk[' + data[i].id + ']';
+                            var nonNull = 'nonNull[' + data[i].id + ']';
+                            var defaultVal = 'defaultVal[' + data[i].id + ']';
+                            var commentaire = 'commentaire[' + data[i].id + ']';
                             var s;
                             /*if (i == 0) {
                              s ="<td><select class='form-control' id='"+type+"' name='" + type + "'>" +
@@ -659,17 +661,15 @@ $('#form1').submit(function (e) {
                                 "</select>"+
                                 "</td>" +
                                 "<td><input type='number' id='data[i].id' name='" + size + "' size='4' value='5'/> </td>";*/
-
                             s = "<td><select class='form-control' id='" + type + "' name='" + type + "'>" +
                                 "<option class='blank'  value=''>Please select a value</option>" +
                                 "<option title='Un nombre entier de 4 octets. La fourchette des entiers relatifs est de -2 147 483 648 à 2 147 483 647. Pour les entiers positifs, cest de 0 à 4 294 967 295' selected>NUMBER</option>" +
                                 "<option title='Une chaîne de longueur variable (0-65,535), la longueur effective réelle dépend de la taille maximum d une ligne'>VARCHAR2</option>" +
+                                "<option title='VARCHAR'>VARCHAR</option>" +
                                 "<option title='DATE'>DATE</option>" +
                                 "<option title='CHAR'>CHAR</option>" +
                                 "<option title='Une date, la fourchette est de «1000-01-01» à «9999-12-31»'>DATE</option>" +
-                                "<option disabled='disabled'>-</option>"+
                                 "<option title='FLOAT(24)'>FLOAT</option>" +
-                                "</option><option disabled='disabled'>-</option>"+
                                 "<option title='BLOB'>BLOB</option>" +
                                 "<option title='RAW'>RAW</option>" +
                                 "<option title='CLOB'>CLOB</option>" +
@@ -727,12 +727,11 @@ $('#form1').submit(function (e) {
                              "</td>" +
                              "<td><input type='number' id='data[i].id' name='" + size + "' size='4' value='5'/> </td>";*/
                             // }
-                            $("#tableaucontenus1").append("<tr data-id='" + data[i].id + "'><td style='color: #63aef9;'>" + data[i].id + "<input type='hidden' id='"+ids+"' name='"+ids+"' value='"+data[i].id+"'/></td><td>"+data[i].name+"<input type='hidden' id='"+cols+"' name='"+cols+"' value='"+data[i].name+"'/></td>" + s + "<td><select name='" + primaryKey + "' id='" + primaryKey + "'><option value='none'>---</option>" +
-                                "<option value='PRIMARY' title='Primaire'>PRIMARY</option>" +
-                                "<option value='UNIQUE' title='Unique'>UNIQUE</option>" +
-                                "<option value='INDEX' title='Index'>INDEX</option>" +
-                                "<option value='FULLTEXT' title='Texte entier'>FULLTEXT</option>" +
-                                "<option value='SPATIAL' title='Spatial'>SPATIAL</option></select></td><td> <input type='checkbox' id='" + autoIncrement + "' name='" + autoIncrement + "' value='autoIncrement'/></td><td><button class='btn btn-danger'><span class='glyphicon glyphicon-remove-sign'></span></button>&nbsp;&nbsp;</td></tr>");
+                            $("#tableaucontenus1").append("<tr data-id='" + data[i].id + "'><td style='color: #63aef9;'>" + data[i].id + "<input type='hidden' id='"+ids+"' name='"+ids+"' value='"+data[i].id+"'/></td><td><input type='checkbox' id='" + pk + "' name='" + pk + "' value='primaryKey'/></td>"+
+                                "<td>"+data[i].name+"<input type='hidden' id='"+cols+"' name='"+cols+"' value='"+data[i].name+"'/></td>" + s + "<td> <input type='checkbox' id='" + nonNull + "' name='" + nonNull + "' value='notNull'/></td>"+
+                                    "<td><input type='text' id='"+defaultVal+"' name='"+defaultVal+"' value=''/></td>"+
+                                "<td><input type='text' id='"+commentaire+"' name='"+commentaire+"' value=''/></td>"+
+                                "<td><button class='btn btn-danger'><span class='glyphicon glyphicon-remove-sign'></span></button>&nbsp;&nbsp;</td></tr>");
                         }
 
                         $('#table1').DataTable({
@@ -788,18 +787,26 @@ $('#form1').submit(function (e) {
                             for (var i = 0; i < data.length; i++) {
                                 var type = 'type[' + data[i].id + ']';
                                 var size = 'size[' + data[i].id + ']';
-                                var autoIncrement = 'autoIncrement[' + data[i].id + ']';
+                                var pk = 'pk[' + data[i].id + ']';
+                                var notNull = 'pk[' + data[i].id + ']';
                                 console.log("data ["+i +data[i].autoIncrement)
                                 var q;
-                                if(data[i].autoIncrement == "true"){
+                                var s;
+                                if(data[i].pk == true){
                                     console.log("TRUE");
-                                q= "<td> <input type='checkbox' name='"+autoIncrement+"' checked='checked' disabled></td>";
+                                q= "<td> <input type='checkbox' name='"+pk+"' checked='checked' disabled></td>";
 
                                 }else{
                                     console.log("FALSEE");
-                                    q = "<td> <input type='checkbox' name='"+autoIncrement+"' disabled></td>";
+                                    q = "<td> <input type='checkbox' name='"+pk+"' disabled></td>";
                                 }
-                                $("#tableaucontenus2").append("<tr data-id='" + data[i].id + "'><td>" + data[i].id + "</td><td>" + data[i].name + "</td><td>"+ data[i].type+"</td><td>"+data[i].size+"</td><td>"+data[i].primaryKey+"</td>"+q+"</tr>");
+                                if(data[i].notNull == true){
+                                    s= "<td> <input type='checkbox' name='"+notNull+"' checked='checked' disabled></td>";
+
+                                }else{
+                                    s = "<td> <input type='checkbox' name='"+notNull+"' disabled></td>";
+                                }
+                                $("#tableaucontenus2").append("<tr data-id='" + data[i].id + "'><td>" + data[i].id + "</td>"+q+"<td>" + data[i].name + "</td><td>"+ data[i].type+"</td><td>"+data[i].size+"</td>"+s+"<td>"+data[i].defautlVal+"</td><td>"+data[i].comment+"</td></tr>");
                             }
                             $('#table2').DataTable({
                                 "scrollY":        "500px",
@@ -1008,7 +1015,7 @@ $('#form1').submit(function (e) {
     } );
 
 
-    $('#table1').on('click','input[type="checkbox"]', function(e) {
+   /* $('#table1').on('click','input[type="checkbox"]', function(e) {
         var id =  $(this).closest('tr').data('id');
         var rowCount = $('#table1 tr').length;
         console.log("type= "+ $('#type\\['+id+'\\] option:selected').text());
@@ -1022,7 +1029,7 @@ $('#form1').submit(function (e) {
                 }
             }
         }
-    });
+    });*/
 
     $(function () {
         $('.btn-radio').click(function(e) {

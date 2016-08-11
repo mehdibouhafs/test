@@ -8,8 +8,10 @@ public class Attribute {
     private String type;
     private String name;
     private String size;
-    private String primaryKey;
-    private boolean autoIncrement;
+    private boolean pK;
+    private boolean nonNull;
+    private String defautlVal;
+    private String commentaire;
 
     public Attribute() {
     }
@@ -46,31 +48,50 @@ public class Attribute {
         this.id = id;
     }
 
-    public String getPrimaryKey() {
-        return primaryKey;
+
+    public boolean ispK() {
+        return pK;
     }
 
-    public boolean isAutoIncrement() {
-        return autoIncrement;
+    public void setpK(boolean pK) {
+        this.pK = pK;
     }
 
-    public void setAutoIncrement(boolean autoIncrement) {
-        this.autoIncrement = autoIncrement;
+    public boolean isNonNull() {
+        return nonNull;
     }
 
-    public void setPrimaryKey(String primaryKey) {
-        this.primaryKey = primaryKey;
+    public void setNonNull(boolean nonNull) {
+        this.nonNull = nonNull;
     }
 
-    @java.lang.Override
-    public java.lang.String toString() {
+    public String getDefautlVal() {
+        return defautlVal;
+    }
+
+    public void setDefautlVal(String defautlVal) {
+        this.defautlVal = defautlVal;
+    }
+
+    public String getCommentaire() {
+        return commentaire;
+    }
+
+    public void setCommentaire(String commentaire) {
+        this.commentaire = commentaire;
+    }
+
+    @Override
+    public String toString() {
         return "Attribute{" +
-                "type='" + type + '\'' +
+                "id=" + id +
+                ", type='" + type + '\'' +
                 ", name='" + name + '\'' +
                 ", size='" + size + '\'' +
-                ", primaryKey='" + primaryKey + '\'' +
-                ", autoIncrement=" + autoIncrement +
-                ", id=" + id +
+                ", pK=" + pK +
+                ", nonNull=" + nonNull +
+                ", defautlVal='" + defautlVal + '\'' +
+                ", commentaire='" + commentaire + '\'' +
                 '}';
     }
 }

@@ -58,7 +58,7 @@ public class Generator
 			ReaderGenerique readerGenerique = context.getBean("readerGenerique", ReaderGenerique.class);
 			ClassPool pool = new ClassPool(true);//ClassPool.getDefault();
 			CtClass result;
-			if(!classeName.equals("")){
+			if(readerGenerique.getExt().equals("csv")){
 				result = pool.makeClass("app.batch.generate."+classeName+"csv$"+counter2);
 			}else {
 				result = pool.makeClass("app.batch.generate." + readerGenerique.getFragmentRootElementName() + "xml$"+counter2);
