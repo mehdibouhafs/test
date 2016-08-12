@@ -1,6 +1,5 @@
 package batch.processor;
 
-import batch.util.App;
 import batch.model.ReaderGenerique;
 import batch.util.Generator;
 import org.springframework.batch.item.database.ItemPreparedStatementSetter;
@@ -29,7 +28,7 @@ public class FieldSetItemPreparedStatementSetter implements ItemPreparedStatemen
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
-        App generator = (App) context.getBean("app");
+        Generator generator = (Generator) context.getBean("generator");
         int i=1;
         for (Map.Entry<String, Class<?>> entry : generator.getProperties().entrySet()) {
             try {
@@ -66,17 +65,6 @@ public class FieldSetItemPreparedStatementSetter implements ItemPreparedStatemen
                         break;
                     case "Date":
                         System.out.println("Date");
-                        //System.out.println("Date"+i+":"+((java.batch.util.Date)(f.get(item))).getTime());
-                       /* final String NEW_FORMAT = "dd/MM/yyyy";
-                        SimpleDateFormat sdf = new SimpleDateFormat("EE MMM dd HH:mm:ss z yyyy", Locale.ENGLISH);
-                        java.batch.util.Date date = null;
-                        try {
-                            date = sdf.parse((f.get(item)).toString());
-                            sdf.applyPattern(NEW_FORMAT);
-                            String s = sdf.format(date);
-                            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-                            java.batch.util.Date date1 = formatter.parse(s);
-                            System.out.println("Date :"+ date1.toString());*/
                         try {
                             ps.setDate(i,  new Date(((java.util.Date)(f.get(item))).getTime()));
                             i++;
@@ -98,20 +86,7 @@ public class FieldSetItemPreparedStatementSetter implements ItemPreparedStatemen
             }
 
         }
-       /* try {
-            ps.setString(1, App.getField(entry.getKey(),item));
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        }
 
-
-        /*try {
-            //ps.setDate(3, new Date(item.getClass().getMethod("getDate")));
-
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        }
-        System.out.println("ItemPREPARED"+item.getClass().getMethod("getFirstName").toString());*/
     }
 }
 

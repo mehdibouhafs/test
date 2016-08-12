@@ -1,6 +1,5 @@
 package batch.listeners;
 
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -9,9 +8,6 @@ import java.util.Map;
 
 
 import batch.util.Generator;
-import javassist.CannotCompileException;
-import javassist.NotFoundException;
-import batch.util.App;
 import batch.model.ReaderGenerique;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;

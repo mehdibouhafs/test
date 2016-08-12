@@ -10,7 +10,6 @@ import java.util.List;
  */
 public class ParamFormData1 {
 
-
     public String typeXML;
     public String tableName;
     public List<Integer> id;

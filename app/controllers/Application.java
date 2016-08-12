@@ -1,5 +1,6 @@
 package controllers;
-import batch.util.App;
+import batch.model.InputError;
+import batch.util.Generator;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import batch.dao.ObjectDao;
@@ -10,6 +11,7 @@ import batch.listeners.JobCompletionNotificationListener;
 import batch.model.Attribute;
 import batch.model.ReaderGenerique;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.jena.atlas.test.Gen;
 import org.springframework.batch.core.*;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
@@ -243,7 +245,7 @@ public class Application extends Controller {
         readerGenerique.setColumnsTable(columnsTable);
         readerGenerique.setTable(formData.get().getTableName());
         readerGenerique.setProperties(properties);
-        App c = context.getBean("app", App.class);
+        Generator c = context.getBean("generator", Generator.class);
         c.setProperties(properties);
         Class<?> classNew = null;
         classNew = c.generator(formData.get().getTableName(), typeXml);
@@ -291,6 +293,7 @@ public class Application extends Controller {
         readerGenerique.setFilePath(filePath);
         String extFile = getExtension(readerGenerique.getFilePath());
         readerGenerique.setExt(extFile);
+
         if (formData.hasErrors()) {
             // Don't call formData.get() when there are errors, pass 'null' to helpers instead.
             flash("error", "Please correct errors above.");
@@ -299,6 +302,34 @@ public class Application extends Controller {
         return ok("path" + readerGenerique.getFilePath());
     }
 
+
+
+    public Result cols001(){
+        ApplicationContext context = Global.getApplicationContext();
+        ReaderGenerique readerGenerique = context.getBean("readerGenerique", ReaderGenerique.class);
+        Form<ParamFormData001> formData001 = Form.form(ParamFormData001.class).bindFromRequest();
+        String[] separator = request().body().asFormUrlEncoded().get("separator");
+        List<String> cols = formData001.get().getCol();
+        System.out.println("cols "+ cols);
+        File destination = new File(readerGenerique.getFilePath());
+        readerGenerique.setLineToSkip(0);
+        readerGenerique.setSeparator(separator[0]);
+        String[] cols1 = new String[cols.size()];
+        ObjectNode result;
+        ArrayNode resuls = play.libs.Json.newArray();
+        int i=0;
+        for (String s:cols
+             ) {
+            cols1[i] = s;
+            result = play.libs.Json.newObject();
+            result.put("id", String.valueOf(i));
+            result.put("name", s);
+            i++;
+            resuls.add(result);
+        }
+        readerGenerique.setColumns(cols1);
+        return ok(Json.toJson(resuls));
+    }
 
     public Result cols() throws IOException {
         String[] cols;
@@ -460,8 +491,10 @@ public class Application extends Controller {
     public Result delete(int id) {
         //colsSelectedMap.remove(id);
         //attributtes.remove(id);
+
         return ok("removed");
     }
+
 
 
     public Result metadata() {
@@ -513,7 +546,7 @@ public class Application extends Controller {
                     JobExecution jobExecution = jobLauncher.run(job, param);
                     JobCompletionNotificationListener listener = context.getBean("listener", JobCompletionNotificationListener.class);
                     if (jobExecution.getStatus().equals(BatchStatus.COMPLETED)) {
-                        App c = context.getBean("app", App.class);
+                        Generator c = context.getBean("generator", Generator.class);
                         c.setClassGenerate(null);
                         Object c1 = context.getBean("firstBe");
                         System.out.println(c1.getClass());
@@ -545,7 +578,7 @@ public class Application extends Controller {
                     JobExecution jobExecution = jobLauncher.run(job, param);
                     JobCompletionNotificationListener listener = context.getBean("listener", JobCompletionNotificationListener.class);
                     if (jobExecution.getStatus().equals(BatchStatus.COMPLETED)) {
-                        App c = context.getBean("app", App.class);
+                        Generator c = context.getBean("generator", Generator.class);
                         c.setClassGenerate(null);
                         ObjectNode result = play.libs.Json.newObject();
                         Double time = readerGenerique.getDateTime() / 1000.0;

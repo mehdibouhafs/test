@@ -16,19 +16,40 @@ import java.io.Serializable;
 import java.lang.reflect.*;
 import java.lang.reflect.Modifier;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 
 /**
- * Hello world!
+ * Created by MBS on 20/07/2016.
  *
  */
-public class Generator
-	{
-		public Generator() {
-		}
+public class Generator {
+
+		private Map<String, Class<?>> properties = new LinkedHashMap<>();
+
+		private Class<?> classGenerate = Object.class;
+
 		private static int counter2 = 0;
+
+	public Generator() {
+		}
+
+		public Class<?> generator(String name, String typeXml) throws CannotCompileException, NotFoundException{
+			ApplicationContext applicationContext = Global.getApplicationContext();
+			ReaderGenerique readerGenerique = applicationContext.getBean("readerGenerique", ReaderGenerique.class);
+			Class<?> rowObjectClass = null;
+			try {
+				rowObjectClass = Generator.buildCSVClassNamexml(this.properties, name,typeXml);
+				this.classGenerate = rowObjectClass;
+				return rowObjectClass;
+
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
 
 		/*public static Class<?> buildCSVClassName(Map<String, Class<?>> properties,String classeName) throws CannotCompileException, NotFoundException, IOException {
 			ClassPool pool = new ClassPool(true);//ClassPool.getDefault();
@@ -184,6 +205,24 @@ public class Generator
 			return counter2;
 		}
 
+		public Map<String, Class<?>> getProperties() {
+			return properties;
+		}
 
+		public void setProperties(Map<String, Class<?>> properties) {
+			this.properties = properties;
+		}
+
+		public Class<?> getClassGenerate() {
+			return classGenerate;
+		}
+
+		public void setClassGenerate(Class<?> classGenerate) {
+			this.classGenerate = classGenerate;
+		}
+
+		public static void setCounter2(int counter2) {
+			Generator.counter2 = counter2;
+		}
 	}
 

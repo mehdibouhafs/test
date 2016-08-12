@@ -1,6 +1,5 @@
 package batch.processor;
 
-import batch.util.App;
 import batch.model.ReaderGenerique;
 import batch.util.Generator;
 import org.springframework.batch.item.ItemProcessor;
@@ -19,7 +18,7 @@ public class ObjectItemProcessor implements ItemProcessor<Object,Object> {
 
         ApplicationContext context = Global.getApplicationContext();
         ReaderGenerique readerGenerique = context.getBean("readerGenerique", ReaderGenerique.class);
-        App generator = (App) context.getBean("app");
+        Generator generator = (Generator) context.getBean("generator");
         for (Map.Entry<String, Class<?>> entry : generator.getProperties().entrySet()) {
             try {
                 Field f = item.getClass().getDeclaredField(entry.getKey());

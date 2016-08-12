@@ -19,6 +19,9 @@ POST    /validate                       controllers.Application.validate()
 POST    /cols                           controllers.Application.cols()
 
 
+POST   /cols001                         controllers.Application.cols001()
+
+
 POST   /colsxml                         controllers.Application.colsxml()
 
 

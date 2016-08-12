@@ -89,10 +89,10 @@
 
 	<bean id="FileVerificationSkipper" class="batch.policy.FileVerificationSkipper"/>
 
-	<bean id="readerGenerique" class="batch.model.ReaderGenerique"/>
+	<bean id="readerGenerique" class="batch.model.ReaderGenerique" scope="singleton"/>
 
 
-	<bean id="app" class="batch.util.App" lazy-init="true" />
+	<bean id="generator" class="batch.util.Generator" lazy-init="true" />
 
 	<bean id="processor" class="batch.processor.ObjectItemProcessor"/>
 

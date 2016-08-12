@@ -1,7 +1,9 @@
 $(document).ready(function() {
+    var table1;
     $('#type3').hide();
     $('#columns').hide();
     $('#dropTab').hide();
+    $('#csvNoHead').hide();
     $('#xml').hide();
     $('#csv').hide();
     $("#cols").hide();
@@ -113,7 +115,7 @@ $(document).ready(function() {
             });
         }
     })
-    
+    var entete;
     $('#filePath').change(function (e) {
         e.preventDefault();
         $('#csv').hide();
@@ -121,10 +123,70 @@ $(document).ready(function() {
         if($('#filePath').val()=="" || $('#filePath').val()==" "){
             location.reload();
         }else {
+            var r = confirm("Est ce que votre fichier contient l'entete ?");
+         if (r == true) {
+                entete = "entete=true";
+
+             $(".ms-list").html("");
+             $("#cols").multiSelect('refresh');
+             var array = $('#filePath').val().split(".");
+             console.log("array" + array + "lenghth" + array.length);
+             var ext = array[array.length - 1];
+             $('#columns').hide();
+             if (ext == "csv") {
+                 $('#csv').show();
+                 $('#validate').hide();
+             } else {
+                 $('#validate').hide();
+                 $('#xml').show();
+
+                 /*$('#xml').append("<div class='row'>"+
+                  +"<div class=''>"
+                  +"<div class='row'>"
+                  +"<div class='col-md-4'>"+
+                  "<img src='images/XmlType1.png' class='img-responsive img-radio'>"+
+                  +"<button type='button' class='btn btn-primary btn-radio'>Left</button>"
+                  +"<input type='checkbox' id='left-item' class='hidden'>"+
+                  +"</div>"
+                  +"<div class='col-md-4'>"
+                  +"<img src='images/XmlType1.png' class='img-responsive img-radio'>"
+                  +"<button type='button' class='btn btn-primary btn-radio'>Middle</button>"
+                  +"<input type='checkbox' id='middle-item' class='hidden'>"
+                  +"</div>"
+                  +"<div class='col-md-4'>"
+                  +"<img src='images/XmlType1.png' class='img-responsive img-radio'>"
+                  +"<button type='button' class='btn btn-primary btn-radio'>Right</button>"
+                  +"<input type='checkbox' id='right-item' class='hidden'>"
+                  +"</div>"
+                  +"</div>"
+                  +"</div>"
+                  +"</div>)");*/
+                 $('#table').text("Fragument Root Element Name");
+                 //$('#table').attr("placeholder").val("Fragument Root Element Name");
+                 $('#tableSpan').text("Please enter Fragument Root Element Name");
+             }
+            } else {
+                entete = "entete=false";
+             $("#validate").hide();
+             var tableOpts = {
+                 "sPaginationType": "full_numbers",
+                 "sScrollY": "500px",
+                 "bFilter": false,
+                 "fnCreatedRow": function (nRow, aData, iDataIndex) {
+                     $(nRow).attr('id', table1.fnSettings().fnRecordsTotal());
+                     var txtBox = $(nRow).find("input[type=text]");
+                     var button = $(nRow).find("button");
+                 }
+             }
+             table1 = $('#csvTableNoHead').dataTable(tableOpts);
+
+             $("#csvNoHead").show();
+            }
+            var data1 = $('#form00').serialize()+"&"+entete;
             $.ajax({
                 type: "POST",//la method à utiliser soit POST ou GET
                 url: "/path", //lien de la servlet qui exerce le traitement sur les données
-                data: $('#form00').serialize(),// sign_in c'est l'id du form qui contient le bouton submit et toutes les champs à envoyer
+                data: data1,// sign_in c'est l'id du form qui contient le bouton submit et toutes les champs à envoyer
                 dataType: 'json',
                 success: function (data) {// le cas ou la requete est bien execute en reçoi les données serialiser par JSON dans la variable msg
                     //recuperation de la valeur stock dans l'attribut desactive
@@ -135,44 +197,6 @@ $(document).ready(function() {
                 }
             });
 
-            $(".ms-list").html("");
-            $("#cols").multiSelect('refresh');
-            var array = $('#filePath').val().split(".");
-            console.log("array" + array + "lenghth" + array.length);
-            var ext = array[array.length - 1];
-            $('#columns').hide();
-            if (ext == "csv") {
-                $('#csv').show();
-                $('#validate').hide();
-            } else {
-                $('#validate').hide();
-                $('#xml').show();
-
-                /*$('#xml').append("<div class='row'>"+
-                    +"<div class=''>"
-                    +"<div class='row'>"
-                    +"<div class='col-md-4'>"+
-                    "<img src='images/XmlType1.png' class='img-responsive img-radio'>"+
-                    +"<button type='button' class='btn btn-primary btn-radio'>Left</button>"
-                    +"<input type='checkbox' id='left-item' class='hidden'>"+
-                    +"</div>"
-                    +"<div class='col-md-4'>"
-                    +"<img src='images/XmlType1.png' class='img-responsive img-radio'>"
-                    +"<button type='button' class='btn btn-primary btn-radio'>Middle</button>"
-                    +"<input type='checkbox' id='middle-item' class='hidden'>"
-                    +"</div>"
-                    +"<div class='col-md-4'>"
-                    +"<img src='images/XmlType1.png' class='img-responsive img-radio'>"
-                    +"<button type='button' class='btn btn-primary btn-radio'>Right</button>"
-                    +"<input type='checkbox' id='right-item' class='hidden'>"
-                    +"</div>"
-                    +"</div>"
-                    +"</div>"
-                    +"</div>)");*/
-                $('#table').text("Fragument Root Element Name");
-                //$('#table').attr("placeholder").val("Fragument Root Element Name");
-                $('#tableSpan').text("Please enter Fragument Root Element Name");
-            }
         }
     });
 
@@ -290,6 +314,31 @@ $(document).ready(function() {
         }
     });
 
+    $('#form001').validate({ // initialize the plugin
+        rules: {
+            separator: {
+                required: true
+            }
+        },
+        highlight: function (element) {
+            $(element).closest('.form-group').addClass('has-error');
+            $('#step222').css('background-color','#ff0000');
+        },
+        unhighlight: function (element) {
+            $(element).closest('.form-group').removeClass('has-error');
+            $('#step222').css('background-color','');
+        },
+        errorElement: 'span',
+        errorClass: 'help-block',
+        errorPlacement: function (error, element) {
+            if (element.parent('.input-group').length) {
+                error.insertAfter(element.parent());
+            } else {
+                error.insertAfter(element);
+            }
+        }
+    });
+
 
     $(function() {
         $("#form01").submit(
@@ -311,14 +360,11 @@ $(document).ready(function() {
                                 sal = obj[i].name;
                                 //$("#cols").append($('<option>', {value:"ok"}).text("ok"));
                                 //$("#cols").append("<option value='" + data[i].name + "'>" + data[i].name + "</option>");
-                                $('#cols').show();
-                                $('#all').show();
-                                $('#none').show();
                                 $('#cols').multiSelect({
                                     selectableHeader: "<div class='custom-header'>Columns</div>",
                                     selectionHeader: "<div class='custom-header'>Columns Selected</div>",
                                     selectableFooter: "<div class='custom-header'>Columns</div>",
-                                    selectionFooter: "<div class='custom-header'>Columns Selected footer</div>"
+                                    selectionFooter: "<div class='custom-header'>Columns Selected</div>"
                                 });
                                 $('#cols').multiSelect('addOption', {
                                     value: sal,
@@ -326,8 +372,12 @@ $(document).ready(function() {
                                     selected: 'true'
                                 });
                                 $('#cols').multiSelect('refresh');
-                                $('#columns').show();
                             }
+                            $('#all').show();
+                            $('#none').show();
+                            $('#cols').show();
+                            $('#validate').hide();
+                            $('#columns').show();
                         },
                         error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
                             console.log("error");
@@ -339,6 +389,63 @@ $(document).ready(function() {
 
             });
     });
+
+
+    $(function() {
+        $("#form001").submit(
+            function (e) {
+                //envoyer les donnees avec ajax
+                e.preventDefault();
+                if($('#form001').valid() && $('#form01').valid()) {
+                    var data1="separator="+$('#separator').find(":selected").text()+"&";
+                    var data2 = table1.$('input').serialize();
+                    var data= data1.concat(data2);
+                    $.ajax({
+                        type: "POST",//la method à utiliser soit POST ou GET
+                        url: "/cols001", //lien de la servlet qui exerce le traitement sur les données
+                        data: data,// sign_in c'est l'id du form qui contient le bouton submit et toutes les champs à envoyer
+                        dataType: 'json',
+                        success: function (data) {// le cas ou la requete est bien execute en reçoi les données serialiser par JSON dans la variable msg
+                            //recuperation de la valeur stock dans l'attribut desactive
+                            var obj = JSON.parse(JSON.stringify(data));
+                            var s = parseInt(data.length);
+                            var sal;
+                            for (var i = 0; i < s; i++) {
+                                sal = obj[i].name;
+                                //$("#cols").append($('<option>', {value:"ok"}).text("ok"));
+                                //$("#cols").append("<option value='" + data[i].name + "'>" + data[i].name + "</option>");
+                                $('#all').show();
+                                $('#none').show();
+                                $('#cols').multiSelect({
+                                    selectableHeader: "<div class='custom-header'>Columns</div>",
+                                    selectionHeader: "<div class='custom-header'>Columns Selected</div>",
+                                    selectableFooter: "<div class='custom-header'>Columns</div>",
+                                    selectionFooter: "<div class='custom-header'>Columns Selected </div>"
+                                });
+                                $('#cols').multiSelect('addOption', {
+                                    value: sal,
+                                    text: sal,
+                                    selected: 'true'
+                                });
+                                $('#cols').multiSelect('refresh');
+                            }
+
+                            $('#cols').show();
+                            $('#columns').show();
+                            $("#csvNoHead").hide();
+                        },
+                        error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
+                            console.log("error");
+                        }
+                    });
+                }else{
+                    alert("form01 not valid ");
+                }
+
+            });
+    });
+
+
 
     var typeXMl;
     $(function() {
@@ -752,7 +859,6 @@ $('#form1').submit(function (e) {
                     }
                 });
         });
-
     $("#activate-step-3").click(function(e) {
             e.preventDefault();
             $('#table2').DataTable().destroy();
@@ -1108,6 +1214,45 @@ $('#form1').submit(function (e) {
         });
 
     });
+
+    var rowCount = 1;
+    function addMoreRows() {
+        rowCount ++;
+        var recRow = "<tr id='rowCount'+'"+rowCount+"'><td>Column</td><td><input name='' type='text'  maxlength='120' style='margin: 4px 5px 0 5px;'/></td>"+
+        "<td><button id='deleteColumn'>DELETE</button></td></tr>";
+        $('#csvTableNoHeadContenu').append(recRow);
+    }
+
+    function removeRow(removeNum) {
+        $('#rowCount'+removeNum).remove();
+    }
+
+
+    $('#addColumn').on('click', function(e){
+        e.preventDefault();
+        var id = '<input type="text" id="nami" value="'+table1.fnSettings().fnRecordsTotal()+'"/>';
+        var textbox = '<input type="text" class="txtBox"/>';
+        var button = '<button class="btn btn-danger"><span class="glyphicon glyphicon-remove-sign"></span></button>';
+        table1.fnAddData([id,textbox,button]);
+});
+
+
+    $('#csvTableNoHead').on( 'click', '.glyphicon-remove-sign', function (e) {
+        e.preventDefault();
+        var table = $('#csvTableNoHead').DataTable();
+
+        table.row( $(this).parents('tr') ).remove().draw();
+        $('nami').each(function (i){
+            console.log("test"+i);
+            $(this).text(i+1);
+            $(this).attr('id',i+1);
+        });
+    });
+
+
+
+
+
 
 
 

@@ -6,7 +6,9 @@ import java.util.List;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
+/**
+Created by MBS on 20/07/2016.
+ **/
 public class ReadXMLFile2 {
 
 	private List<String> s = new ArrayList<>();

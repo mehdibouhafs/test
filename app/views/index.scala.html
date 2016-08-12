@@ -108,6 +108,54 @@
                         </form>
                         </div>
 
+                        <div id="csvNoHead" style="padding-top: 30px;">
+                            <div class="text-center data-block" style="padding-bottom: 25px">
+                                <h1>  HEADER CSV FILE </h1>
+                            </div>
+                        <form class="form-horizontal" id="form001" name="form001" action="@routes.Application.cols001()" method="POST">
+
+                            <div class="form-group third_element_to_target" id="separatorForm">
+                                <label  class="control-label col-xs-12 col-sm-2" style="color: black;" for="separator"> Séparateur :</label>
+                                <div class="col-xs-12 col-sm-2">
+                                    <div class='input-group'>
+                                        <span class='input-group-addon'> <i class="fa fa-eyedropper" aria-hidden="true"></i></span>
+                                        <select
+                                        class="form-control"
+                                        id="separator"
+                                        name="separator">
+                                            <option class="blank"  value=";">;</option>
+                                            <option id="separator[0]",name="separator[0]" title="point virgule" value=";">;</option>
+                                            <option id="separator[1]",name="separator[1]" title="virgule" value=",">,</option>
+                                            <option id="separator[2]",name="separator[2]" title="deux points" value=":">:</option>
+                                            <option id="separator[3]",name="separator[3]" title="pipe" value="|">|</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-sm-4">
+                                    <span class="help-block" style="color:#ffffff;">Please select Séparator requiered !</span>
+                                </div>
+                                <div class="col-xs-12 col-sm-4">
+                                    <span class="help-block" style="color:red;"></span>
+                                </div>
+                            </div>
+
+                            <table class="table table-bordered sixth_element_to_target" id="csvTableNoHead" name="csvTableNoHead">
+                                <thead style="background: #18bc9c">
+                                    <tr>
+                                        <th>Columns Number</th>
+                                        <th> Column</th>
+                                        <th>Options</th>
+                                        <button id="addColumn" class="btn btn-success pull-right" style="background-color: #18bc9c;"><span class='glyphicon glyphicon-plus'>&nbsp;Add More Column&nbsp;</span></button>
+                                    </tr>
+                                </thead>
+                                <tbody id="csvTableNoHeadContenu">
+
+                                </tbody>
+                            </table>
+                            <button id="validateCsvNoHead" class="btn btn-primary pull-right eight_element_to_target"  style="background-color:#18bc9c;" type="submit" style="padding: 10px 70px;background-color: #18bc9c;"><span class='glyphicon glyphicon-ok'>&nbsp;Valider&nbsp;</span></button>
+                        </form>
+                        </div>
+
                     <div id="xml">
                     <form class="form-horizontal" id="form02" name="form02" action="@routes.Application.colsxml()" method="POST">
                             <div id="xml" style="margin-bottom: 20px;margin-top: 30px;background-color: #18bc9c">
