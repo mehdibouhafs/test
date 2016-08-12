@@ -1,17 +1,27 @@
 package batch.model;
 
+import com.avaje.ebean.Model;
+
+import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 /**
  * Created by MBS on 15/07/2016.
  */
-public class Attribute {
+@Entity
+@Table(name="A_MBS3_Attribute")
+public class Attribute extends Model {
     private int id;
     private String type;
-    private String name;
-    private String size;
-    private boolean pK;
+    private String nameo;
+    private String sizeo;
+    private boolean pko;
     private boolean nonNull;
     private String defautlVal;
     private String commentaire;
+    @ManyToOne
+    private Classe classe;
 
     public Attribute() {
     }
@@ -24,20 +34,20 @@ public class Attribute {
         this.type = type;
     }
 
-    public String getSize() {
-        return size;
+    public String getNameo() {
+        return nameo;
     }
 
-    public void setSize(String size) {
-        this.size = size;
+    public void setNameo(String nameo) {
+        this.nameo = nameo;
     }
 
-    public String getName() {
-        return name;
+    public String getSizeo() {
+        return sizeo;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setSizeo(String sizeo) {
+        this.sizeo = sizeo;
     }
 
     public int getId() {
@@ -49,12 +59,20 @@ public class Attribute {
     }
 
 
-    public boolean ispK() {
-        return pK;
+    public Classe getClasse() {
+        return classe;
     }
 
-    public void setpK(boolean pK) {
-        this.pK = pK;
+    public void setClasse(Classe classe) {
+        this.classe = classe;
+    }
+
+    public boolean isPko() {
+        return pko;
+    }
+
+    public void setPko(boolean pko) {
+        this.pko = pko;
     }
 
     public boolean isNonNull() {
@@ -86,9 +104,9 @@ public class Attribute {
         return "Attribute{" +
                 "id=" + id +
                 ", type='" + type + '\'' +
-                ", name='" + name + '\'' +
-                ", size='" + size + '\'' +
-                ", pK=" + pK +
+                ", name='" + nameo + '\'' +
+                ", size='" + sizeo + '\'' +
+                ", pK=" + pko +
                 ", nonNull=" + nonNull +
                 ", defautlVal='" + defautlVal + '\'' +
                 ", commentaire='" + commentaire + '\'' +

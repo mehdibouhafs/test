@@ -138,12 +138,13 @@
                                     <span class="help-block" style="color:red;"></span>
                                 </div>
                             </div>
-
-                            <table class="table table-bordered sixth_element_to_target" id="csvTableNoHead" name="csvTableNoHead">
-                                <thead style="background: #18bc9c">
+                            <div class="row">
+                            <div class="col-xs-12 col-sm-2"></div>
+                            <div class="col-xs-12 col-sm-8">
+                            <table class="stripe row-border order-column" cellspacing="0" width="100%" id="csvTableNoHead" name="csvTableNoHead">
+                                <thead style="background: #18bc9c;">
                                     <tr>
-                                        <th>Columns Number</th>
-                                        <th> Column</th>
+                                        <th> Column by Order</th>
                                         <th>Options</th>
                                         <button id="addColumn" class="btn btn-success pull-right" style="background-color: #18bc9c;"><span class='glyphicon glyphicon-plus'>&nbsp;Add More Column&nbsp;</span></button>
                                     </tr>
@@ -152,7 +153,11 @@
 
                                 </tbody>
                             </table>
+                                </div>
+                            <div class="col-xs-12 col-sm-2"></div>
+                            </div>
                             <button id="validateCsvNoHead" class="btn btn-primary pull-right eight_element_to_target"  style="background-color:#18bc9c;" type="submit" style="padding: 10px 70px;background-color: #18bc9c;"><span class='glyphicon glyphicon-ok'>&nbsp;Valider&nbsp;</span></button>
+
                         </form>
                         </div>
 

@@ -170,7 +170,6 @@ $(document).ready(function() {
              $("#validate").hide();
              var tableOpts = {
                  "sPaginationType": "full_numbers",
-                 "sScrollY": "500px",
                  "bFilter": false,
                  "fnCreatedRow": function (nRow, aData, iDataIndex) {
                      $(nRow).attr('id', table1.fnSettings().fnRecordsTotal());
@@ -396,7 +395,7 @@ $(document).ready(function() {
             function (e) {
                 //envoyer les donnees avec ajax
                 e.preventDefault();
-                if($('#form001').valid() && $('#form01').valid()) {
+                if($('#form001').valid() && $('#form01').valid() && table1.fnGetData().length>0) {
                     var data1="separator="+$('#separator').find(":selected").text()+"&";
                     var data2 = table1.$('input').serialize();
                     var data= data1.concat(data2);
@@ -439,7 +438,7 @@ $(document).ready(function() {
                         }
                     });
                 }else{
-                    alert("form01 not valid ");
+                    alert("No Column was inserted in this table");
                 }
 
             });
@@ -1227,35 +1226,30 @@ $('#form1').submit(function (e) {
         $('#rowCount'+removeNum).remove();
     }
 
-
+    var i=0;
     $('#addColumn').on('click', function(e){
         e.preventDefault();
-        var id = '<input type="text" id="nami" value="'+table1.fnSettings().fnRecordsTotal()+'"/>';
-        var textbox = '<input type="text" class="txtBox"/>';
+        var id = '<input type="hidden" class="nami" name="idCol['+i+']" value="'+table1.fnSettings().fnRecordsTotal()+'" readonly/>';
+        var textbox = '<input type="text" class="txtBox" name="col['+i+']"/><input type="hidden" class="nami" name="idCol['+i+']" value="'+table1.fnSettings().fnRecordsTotal()+'" readonly/>';
         var button = '<button class="btn btn-danger"><span class="glyphicon glyphicon-remove-sign"></span></button>';
-        table1.fnAddData([id,textbox,button]);
+        table1.fnAddData([textbox,button]);
+        i++;
 });
 
 
     $('#csvTableNoHead').on( 'click', '.glyphicon-remove-sign', function (e) {
         e.preventDefault();
         var table = $('#csvTableNoHead').DataTable();
-
         table.row( $(this).parents('tr') ).remove().draw();
-        $('nami').each(function (i){
-            console.log("test"+i);
-            $(this).text(i+1);
-            $(this).attr('id',i+1);
+        $('.nami').each(function (i){
+            $(this).val(i);
+            $(this).attr('name','idCol['+i+']');
         });
+        $('.txtBox').each(function (i){
+            $(this).attr('name','col['+i+']');
+        });
+
     });
-
-
-
-
-
-
-
-
 
 
     /*$('#table2').on('click', '.glyphicon-pencil', function(e){

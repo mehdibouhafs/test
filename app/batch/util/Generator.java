@@ -1,5 +1,6 @@
 package batch.util;
 
+import batch.model.Classe;
 import batch.model.ReaderGenerique;
 import javassist.*;
 import javassist.bytecode.AnnotationsAttribute;
@@ -79,11 +80,15 @@ public class Generator {
 			ReaderGenerique readerGenerique = context.getBean("readerGenerique", ReaderGenerique.class);
 			ClassPool pool = new ClassPool(true);//ClassPool.getDefault();
 			CtClass result;
+			String classeN;
 			if(readerGenerique.getExt().equals("csv")){
-				result = pool.makeClass("app.batch.generate."+classeName+"csv$"+counter2);
+				classeN = classeName;
+				result = pool.makeClass("app.batch.generate."+classeN+"csv$"+counter2);
 			}else {
-				result = pool.makeClass("app.batch.generate." + readerGenerique.getFragmentRootElementName() + "xml$"+counter2);
+				classeN = readerGenerique.getFragmentRootElementName();
+				result = pool.makeClass("app.batch.generate." + classeN + "xml$"+counter2);
 			}
+
 		counter2++;
 		result.setSuperclass(pool.get((Serializable.class).getName()));
 		ClassFile classFile = result.getClassFile();

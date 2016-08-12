@@ -1,4 +1,5 @@
 package controllers;
+import batch.model.Classe;
 import batch.model.InputError;
 import batch.util.Generator;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -133,6 +134,9 @@ public class Application extends Controller {
         ReaderGenerique readerGenerique = context.getBean("readerGenerique", ReaderGenerique.class);
         Map<String, Class<?>> properties = new LinkedHashMap<>();
         StringBuffer typeSizes;
+        Classe classe = new Classe();
+        classe.ClassName=formData.get().getTableName();
+        classe.save();
         final Map<String, String> columnsTable = new LinkedHashMap<>();
         for (int i = 0; i < ss.size(); i++) {
             try {
@@ -161,15 +165,16 @@ public class Application extends Controller {
                         System.out.println("Primary key" + i + "val = " + ss.get(i));
                         String s = "-PrimaryKey";
                         typeSizes.append(s);
-                        attribute.setpK(true);
+                        attribute.setPko(true);
                     }
                 } catch (Exception e) {
-                    attribute.setpK(false);
+                    attribute.setPko(false);
                     typeSizes.append("-");
                 }
 
                 attribute.setType(type);
                 Class o;
+
                 switch (type) {
                     case "NUMBER":
                         o = Integer.class;
@@ -226,11 +231,14 @@ public class Application extends Controller {
                 System.out.println("typeSize for "+ss.get(i)+" typeSizes "+typeSizes.toString());
                 columnsTable.put(ss.get(i), typeSizes.toString());
                 attribute.setId(ids.get(i));
-                attribute.setSize(size);
-                attribute.setName(ss.get(i));
+                attribute.setSizeo(size);
+                attribute.setNameo(ss.get(i));
                 attribute.setCommentaire(comments.get(i));
                 attribute.setDefautlVal(valDefautl.get(i));
                 attributes.add(attribute);
+                attribute.setClasse(classe);
+                attribute.save();
+
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
@@ -258,6 +266,7 @@ public class Application extends Controller {
         readerGenerique.setClassXml(a[1]);
         Object c1 = context.getBean("firstBe");
         System.out.println("classsssssssssssssssssssss   " + c1.getClass() +"reader clss "+readerGenerique.getClassGenerate());
+
         ObjectNode result;
         //JsonArrayBuilder jsa =  Json.createArrayBuilder();
         ArrayNode resuls = play.libs.Json.newArray();
@@ -266,10 +275,10 @@ public class Application extends Controller {
                 ) {
             result = new play.libs.Json().newObject();
             result.put("id", s.getId());
-            result.put("pk",s.ispK());
-            result.put("name", s.getName());
+            result.put("pk",s.isPko());
+            result.put("name", s.getNameo());
             result.put("type", s.getType());
-            result.put("size", s.getSize());
+            result.put("size", s.getSizeo());
             result.put("notNull",s.isNonNull());
             result.put("defautlVal",s.getDefautlVal());
             result.put("comment",s.getCommentaire());
@@ -318,8 +327,7 @@ public class Application extends Controller {
         ObjectNode result;
         ArrayNode resuls = play.libs.Json.newArray();
         int i=0;
-        for (String s:cols
-             ) {
+        for (String s:cols) {
             cols1[i] = s;
             result = play.libs.Json.newObject();
             result.put("id", String.valueOf(i));
