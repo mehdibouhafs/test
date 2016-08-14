@@ -1,0 +1,456 @@
+@*
+ * Call the `main` template with two arguments. The first
+ * argument is a `String` with the title of the page, the second
+ * argument is an `Html` object containing the body of the page.
+ *@
+@import batch.model.User
+@(user: User)
+@main2("ITN MIGRATION",user) {
+@*
+* Get an `Html` object by calling the built-in Play welcome
+* template and passing a `String` message.
+*@
+<!-- Navigation -->
+    <div class="container">
+        <div class="row form-group">
+            <div class="col-xs-12 col-sm-12 col-md-12">
+                <ul class="nav nav-pills nav-justified thumbnail setup-panel" style="rgb(255, 255, 255);">
+                    <li class="active first_element_to_target"><a   id="step111" href="#step-1" >
+                        <h4 class="list-group-item-heading">Step 1</h4>
+                        <p class="list-group-item-text">File configuration</p>
+                    </a></li>
+                    <li id="step22" class="disabled "><a  id="step222" href="#step-2" >
+                        <h4 class="list-group-item-heading">Step 2</h4>
+                        <p class="list-group-item-text">Data configuration</p>
+                    </a></li>
+                    <li id="step33" class="disabled"><a id="step33" href="#step-3" >
+                        <h4 class="list-group-item-heading">Step 3</h4>
+                        <p class="list-group-item-text">Validation configuration</p>
+                    </a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="row setup-content" id="step-1">
+            <div class="col-xs-12 col-sm-12 col-md-12">
+                <div class="col-md-12 well" style="background-color: #ffffff;">
+                    <div class="text-center data-block" style="padding-bottom: 25px">
+                    <h1> Configuration File </h1>
+                     </div>
+
+                    <form class="form-horizontal" id="form00" name="form00" action="@routes.Application.path()" method="POST">
+                        <div class="form-group second_element_to_target">
+                            <label class="control-label col-xs-12 col-sm-2" style="color: black;" for="filePath">File Path</label>
+                            <div class="col-xs-12 col-sm-7">
+                                <div class='input-group'>
+                                    <span class='input-group-addon'> <i class="fa fa-file"></i></span>
+                                    <input type="text" class="form-control" id="filePath" name="filePath" placeholder="\\itnsa.net\path\file...">
+                                </div>
+                            </div>
+                            <div class="col-sm-offset-0  col-sm-3">
+                                <span class="help-block" style="color:#ffffff;" > Please enter the File Path . (required)</span>
+                            </div>
+
+                        </div>
+                        <button id="validate" class="btn btn-primary btn-success pull-right eight_element_to_target"  type="submit" style="padding: 10px 70px;background-color: #18bc9c;"><span class='glyphicon glyphicon-ok'>&nbsp;Valider&nbsp;</span></button>
+                        </form>
+                    <div id="csv">
+                    <form class="form-horizontal" id="form01" name="form01" action="@routes.Application.cols()" method="POST">
+                        <div class="form-group third_element_to_target" id="separatorForm">
+                           <label  class="control-label col-xs-12 col-sm-2" style="color: black;" for="separator"> Séparateur :</label>
+                            <div class="col-xs-12 col-sm-2">
+                                <div class='input-group'>
+                                    <span class='input-group-addon'> <i class="fa fa-eyedropper" aria-hidden="true"></i></span>
+                                    <select
+                                    class="form-control"
+                                    id="separator"
+                                    name="separator">
+                                        <option class="blank"  value=";">;</option>
+                                        <option id="separator[0]",name="separator[0]" title="point virgule" value=";">;</option>
+                                        <option id="separator[1]",name="separator[1]" title="virgule" value=",">,</option>
+                                        <option id="separator[2]",name="separator[2]" title="deux points" value=":">:</option>
+                                        <option id="separator[3]",name="separator[3]" title="pipe" value="|">|</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-sm-4">
+                                <span class="help-block" style="color:#ffffff;">Please select Séparator requiered !</span>
+                            </div>
+                            <div class="col-xs-12 col-sm-4">
+                                <span class="help-block" style="color:red;"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group fourth_element_to_target" id="numberlineForm">
+                            <label  class="control-label col-xs-12 col-sm-2"    style="color: black;" for="numberLine">Number Line to Skipe :</label>
+                            <div class="col-xs-12 col-sm-2">
+                                <div class='input-group'>
+                                    <span class='input-group-addon'> <i class="fa fa-scissors" aria-hidden="true"></i></span>
+                                    <input
+                                    type="number"
+                                    class="form-control"
+                                    id="numberLine"
+                                    name="numberLine"
+                                    value=""
+                                    placeholder="Number of lines to Switch"
+                                    min="1"
+                                    max="99999"
+                                    style="width: 120px;"
+                                    />
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-sm-4">
+                                <span class="help-block" style="color:#ffffff;">Pleaze Give us number of line to switch included the row of columns required !!</span>
+                            </div>
+                            <div class="col-xs-12 col-sm-4">
+                                <span class="help-block" style="color:red;"></span>
+                            </div>
+                        </div>
+                        <button id="validateCsv" class="btn btn-primary btn-success pull-right eight_element_to_target"  type="submit" style="padding: 10px 70px;background-color: #18bc9c;"><span class='glyphicon glyphicon-ok'>&nbsp;Valider&nbsp;</span></button>
+                        </form>
+                        </div>
+
+                        <div id="csvNoHead" style="padding-top: 30px;">
+                            <div class="text-center data-block" style="padding-bottom: 25px">
+                                <h1>  HEADER CSV FILE </h1>
+                            </div>
+                        <form class="form-horizontal" id="form001" name="form001" action="@routes.Application.cols001()" method="POST">
+
+                            <div class="form-group third_element_to_target" id="separatorForm">
+                                <label  class="control-label col-xs-12 col-sm-2" style="color: black;" for="separator"> Séparateur :</label>
+                                <div class="col-xs-12 col-sm-2">
+                                    <div class='input-group'>
+                                        <span class='input-group-addon'> <i class="fa fa-eyedropper" aria-hidden="true"></i></span>
+                                        <select
+                                        class="form-control"
+                                        id="separator"
+                                        name="separator">
+                                            <option class="blank"  value=";">;</option>
+                                            <option id="separator[0]",name="separator[0]" title="point virgule" value=";">;</option>
+                                            <option id="separator[1]",name="separator[1]" title="virgule" value=",">,</option>
+                                            <option id="separator[2]",name="separator[2]" title="deux points" value=":">:</option>
+                                            <option id="separator[3]",name="separator[3]" title="pipe" value="|">|</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-sm-4">
+                                    <span class="help-block" style="color:#ffffff;">Please select Séparator requiered !</span>
+                                </div>
+                                <div class="col-xs-12 col-sm-4">
+                                    <span class="help-block" style="color:red;"></span>
+                                </div>
+                            </div>
+                            <div class="row">
+                            <div class="col-xs-12 col-sm-2"></div>
+                            <div class="col-xs-12 col-sm-8">
+                            <table class="stripe row-border order-column" cellspacing="0" width="100%" id="csvTableNoHead" name="csvTableNoHead">
+                                <thead style="background: #18bc9c;">
+                                    <tr>
+                                        <th> Column by Order</th>
+                                        <th>Options</th>
+                                        <button id="addColumn" class="btn btn-success pull-right" style="background-color: #18bc9c;"><span class='glyphicon glyphicon-plus'>&nbsp;Add More Column&nbsp;</span></button>
+                                    </tr>
+                                </thead>
+                                <tbody id="csvTableNoHeadContenu">
+
+                                </tbody>
+                            </table>
+                                </div>
+                            <div class="col-xs-12 col-sm-2"></div>
+                            </div>
+                            <button id="validateCsvNoHead" class="btn btn-primary pull-right eight_element_to_target"  style="background-color:#18bc9c;" type="submit" style="padding: 10px 70px;background-color: #18bc9c;"><span class='glyphicon glyphicon-ok'>&nbsp;Valider&nbsp;</span></button>
+
+                        </form>
+                        </div>
+
+                    <div id="xml">
+                    <form class="form-horizontal" id="form02" name="form02" action="@routes.Application.colsxml()" method="POST">
+                            <div id="xml" style="margin-bottom: 20px;margin-top: 30px;background-color: #18bc9c">
+                                <div class="col-md-8 col-md-offset-2">
+                                <label style="color:black; margin-bottom: 20px;"> Veuillez Séléctionner le type qui correspond à la structure de votre fichier xml ! </label>
+                                    </div>
+                                <div class="">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <img src="@routes.Assets.versioned("images/XmlType1.png")" class="img-responsive img-radio">
+                                                <button type="button" class="btn btn-primary btn-radio">Structure Fichier N° 1</button>
+                                                <input type="checkbox" id="xml[]" name="xml[]" class="hidden" value="type1">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <img src="@routes.Assets.versioned("images/XmlType2.png")" class="img-responsive img-radio">
+                                                <button type="button" class="btn btn-primary btn-radio">Structure Fichier N° 2</button>
+                                                <input type="checkbox" id="xml[]" name="xml[]" class="hidden" value="type2">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <img src="@routes.Assets.versioned("images/XmlType3.png")" class="img-responsive img-radio">
+                                                <button type="button" class="btn btn-primary btn-radio">Structure Fichier N° 3</button>
+                                                <input type="checkbox" id="xml[]" name="xml[]" class="hidden" value="type3">
+                                            </div>
+                                        </div>
+                                </div>
+                            </div>
+                        <button id="validateXml" class="btn btn-primary btn-success pull-right eight_element_to_target"  type="submit" style="padding: 10px 70px;background-color: #18bc9c;"><span class='glyphicon glyphicon-ok'>&nbsp;Valider&nbsp;</span></button>
+                      </form>
+                        </div>
+                        <div class="col-sm-2 col-md-4">
+                        </div>
+                    <form id="form2" name="form2" action="@routes.Application.upload()" method="post">
+
+                        <div id="columns" class="col-md-12 well" style="background-color: rgb(255, 255, 255);margin-top: 20px;padding-top: 0px; ">
+                            <div class="text-center" style="padding-bottom: 25px;padding-top: 25px;">
+                                <h1> Selection Columns </h1>
+                            </div>
+                            <div class="row">
+                            <div class="col-sm-8 ">
+                                <div class="col-sm-offset-3 col-sm-4">
+                                    <button id="all" class="button btn-success" style="background-color: #18bc9c;" ><span class="fa fa-exchange" aria-hidden="true"></span>
+                                        <span class="sr-only">Select All:</span>Select all</button>
+                                </div>
+
+                                <div class="col-sm-offset-1 col-sm-3">
+
+                                </div>
+                            </div>
+                            <div class="col-sm-3 ">
+                                <button id="none" class="button btn-danger" ><span class="fa fa-exchange" aria-hidden="true"></span>
+                                    Deselect all</button>
+                            </div>
+                                </div>
+                            <div class="row">
+                            <div class="col-sm-4">
+                                <select class="searchable fifth_element_to_target" id="cols" name="cols[]" multiple="multiple">
+                                </select>
+                            </div>
+                            <div class="col-sm-4">
+
+                            </div>
+                            <div class="col-sm-4 ">
+                            </div>
+                                </div>
+                            <div id="type3" class="row">
+                            <div class="text-center" style="padding-bottom: 25px;padding-top: 25px;">
+                                <h1> Parametrage XML TYPE 3 </h1>
+                            </div>
+                                <div class="col-sm-2 "></div>
+                                <div class="col-sm-8 ">
+                                    <table class="table table-bordered sixth_element_to_target" id="xmlTable" name="xmlTable">
+                                        <thead style="background: #18bc9c">
+                                            <tr>
+                                                <th style="color: beige; width: 26px;" class="sorting_asc" tabindex="0" aria-controls="table1" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Id: activate to sort column descending">Cols</th>
+                                                <th style="color: beige; width: 72px;" class="sorting" tabindex="0" aria-controls="table1" rowspan="1" colspan="1" aria-label=" Name: activate to sort column ascending"> Attribute</th>
+                                                <th style="color: beige; width: 72px;" class="sorting" tabindex="0" aria-controls="table1" rowspan="1" colspan="1" aria-label=" Name: activate to sort column ascending"> Element </th>
+                                            </tr>
+                                        </thead>
+                                        <tfoot  style="background: #18bc9c">
+                                            <tr>
+                                                <th style="color: beige; width: 26px;" class="sorting_asc" tabindex="0" aria-controls="table1" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Id: activate to sort column descending">Cols</th>
+                                                <th style="color: beige; width: 72px;" class="sorting" tabindex="0" aria-controls="table1" rowspan="1" colspan="1" aria-label=" Name: activate to sort column ascending"> Attribute</th>
+                                                <th style="color: beige; width: 72px;" class="sorting" tabindex="0" aria-controls="table1" rowspan="1" colspan="1" aria-label=" Name: activate to sort column ascending"> Element </th>
+                                            </tr>
+                                        </tfoot>
+                                        <tbody id="xmlTableContenu1">
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="col-sm-2 "></div>
+                            </div>
+                                </div>
+
+                        <!-- <input id="activate-step-2" type="submit" class="btn btn-primary btn-lg"/>
+                        <input type="submit" id="activate-step-2" class="btn btn-primary btn-lg"  >-->
+                                <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10">
+                            <button id="activate-step-2" class="btn btn-success pull-right" type="submit" style="padding: 10px 10px;
+                                font-size: 19px;
+                                line-height: 1.333333;
+                                border-radius: 80px;
+                                margin-top: 60px;
+                                background-color: #18bc9c;
+                                margin-left: 150px;"
+                            ><span class='glyphicon glyphicon-circle-arrow-right ten_element_to_target'>&nbsp;Continuer&nbsp;</span></button>
+                            </div>
+                            </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="row setup-content" id="step-2">
+                <div class="well">
+                    <h1 class="text-center" style="padding-bottom: 25px"> Mapping Configuration</h1>
+                    <div class="panel panel-default">
+                            <form id="form1" name="form1" action="@routes.Application.getTypes" method="POST">
+                                <div class="panel-body well">
+                                    <div class="form-group seve_element_to_target">
+                                        <label id="table" class="control-label col-xs-12 col-sm-offset-1 col-sm-1" style="color: black;" for="tableName">Table</label>
+                                        <div class="col-xs-12 col-sm-3">
+                                            <div class='input-group'>
+                                                <span class='input-group-addon'> <i class="fa fa-table"></i></span>
+                                                <input type="text" class="form-control" id="tableName" name="tableName" value="" placeholder="Table Name">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-offset-0  col-sm-3">
+                                            <span id="tableSpan" class="" style="color:black;" > Please enter the table Name . (required)</span>
+                                        </div>
+
+                                        <div class="col-sm-offset-0  col-sm-1">
+                                            <button class="btn btn-default consulter" id="consulter" tooltip="consulter" disabled><span class="fa fa-eye"></span></button>
+                                        </div>
+
+                                        <div class="col-sm-offset-0  col-sm-3" id="dropTab">
+                                            <span class="">
+                                                <label style="color: black;margin-right: 20px;">Drop Table</label>
+                                                <input id="dropTable" type="checkbox" checked="">
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                           <div class="table-responsive" style="margin-top: 20px">
+                            <table class="table table-bordered" id="table1" name="table1">
+                                <thead style="background: #18bc9c">
+                                    <tr>
+                                        <th style="color: beige; width: 26px;">Id</th>
+                                        <th style="color: beige; width: 72px;"> PK</th>
+                                        <th style="color: beige; width: 72px;"> Name</th>
+                                        <th style="color: beige; width: 72px;"> Type </th>
+                                        <th style="color: beige; width: 205px;"> Taille</th>
+                                        <th style="color: beige; width: 72px;"> Non NULL</th>
+                                        <th style="color: beige; width: 72px;"> Valeur par Défaut</th>
+                                        <th style="color: beige; width: 72px;">Commentaire</th>
+                                        <th style="color: beige; width: 72px;">Option</th>
+                                    </tr>
+                                </thead>
+                                <tfoot  style="background: #18bc9c">
+                                <tr>
+                                    <th style="color: beige; width: 26px;">Id</th>
+                                    <th style="color: beige; width: 72px;"> PK</th>
+                                    <th style="color: beige; width: 72px;"> Name</th>
+                                    <th style="color: beige; width: 72px;"> Type </th>
+                                    <th style="color: beige; width: 205px;"> Taille</th>
+                                    <th style="color: beige; width: 72px;"> Non NULL</th>
+                                    <th style="color: beige; width: 72px;"> Valeur par Défaut</th>
+                                    <th style="color: beige; width: 72px;">Commentaire</th>
+                                    <th style="color: beige; width: 72px;">Option</th>
+                                </tr>
+                                </tfoot>
+                                <tbody id="tableaucontenus1">
+                                </tbody>
+                            </table>
+                                </div>
+                                    <div class="col-md-4"><button  id="precedent" class="btn btn-danger pull-left nine_element_to_target" style="font-size: 19px;
+                                        line-height: 1.333333;
+                                        border-radius: 80px;
+                                        margin-top: 55px;
+                                        padding: 12px" type="submit"><span class='glyphicon glyphicon-circle-arrow-left'>&nbsp;Precedent&nbsp;</span></button></div>
+                                    <div class="col-md-4"></div>
+                                    <div class="col-md-4"><button id="activate-step-3" class="btn btn-success pull-right ten_element_to_target" type="submit" style="padding: 10px 10px;
+                                        font-size: 19px;
+                                        background-color: #18bc9c;
+                                        line-height: 1.333333;
+                                        border-radius: 80px;
+                                        margin-top: 60px;
+                                        margin-left: 150px;"
+                                    ><span class='glyphicon glyphicon-circle-arrow-right'>&nbsp;Continuer&nbsp;</span></button></div>
+                                </form>
+                        </div>
+                    </div>
+                </div>
+
+        <div class="row setup-content" id="step-3">
+            <div class="well">
+                    <h1 class="text-center" style="padding-bottom: 25px"> Confirmation</h1>
+                    <div class="panel panel-default">
+                    <form id="form3" name="form3" action="@routes.Application.validate()" method="POST">
+                        <div class="panel-body well">
+                            <div class="form-group seve_element_to_target">
+                                <label id="table" class="control-label col-xs-12 col-sm-offset-1 col-sm-1" style="color: black;" for="tableName">Table</label>
+                                <div class="col-xs-12 col-sm-3">
+                                    <div class='input-group'>
+                                        <span class='input-group-addon'> <i class="fa fa-table"></i></span>
+                                        <input type="text" class="form-control" id="tableNameValidation" name="tableNameValidation" disabled/>
+                                    </div>
+                                </div>
+                                <div class="col-sm-offset-0  col-sm-3">
+                                    <span id="tableSpan1" class="" style="color:black;" > </span>
+                                </div>
+                                <div class="col-sm-offset-0  col-sm-1">
+                                    <button class="btn btn-default consulter" id="consulter1" tooltip="consulter"><span class="fa fa-eye"></span></button>
+                                </div>
+
+                                <div class="col-sm-offset-0  col-sm-3" id="dropTab1">
+                                    <span class="">
+                                        <label style="color: beige;margin-right: 20px;">Drop Table</label>
+                                        <input id="dropTable1" type="checkbox"  checked="">
+                                    </span>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="table-responsive" style="margin-top: 20px">
+                    <table class="table table-striped table-bordered" cellspacing="0" width="100%" id="table2" name="table2">
+                        <thead style="background: #18bc9c">
+                            <tr>
+                                <th style="color: beige; width: 26px;">Id</th>
+                                <th style="color: beige; width: 72px;"> PK</th>
+                                <th style="color: beige; width: 72px;"> Name</th>
+                                <th style="color: beige; width: 72px;"> Type </th>
+                                <th style="color: beige; width: 205px;"> Taille</th>
+                                <th style="color: beige; width: 72px;"> Non NULL</th>
+                                <th style="color: beige; width: 72px;"> Valeur par Défaut</th>
+                                <th style="color: beige; width: 72px;">Commentaire</th>
+                            </tr>
+                        </thead>
+                    <tfoot style="background: #18bc9c">
+                        <tr>
+                            <th style="color: beige; width: 26px;">Id</th>
+                            <th style="color: beige; width: 72px;"> PK</th>
+                            <th style="color: beige; width: 72px;"> Name</th>
+                            <th style="color: beige; width: 72px;"> Type </th>
+                            <th style="color: beige; width: 205px;"> Taille</th>
+                            <th style="color: beige; width: 72px;"> Non NULL</th>
+                            <th style="color: beige; width: 72px;"> Valeur par Défaut</th>
+                            <th style="color: beige; width: 72px;">Commentaire</th>
+                        </tr>
+                    </tfoot>
+                        <tbody id="tableaucontenus2">
+                        </tbody>
+                    </table>
+                        </div>
+                        <button  id="precedent1" class="btn btn-danger pull-left nine_element_to_target" style="font-size: 19px;
+                            line-height: 1.333333;
+                            border-radius: 80px;
+                            margin-top : 55px;
+                            padding: 12px" type="submit"><span class='glyphicon glyphicon-circle-arrow-left'>&nbsp;Precedent&nbsp;</span></button>
+                    <button id="activate-step-4" class="btn btn-success pull-right ten_element_to_target" type="submit" style="padding: 10px 10px;
+                        font-size: 19px;
+                        line-height: 1.333333;
+                        border-radius: 80px;
+                        margin-top: 60px;
+                        background-color: #18bc9c;
+                        margin-left: 150px;"
+                    ><span class='glyphicon glyphicon-ok-sign'>&nbsp;Valider&nbsp;</span></button>
+                    </form>
+                            </div>
+                        </div>
+        </div>
+
+    <div id="modal-danger" class="modal modal-message modal-danger fade" style="padding-top: 250px;" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <i class="glyphicon glyphicon-exclamation-sign"></i>
+                </div>
+                <div class="modal-title">ERROR</div>
+                <div id="modal-body-danger" class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button id="thanks" type="button" class="btn btn-danger" data-dismiss="modal">Try Again</button>
+                </div>
+            </div> <!-- / .modal-content -->
+        </div> <!-- / .modal-dialog -->
+    </div>
+    </div>
+}

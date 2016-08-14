@@ -1,6 +1,6 @@
 package controllers;
-import batch.model.Classe;
-import batch.model.InputError;
+import batch.model.*;
+import batch.security.Secured;
 import batch.util.Generator;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -9,10 +9,9 @@ import batch.dao.ObjectDaoJdbc;
 import javassist.CannotCompileException;
 import javassist.NotFoundException;
 import batch.listeners.JobCompletionNotificationListener;
-import batch.model.Attribute;
-import batch.model.ReaderGenerique;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.jena.atlas.test.Gen;
+import org.h2.engine.User;
 import org.springframework.batch.core.*;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
@@ -30,15 +29,12 @@ import play.mvc.Controller;
 import running.Global;
 import batch.util.ReadXMLFile2;
 import views.formdata.*;
-import views.html.index;
+import views.html.*;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.sql.Blob;
 import java.util.*;
 
@@ -306,7 +302,7 @@ public class Application extends Controller {
         if (formData.hasErrors()) {
             // Don't call formData.get() when there are errors, pass 'null' to helpers instead.
             flash("error", "Please correct errors above.");
-            return badRequest(index.render());
+            return badRequest(index.render(batch.model.User.find.byId(request().username())));
         }
         return ok("path" + readerGenerique.getFilePath());
     }
@@ -391,7 +387,7 @@ public class Application extends Controller {
         if (formData.hasErrors()) {
             // Don't call formData.get() when there are errors, pass 'null' to helpers instead.
             flash("error", "Please correct errors above.");
-            return badRequest(index.render(
+            return badRequest(index.render(batch.model.User.find.byId(request().username())
             ));
         }
         System.out.println("xml File cols");
@@ -634,13 +630,106 @@ public class Application extends Controller {
         }
         return  poss;
     }*/
-
+    @Security.Authenticated(Secured.class)
     public Result index() {
         String[] seps = {";", ",", ".", "|", ":", " "};
         List<String> sep = new ArrayList<>(Arrays.asList(seps));
         ParamFormData paramData = new ParamFormData();
         Form<ParamFormData> formData = Form.form(ParamFormData.class).fill(paramData);
-        return ok(index.render());
+
+        return ok(index.render(batch.model.User.find.byId(request().username())));
+    }
+
+    public Result param() {
+        return ok(parameter.render(batch.model.User.find.byId(request().username())));
+    }
+
+    public Result logout() {
+        session().clear();
+        flash("success", "You've been logged out");
+        return redirect(routes.Application.login()
+        );
+    }
+
+    public Result login() {
+        Form form = Form.form(Login.class);
+        return ok(login.render(form));
+    }
+
+    public Result authenticate() {
+        Form<Login> loginForm = Form.form(Login.class).bindFromRequest();
+        System.out.println(loginForm);
+        if (loginForm.hasErrors()) {
+            return badRequest(login.render(loginForm));
+        } else {
+            batch.model.User user = batch.model.User.authenticate(loginForm.get().email,loginForm.get().password);
+            if(user!=null){
+            session().clear();
+            session("email", loginForm.get().email);
+            return redirect(
+                    routes.Application.index()
+            );
+            }  else{
+                return badRequest(login.render(loginForm));
+            }
+        }
+
+    }
+
+    public Result register(){
+        Form form = Form.form(batch.model.User.class);
+        return ok(register.render(form));
+    }
+
+    public Result addUser(){
+        Http.MultipartFormData<File> body = request().body().asMultipartFormData();
+        Http.MultipartFormData.FilePart<File> picture = body.getFile("picture");
+        batch.model.User user = Form.form(batch.model.User.class).bindFromRequest().get();
+        if (picture != null) {
+            String fileName = picture.getFilename();
+            String contentType = picture.getContentType();
+            File file = picture.getFile();
+            OutputStream out = null;
+            InputStream filecontent = null;
+            try {
+                out = new FileOutputStream(new File("public/template/dist/img/"+fileName));
+                filecontent = new FileInputStream(file);
+                int read = 0;
+                final byte[] bytes = new byte[1024];
+
+                while ((read = filecontent.read(bytes)) != -1) {
+                    out.write(bytes, 0, read);
+                }
+
+                user.imagePath = "template/dist/img/"+fileName;
+                System.out.println(user);
+                user.save();
+        } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (out != null) {
+                    try {
+                        out.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if (filecontent != null) {
+                    try {
+                        filecontent.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+            else {
+            flash("error", "Missing file");
+            return badRequest();
+        }
+        return redirect(routes.Application.login());
     }
 
 

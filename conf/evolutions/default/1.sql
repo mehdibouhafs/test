@@ -32,6 +32,15 @@ create table a_mbs_input_errors (
 );
 create sequence A_MBS_INPUT_ERRORS_seq;
 
+create table a_mbs3_user (
+  email                         varchar2(255) not null,
+  first_name                    varchar2(255),
+  last_name                     varchar2(255),
+  image_path                    varchar2(255),
+  password                      varchar2(255),
+  constraint pk_a_mbs3_user primary key (email)
+);
+
 alter table a_mbs3_attribute add constraint fk_a_mbs3_attribute_classe_id foreign key (classe_id) references a_mbs3_classe (id);
 create index ix_a_mbs3_attribute_classe_id on a_mbs3_attribute (classe_id);
 
@@ -48,4 +57,6 @@ drop sequence A_MBS3_CLASSE_seq;
 
 drop table a_mbs_input_errors cascade constraints purge;
 drop sequence A_MBS_INPUT_ERRORS_seq;
+
+drop table a_mbs3_user cascade constraints purge;
 
