@@ -1,8 +1,10 @@
 package batch.dao;
 
+import batch.model.BatchExecution;
 import batch.model.ReaderGenerique;
 import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import running.Global;
 
@@ -120,15 +122,20 @@ public class ObjectDaoJdbc extends JdbcTemplate implements ObjectDao{
 
 
     public boolean dropTable(String table) {
-            System.out.println("Drop Table "+table);
+         Map<String,String> map = dataTable(table);
+        if(!map.get("existe").equals("notExiste")) {
+            System.out.println("Drop Table " + table);
             String q = "DROP TABLE " + table;
             try {
-               execute(q);
-                return  true;
+                execute(q);
+                return true;
             } catch (Exception e) {
                 System.out.println("Erreur : " + e.getMessage());
                 return false;
             }
+        }else {
+            return false;
+        }
         }
 
    public Map<String,String > dataTable(String table) {
@@ -197,4 +204,18 @@ public class ObjectDaoJdbc extends JdbcTemplate implements ObjectDao{
        }
        return map;
    }
+
+    public List<BatchExecution> selectAllDetail() {
+        List<BatchExecution> batchExecutions = query("select version,step_name form Batch_step_exection", new RowMapper<BatchExecution>() {
+            @Override
+            public BatchExecution mapRow(ResultSet rs, int rowNum) throws SQLException {
+                BatchExecution   batchExecution = new BatchExecution();
+                batchExecution.setVersion(rs.getLong("version"));
+                batchExecution.setStep_name(rs.getString("step_name"));
+                return batchExecution;
+            }
+        });
+        return batchExecutions;
+    }
+
    }

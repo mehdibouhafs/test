@@ -6,6 +6,10 @@
 /*-------------------------
     General Styles
 --------------------------*/
+th{
+    background-color: #3c8dbc;
+}
+
 
 
 .ui-progressbar .ui-progressbar-value {
@@ -30,7 +34,7 @@
 
 h1{
     color: #ffffff;
-    background-color: #18bc9c;
+    background-color: #3c8dbc;
 }
 
 input.chk-btn {
@@ -72,7 +76,7 @@ input.chk-btn:checked + label {
 
 .nav-pills>li.active>a {
     color: #ffffff;
-    background-color: #18bc9c;
+    background-color: #3c8dbc;
 }
 
 .well{

@@ -11,9 +11,9 @@
 
         @helper.form(routes.Application.authenticate) {
           @if(form.hasGlobalErrors) {
-            <div class="alert alert-danger">
-              <strong>Error !</strong> @form.globalError.message.
-            </div>
+            <p class="error">
+              <span class="label label-danger">@form.globalError.message</span>
+            </p>
           }
 
           <div class="form-group has-feedback">
@@ -29,7 +29,7 @@
             <div class="col-xs-8">
               <div class="checkbox icheck">
                 <label>
-                  <input type="checkbox"> Remember Me
+                  <input type="checkbox" name="rememberMe" value="true"> Remember Me
                 </label>
               </div>
             </div>

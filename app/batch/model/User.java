@@ -2,6 +2,7 @@ package batch.model;
 
 import com.avaje.ebean.Model;
 import org.hibernate.validator.constraints.Email;
+import org.mindrot.jbcrypt.BCrypt;
 import play.data.format.Formats;
 import play.data.validation.Constraints;
 
@@ -44,6 +45,18 @@ public class User extends Model {
 
     public static Finder<String, User> find = new Finder<String,User>(User.class);
 
+
+    public static User create(String email,String password,String first_name,String last_name,String imagePath) {
+        User user = new User();
+        user.email = email;
+        user.last_name=last_name;
+        user.imagePath=imagePath;
+        user.first_name=first_name;
+        user.password = BCrypt.hashpw(password, BCrypt.gensalt());
+        user.save();
+        return user;
+    }
+
     public static List<User> findAll(){
         return find.all();
     }
@@ -52,6 +65,23 @@ public class User extends Model {
     }*/
 
     public static User authenticate(String email, String password) {
-        return find.where().eq("email", email).eq("password", password).findUnique();
+        //return find.where().eq("email", email).eq("password", password).findUnique();
+        User user = User.find.where().eq("email", email).findUnique();
+        if (user != null && BCrypt.checkpw(password, user.password)) {
+            return user;
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "email='" + email + '\'' +
+                ", first_name='" + first_name + '\'' +
+                ", last_name='" + last_name + '\'' +
+                ", imagePath='" + imagePath + '\'' +
+                ", password='" + password + '\'' +
+                '}';
     }
 }

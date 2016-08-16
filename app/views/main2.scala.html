@@ -84,56 +84,22 @@ desired effect
           <div class="navbar-custom-menu">
             <ul class="nav navbar-nav">
                 <!-- Messages: style can be found in dropdown.less-->
-              <li class="dropdown messages-menu">
-                  <!-- Menu toggle button -->
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                  <i class="fa fa-envelope-o"></i>
-                  <span class="label label-success">4</span>
-                </a>
-                <ul class="dropdown-menu">
-                  <li class="header">You have 4 messages</li>
-                  <li>
-                      <!-- inner menu: contains the messages -->
-                    <ul class="menu">
-                      <li><!-- start message -->
-                        <a href="#">
-                          <div class="pull-left">
-                              <!-- User Image -->
-                            <img src="@user.imagePath" class="img-circle" alt="User Image">
-                          </div>
-                            <!-- Message title and timestamp -->
-                          <h4>
-                            Support Team
-                            <small><i class="fa fa-clock-o"></i> 5 mins</small>
-                          </h4>
-                            <!-- The message -->
-                          <p>Why not buy a new awesome theme?</p>
-                        </a>
-                      </li>
-                        <!-- end message -->
-                    </ul>
-                      <!-- /.menu -->
-                  </li>
-                  <li class="footer"><a href="#">See All Messages</a></li>
-                </ul>
-              </li>
                 <!-- /.messages-menu -->
-
                 <!-- Notifications Menu -->
               <li class="dropdown notifications-menu">
                   <!-- Menu toggle button -->
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                   <i class="fa fa-bell-o"></i>
-                  <span class="label label-warning">10</span>
+                  <span class="label label-warning">1</span>
                 </a>
                 <ul class="dropdown-menu">
-                  <li class="header">You have 10 notifications</li>
+                  <li class="header">You have 1 notifications</li>
                   <li>
                       <!-- Inner Menu: contains the notifications -->
                     <ul class="menu">
                       <li><!-- start notification -->
                         <a href="#">
-                          <i class="fa fa-users text-aqua"></i> 5 new members joined today
+                          <i class="fa fa-database text-aqua"></i> 5 new Batch was done today
                         </a>
                       </li>
                         <!-- end notification -->
@@ -141,43 +107,7 @@ desired effect
                   </li>
                   <li class="footer"><a href="#">View all</a></li>
                 </ul>
-              </li>
-                <!-- Tasks Menu -->
-              <li class="dropdown tasks-menu">
-                  <!-- Menu Toggle Button -->
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                  <i class="fa fa-flag-o"></i>
-                  <span class="label label-danger">9</span>
-                </a>
-                <ul class="dropdown-menu">
-                  <li class="header">You have 9 tasks</li>
-                  <li>
-                      <!-- Inner menu: contains the tasks -->
-                    <ul class="menu">
-                      <li><!-- Task item -->
-                        <a href="#">
-                            <!-- Task title and progress text -->
-                          <h3>
-                            Design some buttons
-                            <small class="pull-right">20%</small>
-                          </h3>
-                            <!-- The progress bar -->
-                          <div class="progress xs">
-                              <!-- Change the css width attribute to simulate progress -->
-                            <div class="progress-bar progress-bar-aqua" style="width: 20%" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">
-                              <span class="sr-only">20% Complete</span>
-                            </div>
-                          </div>
-                        </a>
-                      </li>
-                        <!-- end task item -->
-                    </ul>
-                  </li>
-                  <li class="footer">
-                    <a href="#">View all tasks</a>
-                  </li>
-                </ul>
-              </li>
+
                 <!-- User Account Menu -->
               <li class="dropdown user user-menu">
                   <!-- Menu Toggle Button -->
@@ -194,20 +124,20 @@ desired effect
 
                     <p>
                       @user.first_name @user.last_name - Web Developer
-                      <small>Member since Nov. 2012</small>
+                      <small>Member since Juin. 2016</small>
                     </p>
                   </li>
                     <!-- Menu Body -->
                   <li class="user-body">
                     <div class="row">
                       <div class="col-xs-4 text-center">
-                        <a href="#">Followers</a>
+                        <a href="#">Batchs</a>
                       </div>
                       <div class="col-xs-4 text-center">
-                        <a href="#">Sales</a>
+                        <a href="@routes.Application.lockScreen()">Lock Session</a>
                       </div>
                       <div class="col-xs-4 text-center">
-                        <a href="#">Friends</a>
+                        <a href="#">Options</a>
                       </div>
                     </div>
                       <!-- /.row -->
@@ -248,18 +178,9 @@ desired effect
                 <!-- Status -->
               <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
             </div>
-          </div>
+                <!-- Status -->
 
-            <!-- search form (Optional) -->
-          <form action="#" method="get" class="sidebar-form">
-            <div class="input-group">
-              <input type="text" name="q" class="form-control" placeholder="Search...">
-              <span class="input-group-btn">
-                <button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i>
-                </button>
-              </span>
-            </div>
-          </form>
+          </div>
             <!-- /.search form -->
 
             <!-- Sidebar Menu -->
@@ -270,7 +191,19 @@ desired effect
             <li class="active treeview">
               <a href="#">
                 <i class="fa fa-plug"></i>
-                <span>New Batch</span>
+                <span>Use bean already exist </span>
+                <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
+              </a>
+              <ul class="treeview-menu">
+                <li><a href="@routes.Application.param()"><i class="fa fa-file-excel-o"></i>CSV FILE WITH HEADER</a></li>
+                <li><a href="@routes.Application.param()"><i class="fa fa-file-excel-o"></i>CSV FILE WITHOUT HEADER</a></li>
+                <li><a href="@routes.Application.param()"><i class="fa fa-file-code-o"></i>XML FILE </a></li>
+              </ul>
+            </li>
+            <li class="active treeview">
+              <a href="#">
+                <i class="fa fa-plug"></i>
+                <span>New Batch with new bean</span>
                 <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
             </a>
               <ul class="treeview-menu">
@@ -287,8 +220,8 @@ desired effect
                 </span>
               </a>
               <ul class="treeview-menu">
-                <li><a href="#"><i class="fa fa-user-md"></i> Edit Profil</a></li>
-                <li><a href="#"><i class="fa fa-user-secret"></i> Password</a></li>
+                <li><a href="@routes.Application.edit()"><i class="fa fa-user-md"></i> Edit Profil</a></li>
+                <li><a href="@routes.Application.editPass()"><i class="fa fa-user-secret"></i>Edit Password</a></li>
               </ul>
             </li>
           </ul>
@@ -488,35 +421,17 @@ desired effect
             <ul class="control-sidebar-menu">
               <li>
                 <a href="javascript:;">
-                  <i class="menu-icon fa fa-birthday-cake bg-red"></i>
+                  <i class="menu-icon fa fa-database bg-red"></i>
 
                   <div class="menu-info">
-                    <h4 class="control-sidebar-subheading">Langdon's Birthday</h4>
+                    <h4 class="control-sidebar-subheading">Table A_MBS3 was updated</h4>
 
-                    <p>Will be 23 on April 24th</p>
+                    <p>on 16 Aout 2016 by MiMo and MBS</p>
                   </div>
                 </a>
               </li>
             </ul>
               <!-- /.control-sidebar-menu -->
-
-            <h3 class="control-sidebar-heading">Tasks Progress</h3>
-            <ul class="control-sidebar-menu">
-              <li>
-                <a href="javascript::;">
-                  <h4 class="control-sidebar-subheading">
-                    Custom Template Design
-                    <span class="pull-right-container">
-                      <span class="label label-danger pull-right">70%</span>
-                    </span>
-                  </h4>
-
-                  <div class="progress progress-xxs">
-                    <div class="progress-bar progress-bar-danger" style="width: 70%"></div>
-                  </div>
-                </a>
-              </li>
-            </ul>
               <!-- /.control-sidebar-menu -->
 
           </div>
@@ -561,7 +476,7 @@ desired effect
     <script src="@routes.Assets.versioned("javascripts/bootstrap.min.js")" type="text/javascript"></script>
       <!-- AdminLTE App -->
     <script src="@routes.Assets.versioned("template/dist/js/app.min.js")"></script>
-
+    <script src="@routes.Assets.versioned("stylesheets/assets/js/step1.js")" type="text/javascript"></script>
     <script src="@routes.Assets.versioned("stylesheets/assets/js/step.js")" type="text/javascript"></script>
 
     <script src="@routes.Assets.versioned("stylesheets/assets/js/pageguide.js")" type="text/javascript"></script>

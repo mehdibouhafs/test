@@ -3,43 +3,42 @@
  * argument is a `String` with the title of the page, the second
  * argument is an `Html` object containing the body of the page.
  *@
-@(message: String)
+@import batch.model.User
+@(message: String,user : User)
 @import views.html.bootstrap3._
 @*
 * Get an `Html` object by calling the built-in Play welcome
 * template and passing a `String` message.
 *@
 <!-- Navigation -->
-    <div class="container">
-        <br>
-        <br>
-        <br>
-        <br>
-        <div class="row">
-            <div class="col-md-2"></div>
-            <div class="col-md-8">
-                <div class="panel panel-danger">
-                    <div class="panel-heading">
-                        <h3 class="text-center">
-                            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> ITN Oops :
-                            <small>Error found - <b> 404 error </b></small>
-                        </h3>
-                    </div>
-                    <div class="panel-body">
-                        <p>Problem discovered :</p>
+    @main2("Error",user){
+    <div class="error-page">
+        <h2 class="headline text-yellow"> 404</h2>
 
-                        <p>@(message)</p>
+        <div class="error-content">
+            <h3><i class="fa fa-warning text-yellow"></i> Oops! Page not found.</h3>
+
+            <p>
+                @message
+            We could not find the page you were looking for.
+                Meanwhile, you may <a href="@routes.Application.index()">return to dashboard</a> or try using the search form.
+          </p>
+
+            <form class="search-form">
+                <div class="input-group">
+                    <input type="text" name="search" class="form-control" placeholder="Search">
+
+                    <div class="input-group-btn">
+                        <button type="submit" name="submit" class="btn btn-warning btn-flat"><i class="fa fa-search"></i>
+                        </button>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-2">
-
-            </div>
+                    <!-- /.input-group -->
+            </form>
         </div>
-        <p>JOKE: <a href="http://www.popwebdesign.net/junk.html"target="_blank">Funny 404 page.</a></p>
-        <a href="http://validator.w3.org/check?uri=http%3A%2F%2Fbootsnipp.com%2Fiframe%2FeNAXy" target="_blank">
-            <small>HTML</small><sup>5</sup>
-        </a>
+            <!-- /.error-content -->
     </div>
+    }
+
 
 

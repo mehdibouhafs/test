@@ -3,8 +3,10 @@ package batch.model;
 import com.avaje.ebean.Model;
 
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import java.util.List;
 
 /**
  * Created by MBS on 15/07/2016.
@@ -12,7 +14,8 @@ import javax.persistence.Table;
 @Entity
 @Table(name="A_MBS3_Attribute")
 public class Attribute extends Model {
-    private int id;
+    @Id
+    private Long id;
     private String type;
     private String nameo;
     private String sizeo;
@@ -25,6 +28,16 @@ public class Attribute extends Model {
 
     public Attribute() {
     }
+
+
+    public static Model.Finder<Long,Attribute> find = new Model.Finder(Long.class, Attribute.class);
+
+    public static List<Attribute> findInvolving(String classe) {
+        //return find.fetch("project").where().eq("done", false).eq("project.members.email", classe).findList();
+        return  find.where().eq("classe.className",classe).findList();
+    }
+
+
 
     public String getType() {
         return type;
@@ -50,14 +63,14 @@ public class Attribute extends Model {
         this.sizeo = sizeo;
     }
 
-    public int getId() {
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
-
 
     public Classe getClasse() {
         return classe;

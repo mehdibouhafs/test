@@ -3,10 +3,7 @@
 # ~~~~
 
 
-
-GET     /home              @controllers.Application.home
-
-GET     /login                       controllers.Application.index()
+GET     /home                       controllers.Application.index()
 
 GET     /parameterage                   controllers.Application.param()
 
@@ -17,9 +14,26 @@ POST    /login                      controllers.Application.authenticate()
 GET     /logout                     controllers.Application.logout()
 
 
+GET     /lockScreen                 controllers.Application.lockScreen()
+
+POST    /delockScreen               controllers.Application.delockScreen()
+
+
+GET     /classes                    controllers.Application.getClasses()
+
+GET     /attributes/:classe                   controllers.Application.getAttributes(classe)
+
 GET     /register                               controllers.Application.register()
 
 POST    /register                   controllers.Application.addUser()
+
+POST    /editUser                       controllers.Application.editUser
+
+GET     /editUser                       controllers.Application.edit()
+
+GET     /editPass                     controllers.Application.editPass()
+
+POST     /editPassword                     controllers.Application.editPassword()
 
 # An example controller showing a sample home page
 POST     /upload                   controllers.Application.upload()

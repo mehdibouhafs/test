@@ -1,4 +1,6 @@
 package controllers;
+import batch.dao.BatchJobDao;
+import batch.dao.BatchJobJdbc;
 import batch.model.*;
 import batch.security.Secured;
 import batch.util.Generator;
@@ -12,6 +14,7 @@ import batch.listeners.JobCompletionNotificationListener;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.jena.atlas.test.Gen;
 import org.h2.engine.User;
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.batch.core.*;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
@@ -22,7 +25,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
+import play.api.libs.Crypto$;
 import play.data.Form;
+import play.libs.Crypto;
 import play.libs.Json;
 import play.mvc.*;
 import play.mvc.Controller;
@@ -131,7 +136,7 @@ public class Application extends Controller {
         Map<String, Class<?>> properties = new LinkedHashMap<>();
         StringBuffer typeSizes;
         Classe classe = new Classe();
-        classe.ClassName=formData.get().getTableName();
+        classe.className=formData.get().getTableName();
         classe.save();
         final Map<String, String> columnsTable = new LinkedHashMap<>();
         for (int i = 0; i < ss.size(); i++) {
@@ -226,7 +231,6 @@ public class Application extends Controller {
                 typeSizes.append("- "+comments.get(i));
                 System.out.println("typeSize for "+ss.get(i)+" typeSizes "+typeSizes.toString());
                 columnsTable.put(ss.get(i), typeSizes.toString());
-                attribute.setId(ids.get(i));
                 attribute.setSizeo(size);
                 attribute.setNameo(ss.get(i));
                 attribute.setCommentaire(comments.get(i));
@@ -531,7 +535,7 @@ public class Application extends Controller {
             System.out.println("****************************************");
 
             System.out.println("****************************************");
-            //objectDao.dropTable(readerGenerique.getTable());
+            objectDao.dropTable(readerGenerique.getTable());
         }
         //Boolean create = objectDao.createTable(readerGenerique.getTable(), readerGenerique.getColumnsTable());
         Boolean create = objectDao.createTableOracle(readerGenerique.getTable(), readerGenerique.getColumnsTable());
@@ -639,33 +643,139 @@ public class Application extends Controller {
 
         return ok(index.render(batch.model.User.find.byId(request().username())));
     }
-
+    @Security.Authenticated(Secured.class)
     public Result param() {
         return ok(parameter.render(batch.model.User.find.byId(request().username())));
     }
 
     public Result logout() {
         session().clear();
+        response().discardCookie("rememberme");
         flash("success", "You've been logged out");
         return redirect(routes.Application.login()
         );
     }
 
+
+    @Security.Authenticated(Secured.class)
+    public Result edit(){
+        batch.model.User user = batch.model.User.find.byId(request().username());
+        return ok(edit.render(user));
+    }
+
+
+    @Security.Authenticated(Secured.class)
+    public Result editPass(){
+        batch.model.User user = batch.model.User.find.byId(request().username());
+
+        EditPassword paramData = new EditPassword();
+        Form<EditPassword> form = Form.form(EditPassword.class).fill(paramData);
+
+        return ok(editPassword.render(form,user));
+    }
+
+    @Security.Authenticated(Secured.class)
+    public Result editPassword(){
+        batch.model.User user = batch.model.User.find.byId(request().username());
+        System.out.println("User "+ user);
+        Form<EditPassword> form = Form.form(EditPassword.class).bindFromRequest();
+        if (form.hasErrors()) {
+            return badRequest(editPassword.render(form,user));
+        }else{
+            if(BCrypt.checkpw(form.get().exPassword, user.password)){
+                System.out.println("Her");
+                user.password = BCrypt.hashpw(form.get().password, BCrypt.gensalt());
+                user.update();
+                return ok(editPassword.render(form,user));
+        }else{
+                return badRequest(editPassword.render(form,user));
+            }
+        }
+    }
+
+    @Security.Authenticated(Secured.class)
+    public Result editUser(){
+        batch.model.User user = batch.model.User.find.byId(request().username());
+        Form<EditProfile> loginForm = Form.form(EditProfile.class).bindFromRequest();
+        user.first_name = loginForm.get().first_name;
+        user.last_name = loginForm.get().last_name;
+        Http.MultipartFormData<File> body = request().body().asMultipartFormData();
+        Http.MultipartFormData.FilePart<File> picture = body.getFile("picture");
+
+        if (picture != null) {
+            String fileName = picture.getFilename();
+            String contentType = picture.getContentType();
+            File file = picture.getFile();
+            OutputStream out = null;
+            InputStream filecontent = null;
+            try {
+                out = new FileOutputStream(new File("public/template/dist/img/"+fileName));
+                filecontent = new FileInputStream(file);
+                int read = 0;
+                final byte[] bytes = new byte[1024];
+
+                while ((read = filecontent.read(bytes)) != -1) {
+                    out.write(bytes, 0, read);
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            user.imagePath = "assets/template/dist/img/"+fileName;
+            user.update();
+            return ok(edit.render(user));
+    }else{
+            user.update();
+            return ok(edit.render(user));
+        }
+    }
+
+
     public Result login() {
         Form form = Form.form(Login.class);
+        Http.Cookie remember = request().cookie("rememberme");
+        ApplicationContext context = Global.getApplicationContext();
+        BatchJobDao batchJobDao = (BatchJobDao) context.getBean("batchJobDao");
+        if(remember != null) {
+            int firstIndex = remember.value().indexOf("-");
+            System.out.println("firstIndex"+firstIndex);
+            System.out.println("BATCH " +batchJobDao.selectAllDetail());
+                String sign = remember.value().substring(0, firstIndex);
+                System.out.println("sign "+ sign);
+                String restOfCookie = remember.value().substring(firstIndex + 1);
+                System.out.println("restofCookie "+ restOfCookie);
+                String username = restOfCookie;
+
+                if(play.api.libs.Crypto.crypto().sign(restOfCookie).equals(sign)) {
+                    session("username", username);
+                    batch.model.User user = batch.model.User.find.byId(username);
+                    return ok(index.render(user));
+            }
+        }
+
         return ok(login.render(form));
     }
 
+
+
     public Result authenticate() {
         Form<Login> loginForm = Form.form(Login.class).bindFromRequest();
+        System.out.println(loginForm);
         System.out.println(loginForm);
         if (loginForm.hasErrors()) {
             return badRequest(login.render(loginForm));
         } else {
             batch.model.User user = batch.model.User.authenticate(loginForm.get().email,loginForm.get().password);
             if(user!=null){
+
             session().clear();
             session("email", loginForm.get().email);
+                if(loginForm.get().rememberMe == true) {
+                    System.out.println("REmember me check cookie");
+                    response().setCookie("rememberme", play.api.libs.Crypto.crypto().sign(loginForm.get().email) + "-" + loginForm.get().email, 60*60*24*360);
+                }
             return redirect(
                     routes.Application.index()
             );
@@ -673,7 +783,42 @@ public class Application extends Controller {
                 return badRequest(login.render(loginForm));
             }
         }
+    }
 
+    public Result lockScreen(){
+        batch.model.User user = batch.model.User.find.byId(session(("email")));
+        logout();
+        session("emailTmp",user.email);
+        return  ok(lockscreen.render(user));
+    }
+
+    public Result delockScreen(){
+        System.out.println("delock");
+        String[] password = request().body().asFormUrlEncoded().get("password");
+        String email = session("emailTmp");
+        System.out.println("email"+email);
+        System.out.println("password"+password[0]);
+        batch.model.User user = batch.model.User.authenticate(email,password[0]);
+        batch.model.User user1 = batch.model.User.find.byId(email);
+        if(user != null){
+            session("email",user.email);
+            response().setCookie("rememberme", play.api.libs.Crypto.crypto().sign(user.email) + "-" + user.email, 60*60*24*360);
+            return ok(index.render(user));
+        }else{
+            return  badRequest(lockscreen.render(user1));
+        }
+    }
+
+    public Result getClasses(){
+
+        return ok(Json.toJson(Classe.find.all()));
+    }
+
+    public Result getAttributes(String  id){
+        System.out.println("id " + id);
+
+        System.out.println("attribute "+Attribute.findInvolving(id));
+        return  ok(Json.toJson(Attribute.findInvolving(id)));
     }
 
     public Result register(){
@@ -700,10 +845,8 @@ public class Application extends Controller {
                 while ((read = filecontent.read(bytes)) != -1) {
                     out.write(bytes, 0, read);
                 }
-
-                user.imagePath = "template/dist/img/"+fileName;
-                System.out.println(user);
-                user.save();
+                batch.model.User user1 = batch.model.User.create(user.email,user.password,user.first_name,user.last_name,"assets/template/dist/img/"+fileName);
+                user1.save();
         } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
