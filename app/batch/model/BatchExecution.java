@@ -18,6 +18,7 @@ public class BatchExecution {
     private Long step_execution_id;
     private Long version;
     private String step_name;
+    private String exit_message;
     private Long job_execution_id;
     private Date start_time;
     private Date end_time;
@@ -171,6 +172,14 @@ public class BatchExecution {
 
     public void setLast_updated(Date last_updated) {
         this.last_updated = last_updated;
+    }
+
+    public String getExit_message() {
+        return exit_message;
+    }
+
+    public void setExit_message(String exit_message) {
+        this.exit_message = exit_message;
     }
 
     @Override
