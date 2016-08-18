@@ -114,8 +114,8 @@
 		<constructor-arg ref="jdbcTemplate"/>
 	</bean>
 
-	<batch:job id="importUserJob">
-		<batch:step id="step1">
+	<batch:job id="csvJob">
+		<batch:step id="csv">
 			<tasklet>
 				<chunk
 				reader="cvsFileItemReader"

@@ -11,31 +11,57 @@
 * template and passing a `String` message.
 *@
 <!-- Navigation -->
-
  <div class="row">
-  <div class="col-md-1"></div>
-  <div class="col-md-5">
+  <div class="col-md-3">
+   <div class="small-box bg-aqua">
+    <div class="inner">
+     <h3>@user.total_jobs</h3>
+     <p>ALL MY JOB</p>
+    </div>
+    <div class="icon">
+     <i class="ion ion-eye"></i>
+    </div>
+    <a id="allJobs" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+   </div>
+  </div>
+  <div class="col-md-3">
    <div class="small-box bg-green">
     <div class="inner">
-     <h3>53<sup style="font-size: 20px"></sup></h3>
+     <h3>@user.job_completed<sup style="font-size: 20px"></sup></h3>
      <p>Job Completed</p>
     </div>
     <div class="icon">
-     <i class="ion ion-stats-bars"></i>
+     <i class="ion ion-trophy"></i>
     </div>
-    <a href="#" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+    <a id="allMyJobCompleted" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
    </div>
    </div>
-   <div class="col-md-5">
+
+  <div class="col-md-3">
+
+   <div class="small-box bg-yellow">
+    <div class="inner">
+     <h3>@user.job_abondonned</h3>
+     <p>JOB ABONDONNED</p>
+    </div>
+    <div class="icon">
+     <i class="ion ion-sad-outline"></i>
+    </div>
+    <a id="allMyJobAbondonned" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
+   </div>
+
+  </div>
+
+   <div class="col-md-3">
     <div class="small-box bg-red">
      <div class="inner">
-      <h3>0</h3>
+      <h3>@user.job_failed</h3>
       <p>Job Failed</p>
      </div>
      <div class="icon">
-      <i class="ion ion-pie-graph"></i>
+      <i class="ion ion-social-freebsd-devil"></i>
      </div>
-     <a href="#" class="small-box-footer">More info<i class="fa fa-arrow-circle-right"></i></a>
+     <a id="allMyJobFailed" class="small-box-footer">More info<i class="fa fa-arrow-circle-right"></i></a>
     </div>
    </div>
   </div>
@@ -43,7 +69,7 @@
 <div class="row">
  <!-- PRODUCT LIST -->
  <div class="col-md-1"></div>
- <div class="col-md-10">
+ <div class="col-md-9">
   <div class="box box-info">
    <div class="box-header with-border">
     <h3 class="box-title">Latest Table Created </h3>
@@ -60,13 +86,12 @@
      <table id="latestTabId" class="table no-margin" >
       <thead>
        <tr>
-        <th>ID</th>
         <th>Table Name</th>
         <th>Show </th>
+        <th>Delete </th>
        </tr>
       </thead>
       <tbody id="latestTab">
-
       </tbody>
      </table>
     </div>

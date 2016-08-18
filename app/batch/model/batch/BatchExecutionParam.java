@@ -1,11 +1,19 @@
-package batch.model;
+package batch.model.batch;
 
+import com.avaje.ebean.Model;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.util.Date;
 
 /**
  * Created by MBS on 16/08/2016.
  */
-public class BatchExecutionParam {
+@Entity
+@Table(name="BATCH_JOB_EXECUTION_PARAMS")
+public class BatchExecutionParam extends Model {
+   @Id
     private  Long job_execution_id;
     private String type_cd;
     private String key_name;
@@ -14,6 +22,8 @@ public class BatchExecutionParam {
     private Long long_val;
     private Double double_val;
     private char identifying;
+
+    public static Model.Finder<Long,BatchExecutionParam> find = new Model.Finder(Long.class, BatchExecutionParam.class);
 
     public BatchExecutionParam() {
     }

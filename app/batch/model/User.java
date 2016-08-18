@@ -43,6 +43,15 @@ public class User extends Model {
     @Constraints.MaxLength(20)
     public String password;
 
+
+    public Long job_completed;
+
+    public Long job_failed;
+
+    public Long job_abondonned;
+
+    public Long total_jobs;
+
     public static Finder<String, User> find = new Finder<String,User>(User.class);
 
 
@@ -53,6 +62,10 @@ public class User extends Model {
         user.imagePath=imagePath;
         user.first_name=first_name;
         user.password = BCrypt.hashpw(password, BCrypt.gensalt());
+        user.job_abondonned = 0L;
+        user.job_completed = 0L;
+        user.job_failed = 0L;
+        user.total_jobs = 0L;
         user.save();
         return user;
     }
@@ -73,6 +86,8 @@ public class User extends Model {
             return null;
         }
     }
+
+
 
     @Override
     public String toString() {

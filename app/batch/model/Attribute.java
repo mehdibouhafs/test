@@ -2,10 +2,7 @@ package batch.model;
 
 import com.avaje.ebean.Model;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.List;
 
 /**
@@ -15,20 +12,18 @@ import java.util.List;
 @Table(name="A_MBS3_Attribute")
 public class Attribute extends Model {
     @Id
-    private Long id;
-    private String type;
-    private String nameo;
-    private String sizeo;
-    private boolean pko;
-    private boolean nonNull;
-    private String defautlVal;
-    private String commentaire;
+    public Long id;
+    public String type;
+    public String nameo;
+    public String sizeo;
+    public boolean pko;
+    public boolean nonNull;
+    public String defautlVal;
+    public String commentaire;
     @ManyToOne
-    private Classe classe;
-
+    public Classe classe;
     public Attribute() {
     }
-
 
     public static Model.Finder<Long,Attribute> find = new Model.Finder(Long.class, Attribute.class);
 
@@ -37,7 +32,13 @@ public class Attribute extends Model {
         return  find.where().eq("classe.className",classe).findList();
     }
 
+    public Long getId() {
+        return id;
+    }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getType() {
         return type;
@@ -61,23 +62,6 @@ public class Attribute extends Model {
 
     public void setSizeo(String sizeo) {
         this.sizeo = sizeo;
-    }
-
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Classe getClasse() {
-        return classe;
-    }
-
-    public void setClasse(Classe classe) {
-        this.classe = classe;
     }
 
     public boolean isPko() {
@@ -112,17 +96,20 @@ public class Attribute extends Model {
         this.commentaire = commentaire;
     }
 
+
+
     @Override
     public String toString() {
         return "Attribute{" +
                 "id=" + id +
                 ", type='" + type + '\'' +
-                ", name='" + nameo + '\'' +
-                ", size='" + sizeo + '\'' +
-                ", pK=" + pko +
+                ", nameo='" + nameo + '\'' +
+                ", sizeo='" + sizeo + '\'' +
+                ", pko=" + pko +
                 ", nonNull=" + nonNull +
                 ", defautlVal='" + defautlVal + '\'' +
                 ", commentaire='" + commentaire + '\'' +
+                ", classe=" + classe +
                 '}';
     }
 }

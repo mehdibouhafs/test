@@ -1,20 +1,20 @@
-package batch.model;
+package batch.model.batch;
 
 import com.avaje.ebean.Model;
-import oracle.sql.TIMESTAMP;
+import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.StepExecution;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Date;
 
 /**
  * Created by MBS on 16/08/2016.
  */
 
-
-public class BatchExecution {
-
+@Entity
+@Table(name = "BATCH_STEP_EXECUTION")
+public class BatchStepExecution extends Model{
+    @Id
     private Long step_execution_id;
     private Long version;
     private String step_name;
@@ -22,7 +22,7 @@ public class BatchExecution {
     private Long job_execution_id;
     private Date start_time;
     private Date end_time;
-    private String statuts;
+    private String status;
     private Long commit_count;
     private Long read_count;
     private Long filter_count;
@@ -35,7 +35,10 @@ public class BatchExecution {
     private Date last_updated;
 
 
-    public BatchExecution() {
+    public static Model.Finder<Long,BatchStepExecution> find = new Model.Finder(Long.class, BatchStepExecution.class);
+
+
+    public BatchStepExecution() {
     }
 
     public Long getStep_execution_id() {
@@ -86,12 +89,12 @@ public class BatchExecution {
         this.end_time = end_time;
     }
 
-    public String getStatuts() {
-        return statuts;
+    public String getStatus() {
+        return status;
     }
 
-    public void setStatuts(String statuts) {
-        this.statuts = statuts;
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public Long getCommit_count() {
@@ -191,7 +194,7 @@ public class BatchExecution {
                 ", job_execution_id=" + job_execution_id +
                 ", start_time=" + start_time +
                 ", end_time=" + end_time +
-                ", statuts='" + statuts + '\'' +
+                ", statuts='" + status + '\'' +
                 ", commit_count=" + commit_count +
                 ", read_count=" + read_count +
                 ", filter_count=" + filter_count +

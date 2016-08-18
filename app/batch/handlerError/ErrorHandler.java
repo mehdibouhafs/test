@@ -9,12 +9,12 @@ import play.libs.F.*;
 import views.html.error;
 
 
-public class ErrorHandler extends Controller implements HttpErrorHandler {
+public class ErrorHandler {/*extends Controller implements HttpErrorHandler {
     public Promise<Result> onClientError(RequestHeader request, int statusCode, String message) {
 
         User user = User.find.byId(session("email"));
         return Promise.<Result>pure(
-                Results.badRequest(error.render(message,user))
+                Results.badRequest("ERROR CLIENT"+error.render(message,user))
         );
     }
 
@@ -23,5 +23,5 @@ public class ErrorHandler extends Controller implements HttpErrorHandler {
         return Promise.<Result>pure(
                 Results.badRequest(error.render("Error Serveur "+exception.getMessage(),user))
         );
-    }
+    }*/
 }

@@ -1,14 +1,13 @@
 package batch.dao;
 
-import batch.model.BatchExecution;
-import batch.model.BatchExecutionParam;
+import batch.model.batch.BatchStepExecution;
+import batch.model.batch.BatchExecutionParam;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.concurrent.atomic.LongAccumulator;
 
 /**
  * Created by MBS on 16/08/2016.
@@ -18,41 +17,47 @@ public class BatchJobJdbc extends JdbcTemplate implements BatchJobDao {
 
 
     @Override
-    public List<BatchExecution> selectAllStepExectuion() {
+    public List<BatchStepExecution> selectAllStepExectuion() {
+        /*
         System.out.println("SELECT ////////////////////////////////////////////////////////////////////////////////////");
-      List<BatchExecution> batchExecutions = query("select * from BATCH_STEP_EXECUTION", new RowMapper<BatchExecution>() {
+      List<BatchStepExecution> batchStepExecutions = query("select * from BATCH_STEP_EXECUTION", new RowMapper<BatchStepExecution>() {
           @Override
-          public BatchExecution mapRow(ResultSet rs, int rowNum) throws SQLException {
-             BatchExecution   batchExecution = new BatchExecution();
-              batchExecution.setVersion(rs.getLong("VERSION"));
-              batchExecution.setStep_name(rs.getString("STEP_NAME"));
-              batchExecution.setCommit_count(rs.getLong("COMMIT_COUNT"));
-              batchExecution.setEnd_time(rs.getTime("END_TIME"));
-              batchExecution.setProcess_skip_count(rs.getLong("PROCESS_SKIP_COUNT"));
-              batchExecution.setFilter_count(rs.getLong("FILTER_COUNT"));
-              batchExecution.setExit_code(rs.getString("EXIT_CODE"));
-              batchExecution.setRead_count(rs.getLong("READ_COUNT"));
-              batchExecution.setLast_updated(rs.getTime("LAST_UPDATED"));
-              batchExecution.setStatuts(rs.getString("STATUS"));
-              batchExecution.setWrite_count(rs.getLong("WRITE_COUNT"));
-              batchExecution.setStart_time(rs.getTime("START_TIME"));
-              batchExecution.setWrite_skip_count(rs.getLong("WRITE_SKIP_COUNT"));
-              batchExecution.setRollback_count(rs.getLong("ROLLBACK_COUNT"));
-              batchExecution.setExit_message(rs.getString("EXIT_MESSAGE"));
-              return batchExecution;
+          public BatchStepExecution mapRow(ResultSet rs, int rowNum) throws SQLException {
+             BatchStepExecution batchStepExecution = new BatchStepExecution();
+              batchStepExecution.setStep_execution_id(rs.getLong("STEP_EXECUTION_ID"));
+              batchStepExecution.setVersion(rs.getLong("VERSION"));
+              batchStepExecution.setStep_name(rs.getString("STEP_NAME"));
+           //   batchExecution.setJob_execution_id(rs.getLong("JOB_EXECUTION_ID"));
+              batchStepExecution.setCommit_count(rs.getLong("COMMIT_COUNT"));
+              batchStepExecution.setEnd_time(rs.getTime("END_TIME"));
+              batchStepExecution.setProcess_skip_count(rs.getLong("PROCESS_SKIP_COUNT"));
+              batchStepExecution.setFilter_count(rs.getLong("FILTER_COUNT"));
+              batchStepExecution.setExit_code(rs.getString("EXIT_CODE"));
+              batchStepExecution.setRead_count(rs.getLong("READ_COUNT"));
+              batchStepExecution.setRead_skip_count(rs.getLong("READ_SKIP_COUNT"));
+              batchStepExecution.setLast_updated(rs.getTime("LAST_UPDATED"));
+              //batchExecution.setStatuts(rs.getString("STATUS"));
+              batchStepExecution.setWrite_count(rs.getLong("WRITE_COUNT"));
+              batchStepExecution.setStart_time(rs.getTime("START_TIME"));
+              batchStepExecution.setWrite_skip_count(rs.getLong("WRITE_SKIP_COUNT"));
+              batchStepExecution.setRollback_count(rs.getLong("ROLLBACK_COUNT"));
+              batchStepExecution.setExit_message(rs.getString("EXIT_MESSAGE"));
+              return batchStepExecution;
           }
-      });
-        return batchExecutions;
+      });*/
+        return null;//batchStepExecutions;
     }
 
     @Override
-    public BatchExecution selectStepExecution(Long id) {
-        BatchExecution batchExecution = queryForObject(
+    public BatchStepExecution selectStepExecution(Long id) {
+        /*BatchExecution batchExecution = queryForObject(
                 "select * from BATCH_STEP_EXECUTION where STEP_EXECUTION_ID = ?",
-                new Object[]{1212L},
+                new Object[]{id},
                 new RowMapper<BatchExecution>() {
                     public BatchExecution mapRow(ResultSet rs, int rowNum) throws SQLException {
                         BatchExecution batchExecution1 = new BatchExecution();
+                        batchExecution1.setStep_execution_id(rs.getLong("STEP_EXECUTION_ID"));
+                       // batchExecution1.setJob_execution_id(rs.getLong("JOB_EXECUTION_ID"));
                         batchExecution1.setVersion(rs.getLong("VERSION"));
                         batchExecution1.setStep_name(rs.getString("STEP_NAME"));
                         batchExecution1.setCommit_count(rs.getLong("COMMIT_COUNT"));
@@ -71,7 +76,8 @@ public class BatchJobJdbc extends JdbcTemplate implements BatchJobDao {
                         return batchExecution1;
                     }
                 });
-        return batchExecution;
+        return batchExecution;*/
+       return  null;//BatchStepExecution.find.byId(1L);
     }
 
     @Override
@@ -83,9 +89,9 @@ public class BatchJobJdbc extends JdbcTemplate implements BatchJobDao {
 
     @Override
     public BatchExecutionParam selectBatchExecParam(Long id) {
-        BatchExecutionParam batchExecutionParam = queryForObject(
-                "select first_name, last_name from t_actor where id = ?",
-                new Object[]{1212L},
+       /* BatchExecutionParam batchExecutionParam = queryForObject(
+                "select * from BATCH_JOB_EXECUTION_PARAMS where JOB_EXECUTION_ID = ? AND KEY_NAME <> ?",
+                new Object[]{id,"time"},
                 new RowMapper<BatchExecutionParam>() {
                     public BatchExecutionParam mapRow(ResultSet rs, int rowNum) throws SQLException {
                         BatchExecutionParam batchExecutionParam1 = new BatchExecutionParam();
@@ -100,15 +106,15 @@ public class BatchJobJdbc extends JdbcTemplate implements BatchJobDao {
                         return batchExecutionParam1;
                     }
                 });
-        return batchExecutionParam;
+        return batchExecutionParam;*/
+        return null;//BatchExecutionParam.find.byId(id);
     }
 
     @Override
     public List<BatchExecutionParam> selectAllBatchExecParam() {
-        List<BatchExecutionParam> batchExecutionParams = query("select * from BATCH_STEP_EXECUTION", new RowMapper<BatchExecutionParam>() {
+        /*List<BatchExecutionParam> batchExecutionParams = query("select * from BATCH_JOB_EXECUTION_PARAMS ", new RowMapper<BatchExecutionParam>() {
             @Override
             public BatchExecutionParam mapRow(ResultSet rs, int rowNum) throws SQLException {
-                BatchExecution   batchExecution = new BatchExecution();
                 BatchExecutionParam batchExecutionParam1 = new BatchExecutionParam();
                 batchExecutionParam1.setJob_execution_id(rs.getLong("JOB_EXECUTION_ID"));
                 batchExecutionParam1.setDate_val(rs.getDate("DATE_VAL"));
@@ -120,8 +126,8 @@ public class BatchJobJdbc extends JdbcTemplate implements BatchJobDao {
                 batchExecutionParam1.setType_cd(rs.getString("TYPE_CD"));
                 return batchExecutionParam1;
             }
-        });
-        return batchExecutionParams;
+        });*/
+        return null;//batchExecutionParams;
     }
 
 

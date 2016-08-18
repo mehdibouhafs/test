@@ -1,5 +1,4 @@
 package batch.processor;
-
 import batch.model.ReaderGenerique;
 import batch.util.Generator;
 import org.springframework.batch.item.ItemProcessor;
@@ -8,10 +7,10 @@ import running.Global;
 
 import java.lang.reflect.Field;
 import java.util.Map;
-
 /**
  * Created by MBS on 05/08/2016.
  */
+
 public class ObjectItemProcessor implements ItemProcessor<Object,Object> {
     @Override
     public Object process(Object item) throws Exception {

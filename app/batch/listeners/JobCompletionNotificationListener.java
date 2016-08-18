@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 
+import batch.model.User;
+import batch.policy.FileVerificationSkipper;
 import batch.util.Generator;
 import batch.model.ReaderGenerique;
 import org.joda.time.DateTime;
@@ -22,12 +24,11 @@ import org.springframework.jdbc.core.RowMapper;
 import running.Global;
 
 public class JobCompletionNotificationListener extends JobExecutionListenerSupport {
-
 	//private static final Logger log = LoggerFactory.getLogger(JobCompletionNotificationListener.class);
 
 	private static final Logger log = LoggerFactory.getLogger(JobCompletionNotificationListener.class);
 	private final JdbcTemplate jdbcTemplate;
-
+	private User user;
 
 	@Autowired
 	public JobCompletionNotificationListener(JdbcTemplate jdbcTemplate) {
@@ -41,113 +42,25 @@ public class JobCompletionNotificationListener extends JobExecutionListenerSuppo
 	public void beforeJob(JobExecution jobExecution) {
 		startTime = new DateTime();
 		System.out.println("ExamResult Job starts at :"+startTime);
+		ApplicationContext context = Global.getApplicationContext();
+		FileVerificationSkipper fileVerificationSkipper = (FileVerificationSkipper) context.getBean("FileVerificationSkipper");
+		fileVerificationSkipper.setJob_execution_id(jobExecution.getJobId());
 	}
-
-
-	/*public Long getProgress() {
-
-		double jobComplete = (Double) jobE.
-				getExecutionContext().
-				get("jobComplete");
-		double reads = 0;
-		for (StepExecution step : jobE.getStepExecutions()) {
-			reads = reads + step.getReadCount();
-		}
-		return Math.round(reads / jobComplete * 100);
-	}*/
-
 	@Override
 	public void afterJob(JobExecution jobExecution) {
 		ApplicationContext context = Global.getApplicationContext();
+		User user = this.user;
 		stopTime = new DateTime();
 		ReaderGenerique readerGenerique = context.getBean("readerGenerique",ReaderGenerique.class);
 		log.trace("Loading the data in Process");
 		if(jobExecution.getStatus() == BatchStatus.COMPLETED) {
-
+			user.job_completed = user.job_completed + 1L;
 			//log.info("!!! JOB FINISHED! Time to verify the results");
 			System.out.println("ExamResult Job stops at :"+stopTime);
 			System.out.println("Total time take in millis :"+getTimeInMillis(startTime , stopTime));
 			readerGenerique.setDateTime(getTimeInMillis(startTime , stopTime));
-			StringBuffer cols = null;
-			int i=0;
-			for (Map.Entry<String,String> prop :readerGenerique.getColumnsTable().entrySet()
-				 ) {
-				if(i==0) {
-					cols = new StringBuffer(prop.getKey());
-					i++;
-				}else {
-					cols.append(", " + prop.getKey());
-				}
-			}
-			final String select = "SELECT "+cols.toString()+" From "+readerGenerique.getTable();
-			List<Object> results = jdbcTemplate.query(select, new RowMapper<Object>() {
-				@Override
-				public Object mapRow(ResultSet rs, int row) throws SQLException {
-					try {
-							Object o=new Object(); //Object o = Generator.buildCSVClassNamexml(readerGenerique.getProperties(),readerGenerique.getTable(),readerGenerique.getTypeXml()).newInstance();
-						Class<?> act = null;
-						String nameClasse;
-						  if(readerGenerique.getExt().equals("csv")){
-							   nameClasse = "app.batch.generate."+readerGenerique.getTable()+"csv$"+(Generator.getCounter2()-1);
-						  }else{
-							  nameClasse = "app.batch.generate."+readerGenerique.getFragmentRootElementName()+"xml$"+(Generator.getCounter2()-1);
-						  }
-							act = Class.forName(nameClasse);
-							o = act.newInstance();
-						Field c;
-						int i=1;
-						for (Field f : o.getClass().getDeclaredFields()) {
-							c = o.getClass().getDeclaredField(f.getName());
-							switch (f.getType().getSimpleName()) {
-								case "String":
-									c.setAccessible(true);
-									c.set(o, rs.getString(i));
-									i++;
-									break;
-								case "Integer":
-									c.setAccessible(true);
-									c.set(o, rs.getInt(i));
-									i++;
-									break;
-								case "Long":
-									c.setAccessible(true);
-									c.set(o, rs.getLong(i));
-									i++;
-								case "Float":
-									c.setAccessible(true);
-									c.set(o, rs.getFloat(i));
-									i++;
-								case "Double":
-									c.setAccessible(true);
-									c.set(o, rs.getDouble(i));
-									i++;
-								case "Date":
-									c.setAccessible(true);
-									c.set(o, rs.getDate(i));
-									i++;
-									break;
-							}
-						}
-						//System.out.println(Generator.reflectToString(o));
-						log.debug("Succes writing {} Object", Generator.reflectToString(o));
-						return o;
-					} catch (ClassNotFoundException e) {
-						e.printStackTrace();
-
-					} catch (IllegalAccessException e) {
-						e.printStackTrace();
-					} catch (NoSuchFieldException e) {
-						e.printStackTrace();
-					} catch (InstantiationException e) {
-						e.printStackTrace();
-					}
-					return null;
-				}
-				});
-
-
-
 		}else if(jobExecution.getStatus() == BatchStatus.FAILED){
+			user.job_failed = user.job_failed + 1L;
 		System.out.println("ExamResult job failed with following exceptions ");
 		List<Throwable> exceptionList = jobExecution.getAllFailureExceptions();
 			int i =0;
@@ -156,8 +69,14 @@ public class JobCompletionNotificationListener extends JobExecutionListenerSuppo
 			System.err.println("exceptionsJOBLISTENER :" +th.getLocalizedMessage());
 			System.err.println("Message :" +th.getMessage());
 		}
+	}else if(jobExecution.getStatus() == BatchStatus.ABANDONED){
+			user.job_abondonned = user.job_abondonned + 1L;
+		}
+		user.total_jobs = user.job_completed + user.job_failed + user.job_abondonned;
+		user.update();
+		System.out.println("updated user");
 	}
-	}
+
 
 	public DateTime getStartTime() {
 		return startTime;
@@ -177,5 +96,13 @@ public class JobCompletionNotificationListener extends JobExecutionListenerSuppo
 
 	private long getTimeInMillis(DateTime start, DateTime stop){
 		return stop.getMillis() - start.getMillis();
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
 	}
 }

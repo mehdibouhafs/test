@@ -16,8 +16,6 @@ import java.util.Map;
  * Created by MBS on 29/06/2016.
  */
 public class FieldSetItemPreparedStatementSetter implements ItemPreparedStatementSetter<Object> {
-
-
     @Override
     public void setValues(Object item, PreparedStatement ps) throws SQLException {
 

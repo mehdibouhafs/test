@@ -1,9 +1,12 @@
 package controllers;
 import batch.dao.BatchJobDao;
-import batch.dao.BatchJobJdbc;
 import batch.model.*;
+import batch.model.batch.BatchExecutionParam;
+import batch.model.batch.BatchJobExecution;
+import batch.model.batch.BatchStepExecution;
 import batch.security.Secured;
 import batch.util.Generator;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import batch.dao.ObjectDao;
@@ -12,10 +15,9 @@ import javassist.CannotCompileException;
 import javassist.NotFoundException;
 import batch.listeners.JobCompletionNotificationListener;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.jena.atlas.test.Gen;
-import org.h2.engine.User;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.batch.core.*;
+import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
@@ -23,16 +25,16 @@ import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.batch.item.file.FlatFileParseException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
-import play.api.libs.Crypto$;
 import play.data.Form;
-import play.libs.Crypto;
 import play.libs.Json;
 import play.mvc.*;
 import play.mvc.Controller;
 import running.Global;
 import batch.util.ReadXMLFile2;
+import scala.util.parsing.json.JSONObject;
 import views.formdata.*;
 import views.html.*;
 
@@ -51,26 +53,23 @@ import java.util.*;
 @Component("application")
 public class Application extends Controller {
 
+    private ReaderGenerique readerGenerique;
+    private ApplicationContext context;
     public Application() {
+        context = Global.getApplicationContext();
         System.out.println(" -----------------------------Demarage application Construct------------------by Mehdi Bouhafs Encadre by - MIMO");
+
     }
 
     public Result home() throws JobParametersInvalidException, JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException {
-        //ApplicationContext context = new ClassPathXmlApplicationContext("context.xml");
-        //Application app = (Application) context.getBean("application");
-        //String s = app.encadrant.getName();
-        //encadrant.setName("ok");
-        //this.encadrant = Global.getBean(encadrant.getClass());
         ParamFormData paramData = new ParamFormData();
         Form<ParamFormData> formData = Form.form(ParamFormData.class).fill(paramData);
         return ok("ApplicationController");
     }
 
     public Result upload() throws IOException {
-        ApplicationContext context = Global.getApplicationContext();
-        ReaderGenerique readerGenerique = context.getBean("readerGenerique", ReaderGenerique.class);
+        readerGenerique = context.getBean("readerGenerique", ReaderGenerique.class);
         Form<ParamFormData2> formData = Form.form(ParamFormData2.class).bindFromRequest();
-        String dateParam = new Date().toString();
         List<String> ss = null;
         String type = formData.get().getTypeXML();
         readerGenerique.setTypeXml(type);
@@ -81,31 +80,9 @@ public class Application extends Controller {
         }else{
             ss = formData.get().getCols();
         }
-        //elements = new ArrayList<>();
-        //attributtes = new ArrayList<>();
-
-        /*if (type.equals("type3")) {
-            for (int i = 0; i < ss.size(); i++) {
-                try {
-                    String[] element = request().body().asFormUrlEncoded().get("elements[" + i + "]");
-                    if (element[0].equals("elements[" + i + "]")) {
-                        elements.add(ss.get(i));
-                    }
-                } catch (Exception e) {
-                    String[] attribute = request().body().asFormUrlEncoded().get("attributes[" + i + "]");
-                    if (attribute[0].equals("attributes[" + i + "]")) {
-                        attributtes.add(ss.get(i));
-                    }
-
-                    readerGenerique.getErrors().put("uploadException", e.getMessage());
-                    System.out.println(e.getMessage());
-                }
-            }
-        }*/
         System.out.println("Element = " + readerGenerique.getElements());
         System.out.println("Attributes = " + readerGenerique.getAttributes());
         ObjectNode result;
-        //JsonArrayBuilder jsa =  Json.createArrayBuilder();
         ArrayNode resuls = Json.newArray();
         int i = 0;
         for (String s : ss) {
@@ -117,6 +94,8 @@ public class Application extends Controller {
         }
         return ok(Json.toJson(resuls));
     }
+
+
 
     public Result getTypes() throws NoSuchMethodException, IllegalAccessException, ClassNotFoundException, InstantiationException, CannotCompileException, NotFoundException {
         Attribute attribute;
@@ -137,8 +116,11 @@ public class Application extends Controller {
         StringBuffer typeSizes;
         Classe classe = new Classe();
         classe.className=formData.get().getTableName();
-        classe.save();
+        classe.user_email = session("email");
+         classe.save();
+        System.out.println("/////////////////////////////SAVE CLASSE DATABASE");
         final Map<String, String> columnsTable = new LinkedHashMap<>();
+        Long j = 0L;
         for (int i = 0; i < ss.size(); i++) {
             try {
                 attribute = new Attribute();
@@ -153,10 +135,10 @@ public class Application extends Controller {
                         System.out.println("NotNULL" + i + "val = " + ss.get(i));
                         String s = "- NOT NULL";
                         typeSizes.append(s);
-                        attribute.setNonNull(true);
+                        attribute.nonNull = true;
                     }
                 }catch (Exception e){
-                    attribute.setNonNull(false);
+                    attribute.nonNull = false;
                     typeSizes.append("-");
                 }
                 try {
@@ -166,14 +148,14 @@ public class Application extends Controller {
                         System.out.println("Primary key" + i + "val = " + ss.get(i));
                         String s = "-PrimaryKey";
                         typeSizes.append(s);
-                        attribute.setPko(true);
+                        attribute.pko = true;
                     }
                 } catch (Exception e) {
-                    attribute.setPko(false);
+                    attribute.pko = false;
                     typeSizes.append("-");
                 }
 
-                attribute.setType(type);
+                attribute.type = type;
                 Class o;
 
                 switch (type) {
@@ -231,14 +213,13 @@ public class Application extends Controller {
                 typeSizes.append("- "+comments.get(i));
                 System.out.println("typeSize for "+ss.get(i)+" typeSizes "+typeSizes.toString());
                 columnsTable.put(ss.get(i), typeSizes.toString());
-                attribute.setSizeo(size);
-                attribute.setNameo(ss.get(i));
-                attribute.setCommentaire(comments.get(i));
-                attribute.setDefautlVal(valDefautl.get(i));
+                attribute.sizeo = size;
+                attribute.nameo = ss.get(i);
+                attribute.commentaire = comments.get(i);
+                attribute.defautlVal = valDefautl.get(i);
+                attribute.classe = classe;
                 attributes.add(attribute);
-                attribute.setClasse(classe);
                 attribute.save();
-
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
@@ -525,17 +506,33 @@ public class Application extends Controller {
         return ok(Json.toJson(resuls));
     }
 
+
+    public Result testJson(Long id){
+        List<InputError> inputErros = InputError.find.where().eq("job_execution_id",id).findList();
+        Resume resume = new Resume();
+        //resume.getBatchJobExecution().add(BatchJobExecution.find.byId(jobExecution.getId()));
+        resume.setBatchStepExecution(BatchStepExecution.find.byId(id));
+        if(inputErros.size()>0){
+            resume.setInputError(inputErros);
+        }
+        return  ok(Json.toJson(resume));
+    }
+
+    @Transactional
+    @Security.Authenticated(Secured.class)
     public Result validate() {
+        batch.model.User user = batch.model.User.find.byId(request().username());
         ApplicationContext context = Global.getApplicationContext();
         ReaderGenerique readerGenerique = context.getBean("readerGenerique", ReaderGenerique.class);
+        JobCompletionNotificationListener jobCompletionNotificationListener = (JobCompletionNotificationListener) context.getBean("listener");
+        jobCompletionNotificationListener.setUser(user);
         ObjectDao objectDao = context.getBean("ObjectDao", ObjectDaoJdbc.class);
         Form<ParamFormData3> formData = Form.form(ParamFormData3.class).bindFromRequest();
         String dropeTable = formData.get().getDropeTable();
         if (dropeTable.equals("true")) {
             System.out.println("****************************************");
-
-            System.out.println("****************************************");
             objectDao.dropTable(readerGenerique.getTable());
+            System.out.println("****************************************");
         }
         //Boolean create = objectDao.createTable(readerGenerique.getTable(), readerGenerique.getColumnsTable());
         Boolean create = objectDao.createTableOracle(readerGenerique.getTable(), readerGenerique.getColumnsTable());
@@ -547,29 +544,28 @@ public class Application extends Controller {
                     .addString("input.file.name", destination.getPath())
                     .addLong("time", System.currentTimeMillis()).toJobParameters();
             JobLauncher jobLauncher = (JobLauncher) context.getBean("jobLauncher");
-
             if (readerGenerique.getExt().equals("csv")) {
-                Job job = (Job) context.getBean("importUserJob");
+                Job job = (Job) context.getBean("csvJob");
                 try {
                     JobExecution jobExecution = jobLauncher.run(job, param);
-                    JobCompletionNotificationListener listener = context.getBean("listener", JobCompletionNotificationListener.class);
                     if (jobExecution.getStatus().equals(BatchStatus.COMPLETED)) {
+                        List<InputError> inputErros = InputError.find.where().eq("job_execution_id",jobExecution.getJobId()).findList();
+                        Resume resume = new Resume();
+                        //resume.getBatchJobExecution().add(BatchJobExecution.find.byId(jobExecution.getId()));
+                        //resume.getBatchStepExecution().add(BatchStepExecution.find.byId(jobExecution.getId()));
+                        resume.setBatchStepExecution(BatchStepExecution.find.byId(jobExecution.getId()));
+                        resume.setInputError(inputErros);
                         Generator c = context.getBean("generator", Generator.class);
                         c.setClassGenerate(null);
-                        Object c1 = context.getBean("firstBe");
-                        System.out.println(c1.getClass());
-                        ObjectNode result = play.libs.Json.newObject();
                         Double time = readerGenerique.getDateTime() / 1000.0;
-                        System.out.println("time in seconde" + time + "time in mili" + readerGenerique.getDateTime());
                         time = (double) Math.round(time * 100);
                         time = time/100;
-                        result.put("time", time);
-                        return ok(Json.toJson(result));
+                        resume.setTime(time);
+                        return ok(Json.toJson(resume));
                     }
                 } catch (FlatFileParseException e) {
                     System.out.println("CATCH IT ");
                     e.printStackTrace();
-
                 } catch (JobExecutionAlreadyRunningException e) {
                     e.printStackTrace();
                 } catch (JobRestartException e) {
@@ -586,13 +582,21 @@ public class Application extends Controller {
                     JobExecution jobExecution = jobLauncher.run(job, param);
                     JobCompletionNotificationListener listener = context.getBean("listener", JobCompletionNotificationListener.class);
                     if (jobExecution.getStatus().equals(BatchStatus.COMPLETED)) {
+                        JsonNode jsonObject = Json.toJson(InputError.find.where().eq("job_execution_id",jobExecution.getJobId()).findList());
+                        JsonNode jsonObject1 = Json.toJson(jobExecution);
+                        ArrayNode arrayNode = play.libs.Json.newArray();
+                        arrayNode.add(jsonObject);
+                        arrayNode.add(jsonObject1);
+                        System.out.println("eeeeee "+InputError.find.where().eq("job_execution_id",jobExecution.getJobId()).findList());
+                        InputError.find.where().eq("job_execution_id",jobExecution.getJobId()).findList();
                         Generator c = context.getBean("generator", Generator.class);
                         c.setClassGenerate(null);
                         ObjectNode result = play.libs.Json.newObject();
                         Double time = readerGenerique.getDateTime() / 1000.0;
                         System.out.println("time in seconde" + time + "time in mili" + readerGenerique.getDateTime());
                         result.put("time", time);
-                        return ok(Json.toJson(result));
+                        arrayNode.add(result);
+                        return ok(Json.toJson(arrayNode));
                     }
                 } catch (JobExecutionAlreadyRunningException e) {
                     e.printStackTrace();
@@ -732,6 +736,52 @@ public class Application extends Controller {
         }
     }
 
+    public Result allMyJobs(){
+        List<BatchExecutionParam> batchExecutionParams = BatchExecutionParam.find.where().eq("STRING_VAL",session("email")).findList();
+        List<BatchJobExecution> batchJobExecutions = new ArrayList<>();
+        for (BatchExecutionParam batchExecutionParam : batchExecutionParams){
+            BatchJobExecution batchJobExecution =  BatchJobExecution.find.byId(batchExecutionParam.getJob_execution_id());
+            batchJobExecutions.add(batchJobExecution);
+        }
+        return ok(Json.toJson(batchJobExecutions));
+    }
+
+    public Result allMyJobCompleted(){
+        List<BatchExecutionParam> batchExecutionParams = BatchExecutionParam.find.where().eq("STRING_VAL",session("email")).findList();
+        List<BatchJobExecution> batchJobExecutionsStatusCompleted = new ArrayList<>();
+        for (BatchExecutionParam batchExecutionParam : batchExecutionParams){
+            BatchJobExecution batchJobExecution =  BatchJobExecution.find.byId(batchExecutionParam.getJob_execution_id());
+            if(batchJobExecution.status.equals("COMPLETED")) {
+                batchJobExecutionsStatusCompleted.add(batchJobExecution);
+            }
+        }
+        return ok(Json.toJson(batchJobExecutionsStatusCompleted));
+    }
+
+
+    public Result allMyJobFailed(){
+        List<BatchExecutionParam> batchExecutionParams = BatchExecutionParam.find.where().eq("STRING_VAL",session("email")).findList();
+        List<BatchJobExecution> batchJobExecutionsStatusFailed = new ArrayList<>();
+        for (BatchExecutionParam batchExecutionParam : batchExecutionParams){
+            BatchJobExecution batchJobExecution =  BatchJobExecution.find.byId(batchExecutionParam.getJob_execution_id());
+            if(batchJobExecution.status.equals("FAILED")) {
+                batchJobExecutionsStatusFailed.add(batchJobExecution);
+            }
+        }
+        return ok(Json.toJson(batchJobExecutionsStatusFailed));
+    }
+
+    public Result allMyJobAbondonned(){
+        List<BatchExecutionParam> batchExecutionParams = BatchExecutionParam.find.where().eq("STRING_VAL",session("email")).findList();
+        List<BatchJobExecution> batchJobExecutionsStatusAbondonned = new ArrayList<>();
+        for (BatchExecutionParam batchExecutionParam : batchExecutionParams){
+            BatchJobExecution batchJobExecution =  BatchJobExecution.find.byId(batchExecutionParam.getJob_execution_id());
+            if(batchJobExecution.status.equals("ABONDONNED")) {
+                batchJobExecutionsStatusAbondonned.add(batchJobExecution);
+            }
+        }
+        return ok(Json.toJson(batchJobExecutionsStatusAbondonned));
+    }
 
     public Result login() {
         Form form = Form.form(Login.class);
@@ -740,25 +790,19 @@ public class Application extends Controller {
         BatchJobDao batchJobDao = (BatchJobDao) context.getBean("batchJobDao");
         if(remember != null) {
             int firstIndex = remember.value().indexOf("-");
-            System.out.println("firstIndex"+firstIndex);
-            System.out.println("BATCH " +batchJobDao.selectAllDetail());
+            //System.out.println("BACHAR " +batchJobDao.selectAllStepExectuion());
+            //System.out.println("BATCHPAr " + );
                 String sign = remember.value().substring(0, firstIndex);
-                System.out.println("sign "+ sign);
                 String restOfCookie = remember.value().substring(firstIndex + 1);
-                System.out.println("restofCookie "+ restOfCookie);
                 String username = restOfCookie;
-
                 if(play.api.libs.Crypto.crypto().sign(restOfCookie).equals(sign)) {
-                    session("username", username);
+                    session("email", username);
                     batch.model.User user = batch.model.User.find.byId(username);
                     return ok(index.render(user));
             }
         }
-
         return ok(login.render(form));
     }
-
-
 
     public Result authenticate() {
         Form<Login> loginForm = Form.form(Login.class).bindFromRequest();
@@ -769,7 +813,6 @@ public class Application extends Controller {
         } else {
             batch.model.User user = batch.model.User.authenticate(loginForm.get().email,loginForm.get().password);
             if(user!=null){
-
             session().clear();
             session("email", loginForm.get().email);
                 if(loginForm.get().rememberMe == true) {
@@ -787,38 +830,44 @@ public class Application extends Controller {
 
     public Result lockScreen(){
         batch.model.User user = batch.model.User.find.byId(session(("email")));
-        logout();
-        session("emailTmp",user.email);
         return  ok(lockscreen.render(user));
     }
 
     public Result delockScreen(){
         System.out.println("delock");
         String[] password = request().body().asFormUrlEncoded().get("password");
-        String email = session("emailTmp");
-        System.out.println("email"+email);
         System.out.println("password"+password[0]);
-        batch.model.User user = batch.model.User.authenticate(email,password[0]);
-        batch.model.User user1 = batch.model.User.find.byId(email);
+        batch.model.User user = batch.model.User.authenticate(session(("email")),password[0]);
         if(user != null){
             session("email",user.email);
             response().setCookie("rememberme", play.api.libs.Crypto.crypto().sign(user.email) + "-" + user.email, 60*60*24*360);
             return ok(index.render(user));
         }else{
-            return  badRequest(lockscreen.render(user1));
+            return  ok(index.render(new User()));
         }
     }
 
     public Result getClasses(){
-
+        if(Classe.find.all()!=null){
         return ok(Json.toJson(Classe.find.all()));
+        }else{
+            return ok(Json.toJson(new Classe()));
+        }
     }
 
     public Result getAttributes(String  id){
         System.out.println("id " + id);
-
         System.out.println("attribute "+Attribute.findInvolving(id));
         return  ok(Json.toJson(Attribute.findInvolving(id)));
+    }
+
+    public Result deleteClasse(String id){
+        List<Attribute> attributes =  Attribute.findInvolving(id);
+        for (Attribute e : attributes){
+            e.delete();
+        }
+        Classe.find.byId(id).delete();
+        return ok("deleted");
     }
 
     public Result register(){
@@ -878,7 +927,6 @@ public class Application extends Controller {
 
     public String getExtension(String fileName) {
         String extension = "";
-
         int i = fileName.lastIndexOf('.');
         if (i > 0) {
             extension = fileName.substring(i + 1);

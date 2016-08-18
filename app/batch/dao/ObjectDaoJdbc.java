@@ -1,6 +1,6 @@
 package batch.dao;
 
-import batch.model.BatchExecution;
+import batch.model.batch.BatchStepExecution;
 import batch.model.ReaderGenerique;
 import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -122,9 +122,6 @@ public class ObjectDaoJdbc extends JdbcTemplate implements ObjectDao{
 
 
     public boolean dropTable(String table) {
-         Map<String,String> map = dataTable(table);
-        if(!map.get("existe").equals("notExiste")) {
-            System.out.println("Drop Table " + table);
             String q = "DROP TABLE " + table;
             try {
                 execute(q);
@@ -133,9 +130,6 @@ public class ObjectDaoJdbc extends JdbcTemplate implements ObjectDao{
                 System.out.println("Erreur : " + e.getMessage());
                 return false;
             }
-        }else {
-            return false;
-        }
         }
 
    public Map<String,String > dataTable(String table) {
@@ -154,10 +148,7 @@ public class ObjectDaoJdbc extends JdbcTemplate implements ObjectDao{
                rs = s.executeQuery(query); // your query
                rsmd = rs.getMetaData();
                int colCount = rsmd.getColumnCount();
-
                System.out.println("Number Of Columns : " + colCount);
-               System.out.println("column Details :");
-
                for (int i = 1; i <= colCount; i++) {
                    //getting column name of index 'i'
                    String colName = rsmd.getColumnName(i);
@@ -205,17 +196,17 @@ public class ObjectDaoJdbc extends JdbcTemplate implements ObjectDao{
        return map;
    }
 
-    public List<BatchExecution> selectAllDetail() {
-        List<BatchExecution> batchExecutions = query("select version,step_name form Batch_step_exection", new RowMapper<BatchExecution>() {
+    public List<BatchStepExecution> selectAllDetail() {
+        /*List<BatchStepExecution> batchStepExecutions = query("select version,step_name form Batch_step_exection", new RowMapper<BatchStepExecution>() {
             @Override
-            public BatchExecution mapRow(ResultSet rs, int rowNum) throws SQLException {
-                BatchExecution   batchExecution = new BatchExecution();
-                batchExecution.setVersion(rs.getLong("version"));
-                batchExecution.setStep_name(rs.getString("step_name"));
-                return batchExecution;
+            public BatchStepExecution mapRow(ResultSet rs, int rowNum) throws SQLException {
+                BatchStepExecution batchStepExecution = new BatchStepExecution();
+                batchStepExecution.setVersion(rs.getLong("version"));
+                batchStepExecution.setStep_name(rs.getString("step_name"));
+                return batchStepExecution;
             }
-        });
-        return batchExecutions;
+        });*/
+        return null;//batchStepExecutions;
     }
 
    }

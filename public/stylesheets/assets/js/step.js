@@ -958,46 +958,56 @@ $('#form1').submit(function (e) {
                             value: false,
                         });
                         $('#pleaseWaitDialog').modal('show');
-                        console.log("besfore send");
                     },
                     complete: function () {
                         $('#pleaseWaitDialog').modal('hide');
-                        console.log("complet");
                     },
                     success: function (data) {// le cas ou la requete est bien execute en reçoi les données serialiser par JSON dans la variable msg
                         //recuperation de la valeur stock dans l'attribut desactive
                         console.log("sucess");
-                        if(data.time > 0 ) {
-                            var message;
-                            if(data.time >= 60 && data.time < 3600){
-                                var minute = data.time / 60;
-                                message = minute + " min (s) !"
-                            }else{
-                                if(data.time >= 3600){
-                                    var heure = data.time / 3600;
-                                    message =  heure + " heure (s)";
-                                }else{
-                                    if(data.time < 60){
-                                        message =  data.time + " seconde (s)";
-                                    }
+                        if (data.time > 0) {
+                            $("#contenu").html("");
+                            var contenu = "";
+                            if ((data.inputError.length) == 0) {
+                                contenu += "<fieldset><div class='panel panel-success'><div class='panel-heading'><div class='pad margin no-print'>"+
+                                "<div class='callout callout-success' style='margin-bottom: 0!important;'>"+
+                                    "<h4><i class='fa fa-info'></i> SUCCESS:</h4>This JOB HAS NO ERROR INPUT DUE TO EXCEPTIONS... </div>"+
+                                "</div></div><div class='panel-body'>"
+                            } else {
+                                contenu += "<fieldset><div class='panel panel-danger'><div class='panel-heading'><div class='pad margin no-print'>"+
+                                    "<div class='callout callout-danger' style='margin-bottom: 0!important;'>"+
+                                "<h4><i class='fa fa-info'></i> ALERT :</h4>This JOB HAS ERROR INPUT... </div>"+
+                                "</div></div>"
+                                contenu += "<div class='panel-body'><div class='row'><div class='col-xs-12'>" +
+                                    "<table id='myInputErrors' width='100%' class='table .table-bordered'>" +
+                                    "<thead><tr><th><b>Line Number</b></th><th ><b>Line</b></th><th><b>Message</b></th></thead><tbody>";
+                                for (var i = 0; i < data.inputError.length; i++) {
+                                    contenu += "<tr><td>" + data.inputError[i].lineNumber + "</td><td>" + data.inputError[i].line + "</td><td>" + data.inputError[i].messages + "</td></tr>";
                                 }
+                                contenu += "</tbody></table>" +
+                                    "</div></div>";
                             }
-                            $('#modal-body').append("Total time that job takes  =" + message);
+                            contenu += "<div class='row'><div class='col-xs-12'><table id='resume' width='100%' class='table .table-bordered'>" +
+                             "<thead><tr><th><b>Job ID</b></th><th ><b>Start time</b></th><th><b>End time</b></th><th><b>Status </b></th><th><b>commit_count</b></th><th><b>read_count</b></th><th>write_count</th><th>process_skip_count</th><th>exit_code</th><th>time</th></thead><tbody>";
+                                contenu += "<tr><td>" + data.batchStepExecution.job_execution_id + "</td><td>" + moment(data.batchStepExecution.start_time).format("DD/MM HH:mm:ss") + "</td><td>" + moment(data.batchStepExecution.end_time).format("DD/MM HH:mm:ss") + "</td><td>" + data.batchStepExecution.status + "</td><td>" + data.batchStepExecution.commit_count + "</td><td>" + data.batchStepExecution.read_count + "</td><td>" + data.batchStepExecution.write_count + "</td><td>" + data.batchStepExecution.process_skip_count + "</td><td>" + data.batchStepExecution.exit_code + "</td><td>" + data.time + "</td></tr>";
+                            contenu += "</tbody></table>" +
+                                "</div></div></div></div></fieldset>";
+
+                            $('#modal-body').append(contenu);
                             $('#modal-success').modal('show');
                         }
-                        else{
+                        else {
                             var errors;
                             for (var i = 0; i < data.length; i++) {
-                                errors = errors + data[i].erreur +"=> "+ data[i].value;
+                                errors = errors + data[i].erreur + "=> " + data[i].value;
                             }
-                            $('#modal-body-danger').append("job Failed try again resolve this "+errors);
+                            $('#modal-body-danger').append("job Failed try again resolve this " + errors);
                             $('#modal-danger').modal('show');
                         }
                     },
-                    error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
+                error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
                         $('#modal-danger').modal('show');
                     }
-
                 });
             }else{
                 //alert("Veuillez ajouter une column");

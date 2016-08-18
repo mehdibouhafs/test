@@ -4,10 +4,7 @@ import com.avaje.ebean.Model;
 import com.avaje.ebean.annotation.JsonIgnore;
 import play.data.validation.Constraints;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -20,28 +17,22 @@ import java.util.Set;
 public class Classe extends Model {
 
     @Id
-    public Long id;
     @Constraints.Required
+    @Column(unique=true)
     public String className;
 
-    @OneToMany(mappedBy = "classe")
+    public String user_email;
+
+    @OneToMany
     @JsonIgnore
     public Collection<Attribute> attributes;
 
-    public static Model.Finder<Long,Classe> find = new Model.Finder(Long.class, Classe.class);
+    public static Model.Finder<String,Classe> find = new Model.Finder(String.class, Classe.class);
 
 
     public Classe() {
     }
 
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getClassName() {
         return className;

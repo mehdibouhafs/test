@@ -17,6 +17,10 @@ import org.springframework.batch.item.file.FlatFileParseException;
 public class FileVerificationSkipper implements SkipPolicy {
 
 	private static final Logger logger = LoggerFactory.getLogger("badRecordLogger");
+	private Long job_execution_id;
+
+	public FileVerificationSkipper() {
+	}
 
 	@Override
 	public boolean shouldSkip(Throwable exception, int skipCount) throws SkipLimitExceededException {
@@ -29,7 +33,7 @@ public class FileVerificationSkipper implements SkipPolicy {
 					+ " line of the file. Below was the faulty " + "input.\n");
 			errorMessage.append(ffpe.getInput() + "\n");
 			InputError inputError = new InputError();
-			inputError.datee = new Date();
+			inputError.job_execution_id = job_execution_id;
 			inputError.lineNumber = ffpe.getLineNumber();
 			inputError.line = ffpe.getInput();
 			inputError.messages = ffpe.getMessage();
@@ -45,7 +49,7 @@ public class FileVerificationSkipper implements SkipPolicy {
 				//errorMessage.append(ffpe.getInput() + "\n");
 				logger.error("{}", errorMessage.toString());
 				InputError inputError = new InputError();
-				inputError.datee = new Date();
+				inputError.job_execution_id = job_execution_id;
 				inputError.lineNumber = ffpe.getLineNumber();
 				inputError.line = ffpe.getInput();
 				inputError.messages = exception.getCause().getMessage();
@@ -55,5 +59,13 @@ public class FileVerificationSkipper implements SkipPolicy {
 				return false;
 			}
 		}
+	}
+
+	public Long getJob_execution_id() {
+		return job_execution_id;
+	}
+
+	public void setJob_execution_id(Long job_execution_id) {
+		this.job_execution_id = job_execution_id;
 	}
 }
