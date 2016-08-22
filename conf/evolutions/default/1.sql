@@ -4,7 +4,7 @@
 # --- !Ups
 
 create table a_mbs3_attribute (
-  id                            number(19) not null,
+  id                            number(19),
   type                          varchar2(255),
   nameo                         varchar2(255),
   sizeo                         varchar2(255),
@@ -12,10 +12,8 @@ create table a_mbs3_attribute (
   non_null                      number(1),
   defautl_val                   varchar2(255),
   commentaire                   varchar2(255),
-  classe_class_name             varchar2(255),
-  constraint pk_a_mbs3_attribute primary key (id)
+  classe                        varchar2(255)
 );
-create sequence A_MBS3_Attribute_seq;
 
 create table batch_job_execution_params (
   job_execution_id              number(19) not null,
@@ -81,6 +79,10 @@ create sequence BATCH_STEP_EXECUTION_seq;
 create table a_mbs3_classe (
   class_name                    varchar2(255) not null,
   user_email                    varchar2(255),
+  viewed                        number(10),
+  c_data                        varchar2(255),
+  columns                       varchar2(255),
+  classe_generated              varchar2(255),
   constraint pk_a_mbs3_classe primary key (class_name)
 );
 
@@ -94,19 +96,18 @@ create table a_mbs_input_errors (
 );
 create sequence A_MBS_INPUT_ERRORS_seq;
 
-create table a_mbs3_notify (
+create table a_mbs3_reader (
   id                            number(19) not null,
-  message                       varchar2(255),
-  viewed                        number(1),
-  constraint pk_a_mbs3_notify primary key (id)
+  file_path                     varchar2(255),
+  separator                     varchar2(255),
+  nb_line_to_skip               number(10),
+  classe_name                   varchar2(255),
+  columns                       varchar2(255),
+  id_attribute                  number(19),
+  email_user                    varchar2(255),
+  constraint pk_a_mbs3_reader primary key (id)
 );
-create sequence A_MBS3_Notify_seq;
-
-create table a_mbs3_notify_mbs3_user (
-  a_mbs3_notify_id              number(19) not null,
-  a_mbs3_user_email             varchar2(255) not null,
-  constraint pk_a_mbs3_notify_mbs3_user primary key (a_mbs3_notify_id,a_mbs3_user_email)
-);
+create sequence a_mbs3_reader_seq;
 
 create table a_mbs3_user (
   email                         varchar2(255) not null,
@@ -121,29 +122,10 @@ create table a_mbs3_user (
   constraint pk_a_mbs3_user primary key (email)
 );
 
-alter table a_mbs3_attribute add constraint fk_a_mbs3_ttrbt_clss_clss_nm foreign key (classe_class_name) references a_mbs3_classe (class_name);
-create index ix_a_mbs3_ttrbt_clss_clss_nm on a_mbs3_attribute (classe_class_name);
-
-alter table a_mbs3_notify_mbs3_user add constraint fk_a_mbs3_ntfy_mbs3_sr__mbs_1 foreign key (a_mbs3_notify_id) references a_mbs3_notify (id);
-create index ix_a_mbs3_ntfy_mbs3_sr__mbs_1 on a_mbs3_notify_mbs3_user (a_mbs3_notify_id);
-
-alter table a_mbs3_notify_mbs3_user add constraint fk_a_mbs3_ntfy_mbs3_sr__mbs_2 foreign key (a_mbs3_user_email) references a_mbs3_user (email);
-create index ix_a_mbs3_ntfy_mbs3_sr__mbs_2 on a_mbs3_notify_mbs3_user (a_mbs3_user_email);
-
 
 # --- !Downs
 
-alter table a_mbs3_attribute drop constraint if exists fk_a_mbs3_ttrbt_clss_clss_nm;
-drop index if exists ix_a_mbs3_ttrbt_clss_clss_nm;
-
-alter table a_mbs3_notify_mbs3_user drop constraint if exists fk_a_mbs3_ntfy_mbs3_sr__mbs_1;
-drop index if exists ix_a_mbs3_ntfy_mbs3_sr__mbs_1;
-
-alter table a_mbs3_notify_mbs3_user drop constraint if exists fk_a_mbs3_ntfy_mbs3_sr__mbs_2;
-drop index if exists ix_a_mbs3_ntfy_mbs3_sr__mbs_2;
-
 drop table a_mbs3_attribute cascade constraints purge;
-drop sequence A_MBS3_Attribute_seq;
 
 drop table batch_job_execution_params cascade constraints purge;
 drop sequence BATCH_JOB_EXECUTION_PARAMS_seq;
@@ -162,10 +144,8 @@ drop table a_mbs3_classe cascade constraints purge;
 drop table a_mbs_input_errors cascade constraints purge;
 drop sequence A_MBS_INPUT_ERRORS_seq;
 
-drop table a_mbs3_notify cascade constraints purge;
-drop sequence A_MBS3_Notify_seq;
-
-drop table a_mbs3_notify_mbs3_user cascade constraints purge;
+drop table a_mbs3_reader cascade constraints purge;
+drop sequence a_mbs3_reader_seq;
 
 drop table a_mbs3_user cascade constraints purge;
 

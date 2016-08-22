@@ -1,5 +1,4 @@
 package batch.processor;
-import batch.model.ReaderGenerique;
 import batch.util.Generator;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.context.ApplicationContext;
@@ -16,7 +15,6 @@ public class ObjectItemProcessor implements ItemProcessor<Object,Object> {
     public Object process(Object item) throws Exception {
 
         ApplicationContext context = Global.getApplicationContext();
-        ReaderGenerique readerGenerique = context.getBean("readerGenerique", ReaderGenerique.class);
         Generator generator = (Generator) context.getBean("generator");
         for (Map.Entry<String, Class<?>> entry : generator.getProperties().entrySet()) {
             try {
@@ -45,7 +43,6 @@ public class ObjectItemProcessor implements ItemProcessor<Object,Object> {
                         try {
                             java.util.Date date = (java.util.Date)(f.get(item));
                         } catch (IllegalAccessException e) {
-                            readerGenerique.getErrors().put("casting Date",e.getMessage());
                             e.printStackTrace();
                         }
                         break;
@@ -54,10 +51,8 @@ public class ObjectItemProcessor implements ItemProcessor<Object,Object> {
                         break;
                 }
             } catch (NoSuchFieldException e) {
-                readerGenerique.getErrors().put("NoSuchFiledException",e.getMessage());
                 e.printStackTrace();
             } catch (IllegalAccessException e) {
-                readerGenerique.getErrors().put("IllegalAccessException",e.getMessage());
                 e.printStackTrace();
             }
         }

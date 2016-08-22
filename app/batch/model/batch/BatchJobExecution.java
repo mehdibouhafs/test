@@ -1,8 +1,6 @@
 package batch.model.batch;
 
 import com.avaje.ebean.Model;
-import org.springframework.batch.core.JobExecution;
-import org.springframework.batch.core.JobInstance;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -28,6 +26,8 @@ public class BatchJobExecution extends Model{
     public String job_configuration_location;
 
     public static Model.Finder<Long,BatchJobExecution> find = new Model.Finder(Long.class, BatchJobExecution.class);
+
+
 
 
     @Override

@@ -20,17 +20,38 @@ public class Classe extends Model {
     @Constraints.Required
     @Column(unique=true)
     public String className;
-
     public String user_email;
+    public int viewed;
+    public String cData;
+    public String columns;
+    public String classeGenerated;
 
-    @OneToMany
-    @JsonIgnore
-    public Collection<Attribute> attributes;
+    @Transient
+    public int nbNotViewed;
+
+
 
     public static Model.Finder<String,Classe> find = new Model.Finder(String.class, Classe.class);
 
 
+    public static void dropClasseAndAttribute(String className){
+        Attribute.dropInvolving(className);
+        find.byId(className).delete();
+    }
+
+    public static  boolean isExistClasse(String classeName){
+        Classe  classe= find.byId(classeName);
+        if(classe !=null){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+
+
     public Classe() {
+       this.viewed = 0;
     }
 
 
@@ -42,11 +63,4 @@ public class Classe extends Model {
         this.className = className;
     }
 
-    public Collection<Attribute> getAttributes() {
-        return attributes;
-    }
-
-    public void setAttributes(Collection<Attribute> attributes) {
-        this.attributes = attributes;
-    }
 }

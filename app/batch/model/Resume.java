@@ -14,10 +14,7 @@ public class Resume extends Model {
 
     private List<InputError> inputError;
     private BatchStepExecution batchStepExecution;
-    private Double time;
     private User user;
-
-
 
     public Resume() {
 
@@ -40,12 +37,4 @@ public class Resume extends Model {
         this.inputError = inputError;
     }
 
-
-    public Double getTime() {
-        return time;
-    }
-
-    public void setTime(Double time) {
-        this.time = time;
-    }
 }

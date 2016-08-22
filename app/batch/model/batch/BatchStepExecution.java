@@ -35,6 +35,13 @@ public class BatchStepExecution extends Model{
     private Date last_updated;
 
 
+    public static BatchStepExecution findByJobExecID(Long job_instance_id){
+        return  find.where().eq("job_execution_id",job_instance_id).findUnique();
+    }
+
+
+
+
     public static Model.Finder<Long,BatchStepExecution> find = new Model.Finder(Long.class, BatchStepExecution.class);
 
 

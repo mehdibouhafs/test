@@ -41,12 +41,9 @@
 	</jdbc:initialize-database>
 
 
-	<bean id="BatchService" class="batch.business.BatchServiceImpl"/>
+	<bean id="BatchService" class="batch.business.BatchJobServiceImpl"/>
 
-
-	<bean id="ObjectDao" class="batch.dao.ObjectDaoJdbc">
-		<property name="dataSource" ref="dataSource" />
-	</bean>
+	<bean id="reader" class="batch.model.Reader"/>
 
 	<bean id="batchJobDao" class="batch.dao.BatchJobJdbc">
 	<property name="dataSource" ref="dataSource" />
@@ -76,8 +73,8 @@
 			<bean class="org.springframework.batch.item.file.mapping.DefaultLineMapper">
 				<property name="lineTokenizer">
 					<bean class="org.springframework.batch.item.file.transform.DelimitedLineTokenizer">
-                        <property name="delimiter" value="#{readerGenerique.getSeparator()}"/>
-                        <property name="names" value="#{readerGenerique.getColumns()}"/>
+                        <property name="delimiter" value="#{jobParameters['separator']}"/>
+                        <property name="names" value="#{jobParameters['columns']}"/>
 					</bean>
 				</property>
 				<property name="fieldSetMapper">
@@ -87,24 +84,19 @@
 				</property>
 			</bean>
 		</property>
-		<property name="linesToSkip" value="#{readerGenerique.getLineToSkip()}"/>
+		<property name="linesToSkip" value="#{T(java.lang.Integer).parseInt(jobParameters['nbLineToSkip'])}"/>
 		<property name="strict" value="false" />
 	</bean>
 
 	<bean id="FileVerificationSkipper" class="batch.policy.FileVerificationSkipper"/>
 
-	<bean id="readerGenerique" class="batch.model.ReaderGenerique" scope="singleton"/>
-
-
 	<bean id="generator" class="batch.util.Generator" lazy-init="true" />
 
 	<bean id="processor" class="batch.processor.ObjectItemProcessor"/>
 
-	<bean id="firstBe" class="#{readerGenerique.getClassGenerate()}" lazy-init="true" scope="prototype"></bean>
-
+	<bean id="firstBe" class="#{reader.classeGenerate}" lazy-init="true" scope="prototype"></bean>
 
 	<bean id="recordSeperatorPolicy " class="batch.policy.BlankLineRecordSeparatorPolicy"/>
-
 
 	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
 		<constructor-arg ref ="dataSource"/>
@@ -121,7 +113,6 @@
 				reader="cvsFileItemReader"
 				processor="processor"
 				writer="cvsFileItemWriter"
-				skip-policy="FileVerificationSkipper"
 				commit-interval="1">
 				</chunk>
 			</tasklet>
@@ -135,7 +126,7 @@
 
 	<bean id="cvsFileItemWriter" class="org.springframework.batch.item.database.JdbcBatchItemWriter" scope="step">
 		<property name="dataSource" ref="dataSource" />
-		<property name="sql" value="#{readerGenerique.cData}"/>
+		<property name="sql" value="#{jobParameters['cData']}"/>
 		<property name="itemPreparedStatementSetter">
 			<bean class="batch.processor.FieldSetItemPreparedStatementSetter"/>
 		</property>

@@ -1,5 +1,7 @@
-package batch.model;
+package views.formdata;
 
+
+import batch.model.User;
 
 /**
  * Created by MBS on 13/08/2016.

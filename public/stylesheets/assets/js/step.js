@@ -11,6 +11,20 @@ $(document).ready(function() {
     $("#none").hide();
     $('#activate-step-2').hide();
 
+
+
+    var tableOpts = {
+        "sPaginationType": "full_numbers",
+        "bFilter": false,
+        "fnCreatedRow": function (nRow, aData, iDataIndex) {
+            $(nRow).attr('id', table1.fnSettings().fnRecordsTotal());
+            var txtBox = $(nRow).find("input[type=text]");
+            var button = $(nRow).find("button");
+        }
+    }
+    table1 = $('#csvTableNoHead').dataTable(tableOpts);
+
+
     var navListItems = $('ul.setup-panel li a'),
         allWells = $('.setup-content');
     allWells.hide();
@@ -38,11 +52,168 @@ $(document).ready(function() {
                 });
                 $target.show();
             }else{
-                    $target.show();
+                $target.show();
             }
         }
     });
     $('ul.setup-panel li.active a').trigger('click');
+
+    $('#form00').validate({ // initialize the plugin
+        rules: {
+            filePath1: {
+                required: true
+            }
+        },
+        messages: {
+            filePath1: "Enter your File Path !",
+        },
+        highlight: function (element) {
+            $(element).closest('.form-group').addClass('has-error');
+            $('#step111').css('background-color','#ff0000');
+        },
+        unhighlight: function (element) {
+            $(element).closest('.form-group').removeClass('has-error');
+            $('#step111').css('background-color','');
+        },
+        errorElement: 'span',
+        errorClass: 'help-block',
+        errorPlacement: function (error, element) {
+            if (element.parent('.input-group').length) {
+                error.insertAfter(element.parent());
+            } else {
+                error.insertAfter(element);
+            }
+        }
+    });
+    $("#validate").on('click',
+        function (e) {
+            //envoyer les donnees avec ajax
+            e.preventDefault();
+            if($('#form00').valid()) {
+                $('#cols').multiSelect({
+                    selectableHeader: "<div class='custom-header'>Columns</div>",
+                    selectionHeader: "<div class='custom-header'>Columns Selected</div>",
+                    selectableFooter: "<div class='custom-header'>Columns</div>",
+                    selectionFooter: "<div class='custom-header'>Columns Selected</div>"
+                });
+                var array = $('#filePath').val().split(".");
+                console.log("array" + array + "lenghth" + array.length);
+                var ext = array[array.length - 1];
+                $('#columns').hide();
+                if (ext == "csv") {
+                    $.ajax({
+                        type: "POST",//la method à utiliser soit POST ou GET
+                        url: "/csvHeader", //lien de la servlet qui exerce le traitement sur les données
+                        data: $('#form00').serialize(),// sign_in c'est l'id du form qui contient le bouton submit et toutes les champs à envoyer
+                        dataType: 'json',
+                        success: function (data) {// le cas ou la requete est bien execute en reçoi les données serialiser par JSON dans la variable msg
+                            //recuperation de la valeur stock dans l'attribut desactive
+                            for (var i = 0; i < data.length; i++) {
+                                $('#cols').multiSelect('addOption', {
+                                    value: data[i],
+                                    text: data[i],
+                                    selected: 'true'
+                                });
+                                $('#cols').multiSelect('refresh');
+                            }
+                            $('#all').show();
+                            $('#none').show();
+                            $('#cols').show();
+                            $('#validate').hide();
+                            $('#columns').show();
+                        },
+                        error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
+                            console.log("error");
+                        }
+                    });
+                } else {
+                    alert("Vous devez donner un fichier de format csv ");
+
+                }
+            }else{
+                alert("form01 not valid ");
+            }
+
+        });
+    
+    
+    
+
+
+    $("#activate-step-2").click(
+        function(e) {
+            //envoyer les donnees avec ajax
+            e.preventDefault();
+            $("#tableaucontenus1").html("");
+            var typeXMl;
+            /* $('[name="xml[]"]').each( function (){
+             if($(this).prop('checked') == true){
+             typeXMl = $(this).val();
+             }
+             });*/
+            var data2 = $('#form2').serialize();
+            $.ajax({
+                type: "POST",//la method à utiliser soit POST ou GET
+                url: "/addAttributeReader", //lien de la servlet qui exerce le traitement sur les données
+                dataType: 'json',
+                data: data2,// sign_in c'est l'id du form qui contient le bouton submit et toutes les champs à envoyer
+                success: function (data) {// le cas ou la requete est bien execute en reçoi les données serialiser par JSON dans la variable msg
+                    //recuperation de la valeur stock dans l'attribut desactive
+                    $('ul.setup-panel li:eq(1)').removeClass('disabled');
+                    $('ul.setup-panel li a[href="#step-2"]').trigger('click');
+                    $(this).remove();
+                    for (var i = 0; i < data.length; i++) {
+                        var ids =  'id['+i+']';
+                        var cols = 'cols[' + i+ ']';
+                        var type = 'type[' + i + ']';
+                        var size = 'size[' + i+ ']';
+                        var pk = 'pk[' + i+ ']';
+                        var nonNull = 'nonNull[' + i + ']';
+                        var defaultVal = 'defaultVal[' + i + ']';
+                        var commentaire = 'commentaire[' + i+ ']';
+                        var s;
+                        s = "<td><select class='form-control' id='" + type + "' name='" + type + "'>" +
+                            "<option class='blank'  value=''>Please select a value</option>" +
+                            "<option title='Un nombre entier de 4 octets. La fourchette des entiers relatifs est de -2 147 483 648 à 2 147 483 647. Pour les entiers positifs, cest de 0 à 4 294 967 295' selected>NUMBER</option>" +
+                            "<option title='Une chaîne de longueur variable (0-65,535), la longueur effective réelle dépend de la taille maximum d une ligne'>VARCHAR2</option>" +
+                            "<option title='VARCHAR'>VARCHAR</option>" +
+                            "<option title='DATE'>DATE</option>" +
+                            "<option title='CHAR'>CHAR</option>" +
+                            "<option title='Une date, la fourchette est de «1000-01-01» à «9999-12-31»'>DATE</option>" +
+                            "<option title='FLOAT(24)'>FLOAT</option>" +
+                            "<option title='BLOB'>BLOB</option>" +
+                            "<option title='RAW'>RAW</option>" +
+                            "<option title='CLOB'>CLOB</option>" +
+                            "</optgroup>"+
+                            "</select>"+
+                            "</td>" +
+                            "<td><input type='number' id='data[i].id' name='" + size + "'/> </td>";
+                        $("#tableaucontenus1").append("<tr data-id='" + i + "'><td style='color: #63aef9;'>" + i + "<input type='hidden' id='"+ids+"' name='"+ids+"' value='"+i+"'/></td><td><input type='checkbox' id='" + pk + "' name='" + pk + "' value='primaryKey'/></td>"+
+                            "<td>"+data[i]+"<input type='hidden' id='"+cols+"' name='"+cols+"' value='"+data[i]+"'/></td>" + s + "<td> <input type='checkbox' id='" + nonNull + "' name='" + nonNull + "' value='notNull'/></td>"+
+                            "<td><input type='text' id='"+defaultVal+"' name='"+defaultVal+"' value=''/></td>"+
+                            "<td><input type='text' id='"+commentaire+"' name='"+commentaire+"' value=''/></td>"+
+                            "<td><button class='btn btn-danger'><span class='glyphicon glyphicon-remove-sign'></span></button>&nbsp;&nbsp;</td></tr>");
+                    }
+                    $('#table1').DataTable({
+                        'fnClearTable':true,
+                        "scrollY":        "500px",
+                        "scrollCollapse": true
+                    });
+                    /*$('#table1_info').css("color","#63aef9");
+                     $('#table1_next').css("background-color","#18bc9c");
+                     $('#table1_previous').css("background-color","#18bc9c");
+                     $('#table1_filter').css("background-color","#18bc9c","color","beige");
+                     $('#table1_length').css("background-color","#18bc9c","color","beige");*/
+
+                },
+                error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
+                    console.log("error");
+                    alert("Error Mapping ! make sure that you have selecte for all columns attributes or elements");
+                }
+            });
+        });
+
+
     // DEMO ONLY //
     /*$('#activate-step-2').on('click', function(e) {
         $.post("/upload");
@@ -115,117 +286,152 @@ $(document).ready(function() {
             });
         }
     })
-    var entete;
-    $('#filePath').change(function (e) {
+
+    $("#filepath1, #separator1").change(function(e) {
+        console.log("yeah");
         e.preventDefault();
-        $('#csv').hide();
-        $('#xml').hide();
-        if($('#filePath').val()=="" || $('#filePath').val()==" "){
-            location.reload();
-        }else {
-            var r = confirm("Est ce que votre fichier contient l'entete ?");
-         if (r == true) {
-                entete = "entete=true";
-
-             $(".ms-list").html("");
-             $("#cols").multiSelect('refresh');
-             var array = $('#filePath').val().split(".");
-             console.log("array" + array + "lenghth" + array.length);
-             var ext = array[array.length - 1];
-             $('#columns').hide();
-             if (ext == "csv") {
-                 $('#csv').show();
-                 $('#validate').hide();
-             } else {
-                 $('#validate').hide();
-                 $('#xml').show();
-
-                 /*$('#xml').append("<div class='row'>"+
-                  +"<div class=''>"
-                  +"<div class='row'>"
-                  +"<div class='col-md-4'>"+
-                  "<img src='images/XmlType1.png' class='img-responsive img-radio'>"+
-                  +"<button type='button' class='btn btn-primary btn-radio'>Left</button>"
-                  +"<input type='checkbox' id='left-item' class='hidden'>"+
-                  +"</div>"
-                  +"<div class='col-md-4'>"
-                  +"<img src='images/XmlType1.png' class='img-responsive img-radio'>"
-                  +"<button type='button' class='btn btn-primary btn-radio'>Middle</button>"
-                  +"<input type='checkbox' id='middle-item' class='hidden'>"
-                  +"</div>"
-                  +"<div class='col-md-4'>"
-                  +"<img src='images/XmlType1.png' class='img-responsive img-radio'>"
-                  +"<button type='button' class='btn btn-primary btn-radio'>Right</button>"
-                  +"<input type='checkbox' id='right-item' class='hidden'>"
-                  +"</div>"
-                  +"</div>"
-                  +"</div>"
-                  +"</div>)");*/
-                 $('#table').text("Fragument Root Element Name");
-                 //$('#table').attr("placeholder").val("Fragument Root Element Name");
-                 $('#tableSpan').text("Please enter Fragument Root Element Name");
-             }
-            } else {
-                entete = "entete=false";
-             $("#validate").hide();
-             var tableOpts = {
-                 "sPaginationType": "full_numbers",
-                 "bFilter": false,
-                 "fnCreatedRow": function (nRow, aData, iDataIndex) {
-                     $(nRow).attr('id', table1.fnSettings().fnRecordsTotal());
-                     var txtBox = $(nRow).find("input[type=text]");
-                     var button = $(nRow).find("button");
-                 }
-             }
-             table1 = $('#csvTableNoHead').dataTable(tableOpts);
-
-             $("#csvNoHead").show();
-            }
-            var data1 = $('#form00').serialize()+"&"+entete;
-            $.ajax({
-                type: "POST",//la method à utiliser soit POST ou GET
-                url: "/path", //lien de la servlet qui exerce le traitement sur les données
-                data: data1,// sign_in c'est l'id du form qui contient le bouton submit et toutes les champs à envoyer
-                dataType: 'json',
-                success: function (data) {// le cas ou la requete est bien execute en reçoi les données serialiser par JSON dans la variable msg
-                    //recuperation de la valeur stock dans l'attribut desactive
-                    console.log(data);
-                },
-                error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
-                    console.log("error");
+        $.ajax({
+            type: "POST",//la method à utiliser soit POST ou GET
+            url: "/nbColCsvNoHead", //lien de la servlet qui exerce le traitement sur les données
+            data: $("#form00").serialize(),// sign_in c'est l'id du form qui contient le bouton submit et toutes les champs à envoyer
+            success: function (data) {// le cas ou la requete est bien execute en reçoi les données serialiser par JSON dans la variable msg
+                //recuperation de la valeur stock dans l'attribut desactive
+                 data.size;
+                for(var i = 0 ; i<data.size ;i++ ){
+                    var id = '<input type="hidden" class="nami" name="idCol['+i+']" value="'+table1.fnSettings().fnRecordsTotal()+'" readonly/>';
+                    var textbox = '<input type="text" class="txtBox" id="cols['+i+']" placeholder="Column ' + i+1+'" name="cols['+i+']" required  /><input type="hidden" class="nami" name="idCol['+i+']" value="'+table1.fnSettings().fnRecordsTotal()+'" readonly/>';
+                    var button = '<button class="btn btn-danger"><span class="glyphicon glyphicon-remove-sign"></span></button>';
+                    table1.fnAddData([textbox,button]);
                 }
-            });
-
-        }
-    });
-
-    $('#form00').validate({ // initialize the plugin
-        rules: {
-            filePath: {
-                required: true
-            } 	        	
-        },
-        messages: {
-            filePath: "Enter your File Path !"
-        },
-        highlight: function (element) {
-            $(element).closest('.form-group').addClass('has-error');
-            $('#step111').css('background-color','#ff0000');
-        },
-        unhighlight: function (element) {
-            $(element).closest('.form-group').removeClass('has-error');
-            $('#step111').css('background-color','');
-        },
-        errorElement: 'span',
-        errorClass: 'help-block',
-        errorPlacement: function (error, element) {
-            if (element.parent('.input-group').length) {
-                error.insertAfter(element.parent());
-            } else {
-                error.insertAfter(element);
+                $("#csvNoHead").show();
+            },
+            error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
+                console.log("error");
             }
-        }
-    });             
+        });
+        
+    });
+    ///PARAM 1 CSV NO HEAD
+
+    $("#validateNoHead").on('click',
+        function (e) {
+            //envoyer les donnees avec ajax
+            e.preventDefault();
+            if($('#form00').valid()) {
+                var data2 = table1.$('input').serialize();
+                var data = $('#form00').serialize().concat(data2);
+                $('#cols').multiSelect({
+                    selectableHeader: "<div class='custom-header'>Columns</div>",
+                    selectionHeader: "<div class='custom-header'>Columns Selected</div>",
+                    selectableFooter: "<div class='custom-header'>Columns</div>",
+                    selectionFooter: "<div class='custom-header'>Columns Selected</div>"
+                });
+                var array = $('#filePath1').val().split(".");
+                console.log("array" + array + "lenghth" + array.length);
+                var ext = array[array.length - 1];
+                $('#columns').hide();
+                if (ext == "csv") {
+                    $.ajax({
+                        type: "POST",//la method à utiliser soit POST ou GET
+                        url: "/csvNoHead", //lien de la servlet qui exerce le traitement sur les données
+                        data: data,// sign_in c'est l'id du form qui contient le bouton submit et toutes les champs à envoyer
+                        dataType: 'json',
+                        success: function (data) {// le cas ou la requete est bien execute en reçoi les données serialiser par JSON dans la variable msg
+                            //recuperation de la valeur stock dans l'attribut desactive
+                            console.log("data " + data);
+                            for (var i = 0; i < data.length; i++) {
+                                $('#cols').multiSelect('addOption', {
+                                    value: data[i],
+                                    text: data[i],
+                                    selected: 'true'
+                                });
+                                $('#cols').multiSelect('refresh');
+                            }
+                            $('#all').show();
+                            $('#none').show();
+                            $('#cols').show();
+                            $('#validateNoHead').hide();
+                            $('#columns').show();
+                        },
+                        error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
+                            console.log("error");
+                        }
+                    });
+                } else {
+                    alert("Vous devez donner un fichier de type csv");
+
+                }
+            }else{
+                alert("form not valid veuillez remplir tout les champs ");
+            }
+
+        });
+
+
+
+    ///PARAM 1 CSV NO HEAD
+
+
+    //PARAM 2 XML
+
+
+    $("#validateXml").on('click',
+        function (e) {
+            //envoyer les donnees avec ajax
+            e.preventDefault();
+            if($('#form00').valid()) {
+                var data2 = table1.$('input').serialize();
+                var data = $('#form00').serialize().concat(data2);
+                $('#cols').multiSelect({
+                    selectableHeader: "<div class='custom-header'>Columns</div>",
+                    selectionHeader: "<div class='custom-header'>Columns Selected</div>",
+                    selectableFooter: "<div class='custom-header'>Columns</div>",
+                    selectionFooter: "<div class='custom-header'>Columns Selected</div>"
+                });
+                var array = $('#filePath1').val().split(".");
+                console.log("array" + array + "lenghth" + array.length);
+                var ext = array[array.length - 1];
+                $('#columns').hide();
+            if (ext == "xml") {
+                    $.ajax({
+                        type: "POST",//la method à utiliser soit POST ou GET
+                        url: "/colsxml", //lien de la servlet qui exerce le traitement sur les données
+                        data: data,// sign_in c'est l'id du form qui contient le bouton submit et toutes les champs à envoyer
+                        dataType: 'json',
+                        success: function (data) {// le cas ou la requete est bien execute en reçoi les données serialiser par JSON dans la variable msg
+                            //recuperation de la valeur stock dans l'attribut desactive
+                            console.log("data " + data);
+                            for (var i = 0; i < data.length; i++) {
+                                $('#cols').multiSelect('addOption', {
+                                    value: data[i],
+                                    text: data[i],
+                                    selected: 'true'
+                                });
+                                $('#cols').multiSelect('refresh');
+                            }
+                            $('#all').show();
+                            $('#none').show();
+                            $('#cols').show();
+                            $('#validateNoHead').hide();
+                            $('#columns').show();
+                        },
+                        error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
+                            console.log("error");
+                        }
+                    });
+                } else {
+                    alert("form01 not valid ");
+                }
+            }else{
+                alert('Le fichier doit etre de format xml');
+            }
+
+        });
+    
+    //PARAM 2 XML
+
+    var entete;
+
         $('#form01').validate({ // initialize the plugin
             rules: {
                 separator: {
@@ -257,61 +463,7 @@ $(document).ready(function() {
                 }
             }
         });
-    $('#form02').validate({ // initialize the plugin
-        rules: {
-            'xml[]': {
-                required: true,
-                maxlength:1
-            },
-        },
 
-        highlight: function (element) {
-            $(element).closest('.form-group').addClass('has-error');
-            $('#step111').css('background-color','#ff0000');
-        },
-        unhighlight: function (element) {
-            $(element).closest('.form-group').removeClass('has-error');
-            $('#step111').css('background-color','');
-        },
-        errorElement: 'span',
-        errorClass: 'help-block',
-        errorPlacement: function (error, element) {
-            if (element.parent('.input-group').length) {
-                error.insertAfter(element.parent());
-            } else {
-                error.insertAfter(element);
-            }
-        }
-    });
-        
-
-    $('#form1').validate({ // initialize the plugin
-        rules: {
-            tableName: {
-                required: true
-            }
-        },
-        messages: {
-            tableName: "Enter your tableName  !"
-        },
-        highlight: function (element) {
-            $(element).closest('.form-group').addClass('has-error');
-            $('#step222').css('background-color','#ff0000');
-        },
-        unhighlight: function (element) {
-            $(element).closest('.form-group').removeClass('has-error');
-            $('#step222').css('background-color','');
-        },
-        errorElement: 'span',
-        errorClass: 'help-block',
-        errorPlacement: function (error, element) {
-            if (element.parent('.input-group').length) {
-                error.insertAfter(element.parent());
-            } else {
-                error.insertAfter(element);
-            }
-        }
-    });
 
     $('#form001').validate({ // initialize the plugin
         rules: {
@@ -339,55 +491,7 @@ $(document).ready(function() {
     });
 
 
-    $(function() {
-        $("#form01").submit(
-            function (e) {
-                //envoyer les donnees avec ajax
-                e.preventDefault();
-                if($('#form00').valid() && $('#form01').valid()) {
-                    $.ajax({
-                        type: "POST",//la method à utiliser soit POST ou GET
-                        url: "/cols", //lien de la servlet qui exerce le traitement sur les données
-                        data: $('#form01').serialize(),// sign_in c'est l'id du form qui contient le bouton submit et toutes les champs à envoyer
-                        dataType: 'json',
-                        success: function (data) {// le cas ou la requete est bien execute en reçoi les données serialiser par JSON dans la variable msg
-                            //recuperation de la valeur stock dans l'attribut desactive
-                            var obj = JSON.parse(JSON.stringify(data));
-                            var s = parseInt(data.length);
-                            var sal;
-                            for (var i = 0; i < s; i++) {
-                                sal = obj[i].name;
-                                //$("#cols").append($('<option>', {value:"ok"}).text("ok"));
-                                //$("#cols").append("<option value='" + data[i].name + "'>" + data[i].name + "</option>");
-                                $('#cols').multiSelect({
-                                    selectableHeader: "<div class='custom-header'>Columns</div>",
-                                    selectionHeader: "<div class='custom-header'>Columns Selected</div>",
-                                    selectableFooter: "<div class='custom-header'>Columns</div>",
-                                    selectionFooter: "<div class='custom-header'>Columns Selected</div>"
-                                });
-                                $('#cols').multiSelect('addOption', {
-                                    value: sal,
-                                    text: sal,
-                                    selected: 'true'
-                                });
-                                $('#cols').multiSelect('refresh');
-                            }
-                            $('#all').show();
-                            $('#none').show();
-                            $('#cols').show();
-                            $('#validate').hide();
-                            $('#columns').show();
-                        },
-                        error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
-                            console.log("error");
-                        }
-                    });
-                }else{
-                    alert("form01 not valid ");
-                }
 
-            });
-    });
 
 
     $(function() {
@@ -431,7 +535,6 @@ $(document).ready(function() {
 
                             $('#cols').show();
                             $('#columns').show();
-                            $("#csvNoHead").hide();
                         },
                         error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
                             console.log("error");
@@ -446,418 +549,7 @@ $(document).ready(function() {
 
 
 
-    var typeXMl;
-    $(function() {
-        $("#form02").submit(
-            function (e) {
-                //envoyer les donnees avec ajax
-                e.preventDefault();
-                //console.log($("input[name='xml[]']").val());
-                if($('#form00').valid()&& $('#form02').valid()) {
-                    /*$.ajax({
-                        type: "POST",//la method à utiliser soit POST ou GET
-                        url: "/colsxml", //lien de la servlet qui exerce le traitement sur les données
-                        data: $('#form02').serialize(),// sign_in c'est l'id du form qui contient le bouton submit et toutes les champs à envoyer
-                        dataType: 'json',
-                        success: function (data) {// le cas ou la requete est bien execute en reçoi les données serialiser par JSON dans la variable msg
-                            //recuperation de la valeur stock dans l'attribut desactive
-                            var obj = JSON.parse(JSON.stringify(data));
-                            var s = parseInt(data.length);
-                            var sal;
-                            for (var i = 0; i < s; i++) {
-                                sal = obj[i].name;
-                                //$("#cols").append($('<option>', {value:"ok"}).text("ok"));
-                                //$("#cols").append("<option value='" + data[i].name + "'>" + data[i].name + "</option>");
-                                $('#cols').show();
-                                $('#all').show();
-                                $('#none').show();
-                                $('#cols').multiSelect({
-                                    selectableHeader: "<div class='custom-header'>Columns</div>",
-                                    selectionHeader: "<div class='custom-header'>Columns Selected</div>",
-                                    selectableFooter: "<div class='custom-header'>Columns</div>",
-                                    selectionFooter: "<div class='custom-header'>Columns Selected footer</div>"
-                                });
-                                $('#cols').multiSelect('addOption', {
-                                    value: sal,
-                                    text: sal,
-                                    selected: 'true'
-                                });
-                                $('#cols').multiSelect('refresh');
-                                $('#columns').show();
-                            }
 
-
-                           $('[name="xml[]"]').each(function () {
-                                if ($(this).prop('checked') == true) {
-                                    typeXMl = $(this).val();
-                                }
-                            });
-
-                        },
-                        error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
-                            console.log("error");
-                        }
-                    });*/
-                    $("#activate-step-2").trigger('click');
-                }
-
-            });
-    });
-
-$('#form1').submit(function (e) {
-    e.preventDefault();
-});
-    $('#form2').submit(function (e) {
-        e.preventDefault();
-    });
-
-    $("#activate-step-2").click(
-        function(e) {
-            //envoyer les donnees avec ajax
-            e.preventDefault();
-            $("#tableaucontenus1").html("");
-            var typeXMl;
-            $('[name="xml[]"]').each( function (){
-                if($(this).prop('checked') == true){
-                    typeXMl = $(this).val();
-                }
-            });
-            var data1 = "typeXML="+typeXMl+"&";
-            var data2 = $('#form2').serialize();
-            var data3 = data1.concat(data2);
-            console.log("uploaaads"+data3);
-                $.ajax({
-                    type: "POST",//la method à utiliser soit POST ou GET
-                    url: "/upload", //lien de la servlet qui exerce le traitement sur les données
-                    dataType: 'json',
-                    data: data3,// sign_in c'est l'id du form qui contient le bouton submit et toutes les champs à envoyer
-                    success: function (data) {// le cas ou la requete est bien execute en reçoi les données serialiser par JSON dans la variable msg
-                        //recuperation de la valeur stock dans l'attribut desactive
-                        $('ul.setup-panel li:eq(1)').removeClass('disabled');
-                        $('ul.setup-panel li a[href="#step-2"]').trigger('click');
-                        $(this).remove();
-                        var obj = JSON.parse(JSON.stringify(data));
-                        var le = parseInt(data.length);
-                        for (var i = 0; i < le; i++) {
-                            var ids =  'id['+data[i].id+']';
-                            var cols = 'cols[' + data[i].id + ']';
-                            var type = 'type[' + data[i].id + ']';
-                            var size = 'size[' + data[i].id + ']';
-                            var pk = 'pk[' + data[i].id + ']';
-                            var nonNull = 'nonNull[' + data[i].id + ']';
-                            var defaultVal = 'defaultVal[' + data[i].id + ']';
-                            var commentaire = 'commentaire[' + data[i].id + ']';
-                            var s;
-                            /*if (i == 0) {
-                             s ="<td><select class='form-control' id='"+type+"' name='" + type + "'>" +
-                             "<option class='blank'  value=''>Please select a value</option>" +
-                             "<option title='Un nombre entier de 4 octets. La fourchette des entiers relatifs est de -2 147 483 648 à 2 147 483 647. Pour les entiers positifs, cest de 0 à 4 294 967 295' selected>INT</option>" +
-                             "<option title='Une chaîne de longueur variable (0-65,535), la longueur effective réelle dépend de la taille maximum d'une ligne'>VARCHAR</option>" +
-                             "<option title='Une colonne TEXT d une longueur maximum de 65 535 (2^16 - 1) caractères, stockée avec un préfixe de deux octets indiquant la longueur de la valeur en octets'>TEXT</option>" +
-                             "<option title='Une date, la fourchette est de «1000-01-01» à «9999-12-31»'>DATETIME</option>" +
-                             "<optgroup label='Numérique'>" +
-                             "<option title='Un nombre entier de 1 octet. La fourchette des nombres avec signe est de -128 à 127. Pour les nombres sans signe, c est de 0 à 255'>TINYINT</option>" +
-                             "<option title='Un nombre entier de 2 octets. La fourchette des nombres avec signe est de -32 768 à 32 767. Pour les nombres sans signe, c est de 0 à 65 535'>SMALLINT</option>" +
-                             "<option title='Un nombre entier de 3 octets. La fourchette des nombres avec signe est de -8 388 608 à 8 388 607. Pour les nombres sans signe, c est de 0 à 16 777 215'>MEDIUMINT</option>" +
-                             "<option title='Un nombre entier de 4 octets. La fourchette des entiers relatifs est de -2 147 483 648 à 2 147 483 647. Pour les entiers positifs, c est de 0 à 4 294 967 295'>INT</option>" +
-                             "<option title='Un nombre entier de 8 octets. La fourchette des nombres avec signe est de -9 223 372 036 854 775 808 à 9 223 372 036 854 775 807. Pour les nombres sans signe, c est de 0 à 18 446 744 073 709 551 615'>BIGINT</option>" +
-                             "</optgroup></select>" +
-                             "</td>" +
-                             "<td><input type='number' id='data[i].id' name='" + size + "' size='4' value='10'/> </td>";
-                             /*s = "<td><select class='form-control' id='type' name='" + type + "'>" +
-                             "<option class='blank'  value=''>Please select a value</option>" +
-                             "<option title='Un nombre entier de 4 octets. La fourchette des entiers relatifs est de -2 147 483 648 à 2 147 483 647. Pour les entiers positifs, cest de 0 à 4 294 967 295' selected>INT</option>" +
-                             "<option title='Une chaîne de longueur variable (0-65,535), la longueur effective réelle dépend de la taille maximum d'une ligne'>VARCHAR</option>" +
-                             "<option title='Une colonne TEXT d une longueur maximum de 65 535 (2^16 - 1) caractères, stockée avec un préfixe de deux octets indiquant la longueur de la valeur en octets'>TEXT</option>" +
-                             "<option title='Une date, la fourchette est de «1000-01-01» à «9999-12-31»'>DATETIME</option>" +
-                             "<optgroup label='Numérique'>" +
-                             "<option title='Un nombre entier de 1 octet. La fourchette des nombres avec signe est de -128 à 127. Pour les nombres sans signe, c est de 0 à 255'>TINYINT</option>" +
-                             "<option title='Un nombre entier de 2 octets. La fourchette des nombres avec signe est de -32 768 à 32 767. Pour les nombres sans signe, c est de 0 à 65 535'>SMALLINT</option>" +
-                             "<option title='Un nombre entier de 3 octets. La fourchette des nombres avec signe est de -8 388 608 à 8 388 607. Pour les nombres sans signe, c est de 0 à 16 777 215'>MEDIUMINT</option>" +
-                             "<option title='Un nombre entier de 4 octets. La fourchette des entiers relatifs est de -2 147 483 648 à 2 147 483 647. Pour les entiers positifs, c est de 0 à 4 294 967 295'>INT</option>" +
-                             "<option title='Un nombre entier de 8 octets. La fourchette des nombres avec signe est de -9 223 372 036 854 775 808 à 9 223 372 036 854 775 807. Pour les nombres sans signe, c est de 0 à 18 446 744 073 709 551 615'>BIGINT</option>" +
-                             "<option disabled='disabled'>-</option><option title='Un nombre en virgule fixe (M, D) - le nombre maximum de chiffres (M) est de 65 (10 par défaut), le nombre maximum de décimales (D) est de 30'>DECIMAL</option>"+
-                             "<option title='Un petit nombre en virgule flottante, la fourchette des valeurs est -3.402823466E+38 à -1.175494351E-38, 0, et 1.175494351E-38 à 3.402823466E+38'>FLOAT</option>"+
-                             "<option title='Un nombre en virgule flottante double-précision, la fourchette des valeurs est -1.7976931348623157E+308 à -2.2250738585072014E-308, 0, et 2.2250738585072014E-308 à 1.7976931348623157E+308'>DOUBLE</option>"+
-                             "<option title='Synonyme de DOUBLE (exception : dans le mode SQL REAL_AS_FLOAT, c est un synonyme de FLOAT)'>REAL</option>"+
-                             "<option disabled='disabled'>-</option>"+
-                             "<option title='Une colonne contenant des bits (M), stockant M bits par valeur (1 par défaut, maximum 64)'>BIT</option>"+
-                             "<option title='Un synonyme de TINYINT(1), une valeur de zéro signifie faux, une valeur non-zéro signifie vrai'>BOOLEAN</option>"+
-                             "<option title='Un alias pour BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE'>SERIAL</option>"+
-                             "</optgroup><optgroup label='Contient la date et l heure'><option>DATE</option><option>DATETIME</option><option>TIMESTAMP</option><option>YEAR</option><option>YEAR</option></optgroup>"+
-                             "<optgroup label='Chaîne de caractères'>"+
-                             "<option title='enregistrée'>CHAR</option>"+
-                             "<option title='varchar'>VARCHAR</option>"+
-                             "<option disabled='disabled'>-</option>"+
-                             "<option title='tinytext'>TINYTEXT</option>"+
-                             "<option title='TEXT'>TEXT</option>"+
-                             "<option title=''>MEDIUMTEXT</option>"+
-                             "<option title=''>LONGTEXT</option><option disabled='disabled'>-</option><option title='Similaire au type CHAR, mais stocke des chaînes binaires au lieu de chaînes non binaires'>BINARY</option>"+
-                             "<option title=''>VARBINARY</option><option disabled='disabled'>-</option>"+
-                             "<option title='Une colonne BLOB '>TINYBLOB</option>"+
-                             "<option title='Une colonne BLOB '>MEDIUMBLOB</option>"+
-                             "<option title='Une colonne BLOB '>BLOB</option>"+
-                             "<option title='Une colonne BLOB '>LONGBLOB</option>"+
-                             "<option disabled='disabled'>-</option>"+
-                             "<option title='Une'>ENUM</option>"+
-                             "<option title='Set'>SET</option>"+
-                             "</optgroup>"+
-                             "</select>" +
-                             "</td>" +
-                             "<td><input type='number' id='data[i].id' name='" + size + "' size='4' value='10'/> </td>";*/
-                            //}
-                            /*  if (i == 1) {
-                             s=  "<td><select class='form-control' id='"+type+"' name='" + type + "'>" +
-                             "<option class='blank'  value=''>Please select a value</option>" +
-                             "<option title='Un nombre entier de 4 octets. La fourchette des entiers relatifs est de -2 147 483 648 à 2 147 483 647. Pour les entiers positifs, cest de 0 à 4 294 967 295' >INT</option>" +
-                             "<option title='Une chaîne de longueur variable (0-65,535), la longueur effective réelle dépend de la taille maximum d une ligne' selected >VARCHAR</option>" +
-                             "<option title='Une colonne TEXT dune longueur maximum de 65 535 (2^16 - 1) caractères, stockée avec un préfixe de deux octets indiquant la longueur de la valeur en octets'>TEXT</option>" +
-                             "<option title='Une date, la fourchette est de «1000-01-01» à «9999-12-31»'>DATETIME</option>" +
-                             "<optgroup label='Numérique'>" +
-                             "<option title='Un nombre entier de 1 octet. La fourchette des nombres avec signe est de -128 à 127. Pour les nombres sans signe, c est de 0 à 255'>TINYINT</option>" +
-                             "<option title='Un nombre entier de 2 octets. La fourchette des nombres avec signe est de -32 768 à 32 767. Pour les nombres sans signe, c est de 0 à 65 535'>SMALLINT</option>" +
-                             "<option title='Un nombre entier de 3 octets. La fourchette des nombres avec signe est de -8 388 608 à 8 388 607. Pour les nombres sans signe, c est de 0 à 16 777 215'>MEDIUMINT</option>" +
-                             "<option title='Un nombre entier de 4 octets. La fourchette des entiers relatifs est de -2 147 483 648 à 2 147 483 647. Pour les entiers positifs, c est de 0 à 4 294 967 295'>INT</option>" +
-                             "<option title='Un nombre entier de 8 octets. La fourchette des nombres avec signe est de -9 223 372 036 854 775 808 à 9 223 372 036 854 775 807. Pour les nombres sans signe, c est de 0 à 18 446 744 073 709 551 615'>BIGINT</option>" +
-                             "</optgroup></select>" +
-                             "</td>" +
-                             "<td><input type='number' id='data[i].id' name='" + size + "' size='4' value='255'/> </td>";
-                             /*s = "<td><select class='form-control' id='type' name='" + type + "'>" +
-                             "<option class='blank'  value=''>Please select a value</option>" +
-                             "<option title='Un nombre entier de 4 octets. La fourchette des entiers relatifs est de -2 147 483 648 à 2 147 483 647. Pour les entiers positifs, cest de 0 à 4 294 967 295' >INT</option>" +
-                             "<option title='Une chaîne de longueur variable (0-65,535), la longueur effective réelle dépend de la taille maximum d une ligne' selected >VARCHAR</option>" +
-                             "<option title='Une colonne TEXT dune longueur maximum de 65 535 (2^16 - 1) caractères, stockée avec un préfixe de deux octets indiquant la longueur de la valeur en octets'>TEXT</option>" +
-                             "<option title='Une date, la fourchette est de «1000-01-01» à «9999-12-31»'>DATETIME</option>" +
-                             "<optgroup label='Numérique'>" +
-                             "<option title='Un nombre entier de 1 octet. La fourchette des nombres avec signe est de -128 à 127. Pour les nombres sans signe, c est de 0 à 255'>TINYINT</option>" +
-                             "<option title='Un nombre entier de 2 octets. La fourchette des nombres avec signe est de -32 768 à 32 767. Pour les nombres sans signe, c est de 0 à 65 535'>SMALLINT</option>" +
-                             "<option title='Un nombre entier de 3 octets. La fourchette des nombres avec signe est de -8 388 608 à 8 388 607. Pour les nombres sans signe, c est de 0 à 16 777 215'>MEDIUMINT</option>" +
-                             "<option title='Un nombre entier de 4 octets. La fourchette des entiers relatifs est de -2 147 483 648 à 2 147 483 647. Pour les entiers positifs, c est de 0 à 4 294 967 295'>INT</option>" +
-                             "<option title='Un nombre entier de 8 octets. La fourchette des nombres avec signe est de -9 223 372 036 854 775 808 à 9 223 372 036 854 775 807. Pour les nombres sans signe, c est de 0 à 18 446 744 073 709 551 615'>BIGINT</option>" +
-                             "</optgroup><option disabled='disabled'>-</option><option title='Un nombre en virgule fixe (M, D) - le nombre maximum de chiffres (M) est de 65 (10 par défaut), le nombre maximum de décimales (D) est de 30'>DECIMAL</option>"+
-                             "<option title='Un petit nombre en virgule flottante, la fourchette des valeurs est -3.402823466E+38 à -1.175494351E-38, 0, et 1.175494351E-38 à 3.402823466E+38'>FLOAT</option>"+
-                             "<option title='Un nombre en virgule flottante double-précision, la fourchette des valeurs est -1.7976931348623157E+308 à -2.2250738585072014E-308, 0, et 2.2250738585072014E-308 à 1.7976931348623157E+308'>DOUBLE</option>"+
-                             "<option title='Synonyme de DOUBLE (exception : dans le mode SQL REAL_AS_FLOAT, c est un synonyme de FLOAT)'>REAL</option>"+
-                             "<option disabled='disabled'>-</option>"+
-                             "<option title='Une colonne contenant des bits (M), stockant M bits par valeur (1 par défaut, maximum 64)'>BIT</option>"+
-                             "<option title='Un synonyme de TINYINT(1), une valeur de zéro signifie faux, une valeur non-zéro signifie vrai'>BOOLEAN</option>"+
-                             "<option title='Un alias pour BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE'>SERIAL</option>"+
-                             "</optgroup><optgroup label='Contient la date et l heure'>"+
-                             "<option>DATE</option>"+
-                             "<option>DATETIME</option>"+
-                             "<option>TIMESTAMP</option>"+
-                             "<option>YEAR</option>"+
-                             "<option>YEAR</option>"+
-                             "</optgroup>"+
-                             /* "<optgroup label='Chaîne de caractères'>"+
-                             "<option title='enregistrée'>CHAR</option>"+
-                             "<option title='varchar'>VARCHAR</option>"+
-                             "<option disabled='disabled'>-</option>"+
-                             "<option title='tinytext'>TINYTEXT</option>"+
-                             "<option title='TEXT'>TEXT</option>"+
-                             "<option title=''>MEDIUMTEXT</option>"+
-                             "<option title=''>LONGTEXT</option><option disabled='disabled'>-</option><option title='Similaire au type CHAR, mais stocke des chaînes binaires au lieu de chaînes non binaires'>BINARY</option>"+
-                             "<option title=''>VARBINARY</option><option disabled='disabled'>-</option>"+
-                             "<option title='Une colonne BLOB '>TINYBLOB</option>"+
-                             "<option title='Une colonne BLOB '>MEDIUMBLOB</option>"+
-                             "<option title='Une colonne BLOB '>BLOB</option>"+
-                             "<option title='Une colonne BLOB '>LONGBLOB</option>"+
-                             "<option disabled='disabled'>-</option>"+
-                             "<option title='Une'>ENUM</option>"+
-                             "<option title='Set'>SET</option>"+
-                             "</optgroup>"+
-                             "</select>" + +
-                             "</td>" +
-                             "<td><input type='number' id='data[i].id' name='" + size + "' size='4' value='255'/> </td>";*/
-                            // }
-                            /*if (i == 2) {
-                             s= "<td><select class='form-control' id='"+type+"' name='" + type + "'>" +
-                             "<option class='blank'  value=''>Please select a value</option>" +
-                             "<option title='Un nombre entier de 4 octets. La fourchette des entiers relatifs est de -2 147 483 648 à 2 147 483 647. Pour les entiers positifs, cest de 0 à 4 294 967 295' >INT</option>" +
-                             "<option title='Une chaîne de longueur variable (0-65,535), la longueur effective réelle dépend de la taille maximum d une ligne' selected>VARCHAR</option>" +
-                             "<option title='Une colonne TEXT d une longueur maximum de 65 535 (2^16 - 1) caractères, stockée avec un préfixe de deux octets indiquant la longueur de la valeur en octets'>TEXT</option>" +
-                             "<option title='Une date, la fourchette est de «1000-01-01» à «9999-12-31»'>DATETIME</option>" +
-                             "<optgroup label='Numérique'>" +
-                             "<option title='Un nombre entier de 1 octet. La fourchette des nombres avec signe est de -128 à 127. Pour les nombres sans signe, c est de 0 à 255'>TINYINT</option>" +
-                             "<option title='Un nombre entier de 2 octets. La fourchette des nombres avec signe est de -32 768 à 32 767. Pour les nombres sans signe, c est de 0 à 65 535'>SMALLINT</option>" +
-                             "<option title='Un nombre entier de 3 octets. La fourchette des nombres avec signe est de -8 388 608 à 8 388 607. Pour les nombres sans signe, c est de 0 à 16 777 215'>MEDIUMINT</option>" +
-                             "<option title='Un nombre entier de 4 octets. La fourchette des entiers relatifs est de -2 147 483 648 à 2 147 483 647. Pour les entiers positifs, c est de 0 à 4 294 967 295'>INT</option>" +
-                             "<option title='Un nombre entier de 8 octets. La fourchette des nombres avec signe est de -9 223 372 036 854 775 808 à 9 223 372 036 854 775 807. Pour les nombres sans signe, c est de 0 à 18 446 744 073 709 551 615'>BIGINT</option>" +
-                             "</optgroup></select>" +
-                             "</td>" +
-                             "<td><input type='number' id='data[i].id' name='" + size + "' size='4' value='255'/> </td>";
-                             /*s = "<td><select class='form-control' id='type' name='" + type + "'>" +
-                             "<option class='blank'  value=''>Please select a value</option>" +
-                             "<option title='Un nombre entier de 4 octets. La fourchette des entiers relatifs est de -2 147 483 648 à 2 147 483 647. Pour les entiers positifs, cest de 0 à 4 294 967 295' >INT</option>" +
-                             "<option title='Une chaîne de longueur variable (0-65,535), la longueur effective réelle dépend de la taille maximum d une ligne' selected>VARCHAR</option>" +
-                             "<option title='Une colonne TEXT d une longueur maximum de 65 535 (2^16 - 1) caractères, stockée avec un préfixe de deux octets indiquant la longueur de la valeur en octets'>TEXT</option>" +
-                             "<option title='Une date, la fourchette est de «1000-01-01» à «9999-12-31»'>DATETIME</option>" +
-                             "<optgroup label='Numérique'>" +
-                             "<option title='Un nombre entier de 1 octet. La fourchette des nombres avec signe est de -128 à 127. Pour les nombres sans signe, c est de 0 à 255'>TINYINT</option>" +
-                             "<option title='Un nombre entier de 2 octets. La fourchette des nombres avec signe est de -32 768 à 32 767. Pour les nombres sans signe, c est de 0 à 65 535'>SMALLINT</option>" +
-                             "<option title='Un nombre entier de 3 octets. La fourchette des nombres avec signe est de -8 388 608 à 8 388 607. Pour les nombres sans signe, c est de 0 à 16 777 215'>MEDIUMINT</option>" +
-                             "<option title='Un nombre entier de 4 octets. La fourchette des entiers relatifs est de -2 147 483 648 à 2 147 483 647. Pour les entiers positifs, c est de 0 à 4 294 967 295'>INT</option>" +
-                             "<option title='Un nombre entier de 8 octets. La fourchette des nombres avec signe est de -9 223 372 036 854 775 808 à 9 223 372 036 854 775 807. Pour les nombres sans signe, c est de 0 à 18 446 744 073 709 551 615'>BIGINT</option>" +
-                             "</optgroup><option disabled='disabled'>-</option><option title='Un nombre en virgule fixe (M, D) - le nombre maximum de chiffres (M) est de 65 (10 par défaut), le nombre maximum de décimales (D) est de 30'>DECIMAL</option>"+
-                             "<option title='Un petit nombre en virgule flottante, la fourchette des valeurs est -3.402823466E+38 à -1.175494351E-38, 0, et 1.175494351E-38 à 3.402823466E+38'>FLOAT</option>"+
-                             "<option title='Un nombre en virgule flottante double-précision, la fourchette des valeurs est -1.7976931348623157E+308 à -2.2250738585072014E-308, 0, et 2.2250738585072014E-308 à 1.7976931348623157E+308'>DOUBLE</option>"+
-                             "<option title='Synonyme de DOUBLE (exception : dans le mode SQL REAL_AS_FLOAT, c est un synonyme de FLOAT)'>REAL</option>"+
-                             "<option disabled='disabled'>-</option>"+
-                             "<option title='Une colonne contenant des bits (M), stockant M bits par valeur (1 par défaut, maximum 64)'>BIT</option>"+
-                             "<option title='Un synonyme de TINYINT(1), une valeur de zéro signifie faux, une valeur non-zéro signifie vrai'>BOOLEAN</option>"+
-                             "<option title='Un alias pour BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE'>SERIAL</option>"+
-                             "</optgroup><optgroup label='Contient la date et l heure'>"+
-                             "<option>DATE</option>"+
-                             "<option>DATETIME</option>"+
-                             "<option>TIMESTAMP</option>"+
-                             "<option>YEAR</option>"+
-                             "<option>YEAR</option>"+
-                             "</optgroup>"
-                             /* "<optgroup label='Chaîne de caractères'>"+
-                             "<option title='enregistrée'>CHAR</option>"+
-                             "<option title='varchar'>VARCHAR</option>"+
-                             "<option disabled='disabled'>-</option>"+
-                             "<option title='tinytext'>TINYTEXT</option>"+
-                             "<option title='TEXT'>TEXT</option>"+
-                             "<option title=''>MEDIUMTEXT</option>"+
-                             "<option title=''>LONGTEXT</option><option disabled='disabled'>-</option><option title='Similaire au type CHAR, mais stocke des chaînes binaires au lieu de chaînes non binaires'>BINARY</option>"+
-                             "<option title=''>VARBINARY</option><option disabled='disabled'>-</option>"+
-                             "<option title='Une colonne BLOB '>TINYBLOB</option>"+
-                             "<option title='Une colonne BLOB '>MEDIUMBLOB</option>"+
-                             "<option title='Une colonne BLOB '>BLOB</option>"+
-                             "<option title='Une colonne BLOB '>LONGBLOB</option>"+
-                             "<option disabled='disabled'>-</option>"+
-                             "<option title='Une'>ENUM</option>"+
-                             "<option title='Set'>SET</option>"+
-                             "</optgroup>"+
-                             "</select>" +
-                             "</td>" +
-                             "<td><input type='number' id='data[i].id' name='" + size + "' size='4' value='255'/> </td>";*/
-                            // }
-                            // if (i == 3) {
-                           /* s = "<td><select class='form-control' id='" + type + "' name='" + type + "'>" +
-                                "<option class='blank'  value=''>Please select a value</option>" +
-                                "<option title='Un nombre entier de 4 octets. La fourchette des entiers relatifs est de -2 147 483 648 à 2 147 483 647. Pour les entiers positifs, cest de 0 à 4 294 967 295' selected>INT</option>" +
-                                "<option title='Une chaîne de longueur variable (0-65,535), la longueur effective réelle dépend de la taille maximum d une ligne'>VARCHAR</option>" +
-                                "<option title='Une colonne TEXT d une longueur maximum de 65 535 (2^16 - 1) caractères, stockée avec un préfixe de deux octets indiquant la longueur de la valeur en octets'>TEXT</option>" +
-                                "<option title='Une date, la fourchette est de «1000-01-01» à «9999-12-31»'>DATETIME</option>" +
-                                "<optgroup label='Numérique'>" +
-                                "<option title='Un nombre entier de 1 octet. La fourchette des nombres avec signe est de -128 à 127. Pour les nombres sans signe, c est de 0 à 255'>TINYINT</option>" +
-                                "<option title='Un nombre entier de 2 octets. La fourchette des nombres avec signe est de -32 768 à 32 767. Pour les nombres sans signe, c est de 0 à 65 535'>SMALLINT</option>" +
-                                "<option title='Un nombre entier de 3 octets. La fourchette des nombres avec signe est de -8 388 608 à 8 388 607. Pour les nombres sans signe, c est de 0 à 16 777 215'>MEDIUMINT</option>" +
-                                "<option title='Un nombre entier de 4 octets. La fourchette des entiers relatifs est de -2 147 483 648 à 2 147 483 647. Pour les entiers positifs, c est de 0 à 4 294 967 295'>INT</option>" +
-                                "<option title='Un nombre entier de 8 octets. La fourchette des nombres avec signe est de -9 223 372 036 854 775 808 à 9 223 372 036 854 775 807. Pour les nombres sans signe, c est de 0 à 18 446 744 073 709 551 615'>BIGINT</option>" +
-                                "</option><option disabled='disabled'>-</option>"+
-                                "<option title='DECIMAL'>DECIMAL</option>" +
-                                "<option title='FLOAT'>FLOAT</option>" +
-                                "<option title='DOUBLE'>DOUBLE</option>" +
-                                "<option title='REAL'>REAL</option>" +
-                                "</option><option disabled='disabled'>-</option>"+
-                                "<option title='BIT'>BIT</option>" +
-                                "<option title='BOOLEAN'>BOOLEAN</option>" +
-                                "<option title='SERIAL'>SERIAL</option>" +
-                                "</optgroup>"+
-                                "<optgroup label='Contient la date et I'>" +
-                                "<option title='DATE'>DATE</option>" +
-                                "<option title='DATETIME'>DATETIME</option>" +
-                                "<option title='TIMESTAMP'>TIMESTAMP</option>" +
-                                "<option title='TIMESTAMP'>TIMESTAMP</option>" +
-                                "<option title='YEAR'>YEAR</option>" +
-                                "</optgroup>"+
-                                "</select>"+
-                                "</td>" +
-                                "<td><input type='number' id='data[i].id' name='" + size + "' size='4' value='5'/> </td>";*/
-                            s = "<td><select class='form-control' id='" + type + "' name='" + type + "'>" +
-                                "<option class='blank'  value=''>Please select a value</option>" +
-                                "<option title='Un nombre entier de 4 octets. La fourchette des entiers relatifs est de -2 147 483 648 à 2 147 483 647. Pour les entiers positifs, cest de 0 à 4 294 967 295' selected>NUMBER</option>" +
-                                "<option title='Une chaîne de longueur variable (0-65,535), la longueur effective réelle dépend de la taille maximum d une ligne'>VARCHAR2</option>" +
-                                "<option title='VARCHAR'>VARCHAR</option>" +
-                                "<option title='DATE'>DATE</option>" +
-                                "<option title='CHAR'>CHAR</option>" +
-                                "<option title='Une date, la fourchette est de «1000-01-01» à «9999-12-31»'>DATE</option>" +
-                                "<option title='FLOAT(24)'>FLOAT</option>" +
-                                "<option title='BLOB'>BLOB</option>" +
-                                "<option title='RAW'>RAW</option>" +
-                                "<option title='CLOB'>CLOB</option>" +
-                                "</optgroup>"+
-                                "</select>"+
-                                "</td>" +
-                                "<td><input type='number' id='data[i].id' name='" + size + "'/> </td>";
-
-
-                            /*s = "<td><select class='form-control' id='type' name='" + type + "'>" +
-                             "<option class='blank'  value=''>Please select a value</option>" +
-                             "<option title='Un nombre entier de 4 octets. La fourchette des entiers relatifs est de -2 147 483 648 à 2 147 483 647. Pour les entiers positifs, cest de 0 à 4 294 967 295'>INT</option>" +
-                             "<option title='Une chaîne de longueur variable (0-65,535), la longueur effective réelle dépend de la taille maximum d une ligne'>VARCHAR</option>" +
-                             "<option title='Une colonne TEXT d une longueur maximum de 65 535 (2^16 - 1) caractères, stockée avec un préfixe de deux octets indiquant la longueur de la valeur en octets'>TEXT</option>" +
-                             "<option title='Une date, la fourchette est de «1000-01-01» à «9999-12-31»' selected>DATETIME</option>" +
-                             "<optgroup label='Numérique'>" +
-                             "<option title='Un nombre entier de 1 octet. La fourchette des nombres avec signe est de -128 à 127. Pour les nombres sans signe, c est de 0 à 255'>TINYINT</option>" +
-                             "<option title='Un nombre entier de 2 octets. La fourchette des nombres avec signe est de -32 768 à 32 767. Pour les nombres sans signe, c est de 0 à 65 535'>SMALLINT</option>" +
-                             "<option title='Un nombre entier de 3 octets. La fourchette des nombres avec signe est de -8 388 608 à 8 388 607. Pour les nombres sans signe, c est de 0 à 16 777 215'>MEDIUMINT</option>" +
-                             "<option title='Un nombre entier de 4 octets. La fourchette des entiers relatifs est de -2 147 483 648 à 2 147 483 647. Pour les entiers positifs, c est de 0 à 4 294 967 295'>INT</option>" +
-                             "<option title='Un nombre entier de 8 octets. La fourchette des nombres avec signe est de -9 223 372 036 854 775 808 à 9 223 372 036 854 775 807. Pour les nombres sans signe, c est de 0 à 18 446 744 073 709 551 615'>BIGINT</option>" +
-                             "</optgroup><option disabled='disabled'>-</option><option title='Un nombre en virgule fixe (M, D) - le nombre maximum de chiffres (M) est de 65 (10 par défaut), le nombre maximum de décimales (D) est de 30'>DECIMAL</option>"+
-                             "<option title='Un petit nombre en virgule flottante, la fourchette des valeurs est -3.402823466E+38 à -1.175494351E-38, 0, et 1.175494351E-38 à 3.402823466E+38'>FLOAT</option>"+
-                             "<option title='Un nombre en virgule flottante double-précision, la fourchette des valeurs est -1.7976931348623157E+308 à -2.2250738585072014E-308, 0, et 2.2250738585072014E-308 à 1.7976931348623157E+308'>DOUBLE</option>"+
-                             "<option title='Synonyme de DOUBLE (exception : dans le mode SQL REAL_AS_FLOAT, c est un synonyme de FLOAT)'>REAL</option>"+
-                             "<option disabled='disabled'>-</option>"+
-                             "<option title='Une colonne contenant des bits (M), stockant M bits par valeur (1 par défaut, maximum 64)'>BIT</option>"+
-                             "<option title='Un synonyme de TINYINT(1), une valeur de zéro signifie faux, une valeur non-zéro signifie vrai'>BOOLEAN</option>"+
-                             "<option title='Un alias pour BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE'>SERIAL</option>"+
-                             "</optgroup><optgroup label='Contient la date et l heure'>"+
-                             "<option>DATE</option>"+
-                             "<option>DATETIME</option>"+
-                             "<option>TIMESTAMP</option>"+
-                             "<option>YEAR</option>"+
-                             "<option>YEAR</option>"+
-                             "</optgroup>"
-                             "<optgroup label='Chaîne de caractères'>"+
-                             "<option title='enregistrée'>CHAR</option>"+
-                             "<option title='varchar'>VARCHAR</option>"+
-                             "<option disabled='disabled'>-</option>"+
-                             "<option title='tinytext'>TINYTEXT</option>"+
-                             "<option title='TEXT'>TEXT</option>"+
-                             "<option title=''>MEDIUMTEXT</option>"+
-                             "<option title=''>LONGTEXT</option><option disabled='disabled'>-</option><option title='Similaire au type CHAR, mais stocke des chaînes binaires au lieu de chaînes non binaires'>BINARY</option>"+
-                             "<option title=''>VARBINARY</option><option disabled='disabled'>-</option>"+
-                             "<option title='Une colonne BLOB '>TINYBLOB</option>"+
-                             "<option title='Une colonne BLOB '>MEDIUMBLOB</option>"+
-                             "<option title='Une colonne BLOB '>BLOB</option>"+
-                             "<option title='Une colonne BLOB '>LONGBLOB</option>"+
-                             "<option disabled='disabled'>-</option>"+
-                             "<option title='Une'>ENUM</option>"+
-                             "<option title='Set'>SET</option>"+
-                             "</optgroup>"+
-                             "</select>" +
-                             "</td>" +
-                             "<td><input type='number' id='data[i].id' name='" + size + "' size='4' value='5'/> </td>";*/
-                            // }
-                            $("#tableaucontenus1").append("<tr data-id='" + data[i].id + "'><td style='color: #63aef9;'>" + data[i].id + "<input type='hidden' id='"+ids+"' name='"+ids+"' value='"+data[i].id+"'/></td><td><input type='checkbox' id='" + pk + "' name='" + pk + "' value='primaryKey'/></td>"+
-                                "<td>"+data[i].name+"<input type='hidden' id='"+cols+"' name='"+cols+"' value='"+data[i].name+"'/></td>" + s + "<td> <input type='checkbox' id='" + nonNull + "' name='" + nonNull + "' value='notNull'/></td>"+
-                                    "<td><input type='text' id='"+defaultVal+"' name='"+defaultVal+"' value=''/></td>"+
-                                "<td><input type='text' id='"+commentaire+"' name='"+commentaire+"' value=''/></td>"+
-                                "<td><button class='btn btn-danger'><span class='glyphicon glyphicon-remove-sign'></span></button>&nbsp;&nbsp;</td></tr>");
-                        }
-
-                        $('#table1').DataTable({
-                            'fnClearTable':true,
-                            "scrollY":        "500px",
-                            "scrollCollapse": true
-                        });
-                        /*$('#table1_info').css("color","#63aef9");
-                        $('#table1_next').css("background-color","#18bc9c");
-                        $('#table1_previous').css("background-color","#18bc9c");
-                        $('#table1_filter').css("background-color","#18bc9c","color","beige");
-                        $('#table1_length').css("background-color","#18bc9c","color","beige");*/
-
-                    },
-                    error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
-                        console.log("error");
-                        alert("Error Mapping ! make sure that you have selecte for all columns attributes or elements");
-                    }
-                });
-        });
     $("#activate-step-3").click(function(e) {
             e.preventDefault();
             $('#table2').DataTable().destroy();
@@ -867,56 +559,79 @@ $('#form1').submit(function (e) {
             {
                 if ($("#tableaucontenus1").children().length > 0) {
                     var table = $('#table1').DataTable();
-                    var data = table.$('input, select').serialize();
+                    var data0 = table.$('input, select').serialize();
                     var data1 = $('#tableName').serialize()+"&";
-                    var data4 = data1.concat(data);
-                    var typeXMl;
+                    var data2 = data1.concat(data0);
+                    var data3=  "dropeTable="+$("#dropTable").bootstrapSwitch('state')+"&";
+                    var data4 = data3.concat(data2);
+                   /* var typeXMl;
                     $('[name="xml[]"]').each( function (){
                         if($(this).prop('checked') == true){
                             typeXMl = $(this).val();
                         }
-                    });
-                    var data3 = "typeXML="+typeXMl+"&";
-                    var data5 = data3.concat(data4);
+                    });*/
+                    //var data3 = "typeXML="+typeXMl+"&";
+                    //var data5 = data3.concat(data4);
                     //envoyer les donnees avec ajax
                     $.ajax({
                         type: "POST",//la method à utiliser soit POST ou GET
                         url: "/getTypes", //lien de la servlet qui exerce le traitement sur les données
                         dataType: 'json',
-                        data: data5,// sign_in c'est l'id du form qui contient le bouton submit et toutes les champs à envoyer
-                        success: function (data) {// le cas ou la requete est bien execute en reçoi les données serialiser par JSON dans la variable msg
-                            //recuperation de la valeur stock dans l'attribut desactive
-                            $('ul.setup-panel li:eq(2)').removeClass('disabled');
-                            $('ul.setup-panel li a[href="#step-3"]').trigger('click');
-                            $(this).remove();
-                            for (var i = 0; i < data.length; i++) {
-                                var type = 'type[' + data[i].id + ']';
-                                var size = 'size[' + data[i].id + ']';
-                                var pk = 'pk[' + data[i].id + ']';
-                                var notNull = 'pk[' + data[i].id + ']';
-                                console.log("data ["+i +data[i].autoIncrement)
-                                var q;
-                                var s;
-                                if(data[i].pk == true){
-                                    console.log("TRUE");
-                                q= "<td> <input type='checkbox' name='"+pk+"' checked='checked' disabled></td>";
-
-                                }else{
-                                    console.log("FALSEE");
-                                    q = "<td> <input type='checkbox' name='"+pk+"' disabled></td>";
+                        data: data4,// sign_in c'est l'id du form qui contient le bouton submit et toutes les champs à envoyer
+                        xhr: function () {
+                            var xhr = new window.XMLHttpRequest();
+                            //Download progress
+                            xhr.addEventListener("progress", function (evt) {
+                                console.log(evt.lengthComputable);
+                                if (evt.lengthComputable) {
+                                    var percentComplete = evt.loaded / evt.total;
                                 }
-                                if(data[i].notNull == true){
-                                    s= "<td> <input type='checkbox' name='"+notNull+"' checked='checked' disabled></td>";
-
-                                }else{
-                                    s = "<td> <input type='checkbox' name='"+notNull+"' disabled></td>";
-                                }
-                                $("#tableaucontenus2").append("<tr data-id='" + data[i].id + "'><td>" + data[i].id + "</td>"+q+"<td>" + data[i].name + "</td><td>"+ data[i].type+"</td><td>"+data[i].size+"</td>"+s+"<td>"+data[i].defautlVal+"</td><td>"+data[i].comment+"</td></tr>");
-                            }
-                            $('#table2').DataTable({
-                                "scrollY":        "500px",
-                                "scrollCollapse": true
+                            }, false);
+                            return xhr;
+                        },
+                        beforeSend: function () {
+                            var progressbar = $( "#progressbar" ),
+                                progressLabel = $( ".progress-label" );
+                            progressbar.progressbar({
+                                value: false,
                             });
+                            $('#pleaseWaitDialog').modal('show');
+                        },
+                        complete: function () {
+                            $('#pleaseWaitDialog').modal('hide');
+                        },
+                        success: function (data) {// le cas ou la requete est bien execute en reçoi les données serialiser par JSON dans la variable msg
+                                $("#contenu").html("");
+                                var contenu = "";
+                            console.log("data.length" + data.inputError.length);
+                                if ((data.inputError.length) == 0) {
+                                    contenu += "<fieldset><div class='panel panel-success'><div class='panel-heading'><div class='pad margin no-print'>"+
+                                        "<div class='callout callout-success' style='margin-bottom: 0!important;'>"+
+                                        "<h4><i class='fa fa-info'></i> SUCCESS:</h4>This JOB HAS NO ERROR INPUT DUE TO EXCEPTIONS... </div>"+
+                                        "</div></div><div class='panel-body'>"
+                                } else {
+                                    contenu += "<fieldset><div class='panel panel-danger'><div class='panel-heading'><div class='pad margin no-print'>"+
+                                        "<div class='callout callout-danger' style='margin-bottom: 0!important;'>"+
+                                        "<h4><i class='fa fa-info'></i> ALERT :</h4>This JOB HAS ERROR INPUT... </div>"+
+                                        "</div></div>"
+                                    contenu += "<div class='panel-body'><div class='row'><div class='col-xs-12'>" +
+                                        "<table id='myInputErrors' width='100%' class='table .table-bordered'>" +
+                                        "<thead><tr><th><b>Line Number</b></th><th ><b>Line</b></th><th><b>Message</b></th></thead><tbody>";
+                                    for (var i = 0; i < data.inputError.length; i++) {
+                                        contenu += "<tr><td>" + data.inputError[i].lineNumber + "</td><td>" + data.inputError[i].line + "</td><td>" + data.inputError[i].messages + "</td></tr>";
+                                    }
+                                    contenu += "</tbody></table>" +
+                                        "</div></div>";
+                                }
+                                contenu += "<div class='row'><div class='col-xs-12'><table id='resume' width='100%' class='table .table-bordered'>" +
+                                    "<thead><tr><th><b>Job ID</b></th><th ><b>Start time</b></th><th><b>End time</b></th><th><b>Status </b></th><th><b>Number rows Added</b></th><th>Number rows Skiped</th></tr></thead><tbody>";
+                                contenu += "<tr><td>" + data.batchStepExecution.job_execution_id + "</td><td>" + moment(data.batchStepExecution.start_time).format("DD/MM HH:mm:ss") + "</td><td>" + moment(data.batchStepExecution.end_time).format("DD/MM HH:mm:ss") + "</td><td>" + data.batchStepExecution.status + "</td><td>" + data.batchStepExecution.write_count + "</td><td>" + data.batchStepExecution.process_skip_count + "</td></tr>";
+                                contenu += "</tbody></table>" +
+                                    "</div></div></div></div></fieldset>";
+
+                                $('#modal-body').append(contenu);
+                                $('#modal-success').modal('show');
+
                         },
                         error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
                             console.log("error");
@@ -1006,7 +721,7 @@ $('#form1').submit(function (e) {
                         }
                     },
                 error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
-                        $('#modal-danger').modal('show');
+                    $('#modal-danger').modal('show');
                     }
                 });
             }else{
@@ -1177,7 +892,6 @@ $('#form1').submit(function (e) {
     });
 
 
-
     $('.consulter').on('click',function(e){
         e.preventDefault();
         var tableName=$('#tableName').val();
@@ -1187,12 +901,19 @@ $('#form1').submit(function (e) {
             data :{
                 tableName:tableName
             },
-            success : function(response) {
-                console.log(response[0].col);
-                if(response[0].col == "existe" ){
-                }else {
-                    $('#Modalx').modal("show");
+            success : function(data) {
+                $("#contenus").html("");
+                var contenu ="";
+                contenu += "<fieldset>" +
+                    "<table id='infoClasse' width='100%' class='table .table-bordered'>" +
+                    "<thead><tr><th><b> Column </b></th><th ><b>Type</b></th></thead><tbody>";
+                var type="";
+                for (var i = 0; i < data.length; i++) {
+                    contenu += "<tr><td>" + data[i].col + "</td><td>" + data[i].type  + "</td></tr>";
                 }
+                contenu += "</tbody></table></fieldset>";
+                $("#contenus").append(contenu);
+                $("#Modalx").modal("show");
             },
             error : function() {
                 console.log("erreur");
@@ -1201,50 +922,11 @@ $('#form1').submit(function (e) {
 
     });
 
-    $('.consulter1').on('click',function(e){
-        e.preventDefault();
-        var tableName=$('#tableName').val();
-        $.ajax({
-            type : "post",
-            url : "metadata", //process to mail
-            data :{
-                tableName:tableName
-            },
-            success : function(response) {
-                console.log(response[0].col);
-                if(response[0].col == "existe" ){
-                }else {
-                    $('#Modalx').modal("show");
-                }
-            },
-            error : function() {
-                console.log("erreur");
-            }
-        });
 
-    });
-
-    var rowCount = 1;
-    function addMoreRows() {
-        rowCount ++;
-        var recRow = "<tr id='rowCount'+'"+rowCount+"'><td>Column</td><td><input name='' type='text'  maxlength='120' style='margin: 4px 5px 0 5px;'/></td>"+
-        "<td><button id='deleteColumn'>DELETE</button></td></tr>";
-        $('#csvTableNoHeadContenu').append(recRow);
-    }
 
     function removeRow(removeNum) {
         $('#rowCount'+removeNum).remove();
     }
-
-    var i=0;
-    $('#addColumn').on('click', function(e){
-        e.preventDefault();
-        var id = '<input type="hidden" class="nami" name="idCol['+i+']" value="'+table1.fnSettings().fnRecordsTotal()+'" readonly/>';
-        var textbox = '<input type="text" class="txtBox" name="col['+i+']"/><input type="hidden" class="nami" name="idCol['+i+']" value="'+table1.fnSettings().fnRecordsTotal()+'" readonly/>';
-        var button = '<button class="btn btn-danger"><span class="glyphicon glyphicon-remove-sign"></span></button>';
-        table1.fnAddData([textbox,button]);
-        i++;
-});
 
 
     $('#csvTableNoHead').on( 'click', '.glyphicon-remove-sign', function (e) {

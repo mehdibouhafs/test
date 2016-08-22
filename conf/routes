@@ -4,32 +4,26 @@
 
 
 GET     /home                       controllers.Application.index()
-
-GET     /parameterage                   controllers.Application.param()
-
+GET   /viewedClasses                controllers.Application.viewedClasses
+POST    /viewedClasse           controllers.Application.viewedClasse
+GET     /csv                   controllers.Application.param()
+GET     /noHeadCsv1                   controllers.Application.param1()
+GET     /xml                   controllers.Application.param2()
+GET     /beanExisteCsv      controllers.Application.param3()
+GET     /BeanExistXml    controllers.Application.param4()
+POST    /existXml       controllers.Application.existXml()
+POST   /csvExistHeader      controllers.Application.csvExistHeader()
+POST   /csvNoHead                       controllers.Application.csvNoHead()
 GET     /                               controllers.Application.login()
-
 POST    /login                      controllers.Application.authenticate()
-
 GET     /logout                     controllers.Application.logout()
-
-
 GET     /allMyJobs                  controllers.Application.allMyJobs()
-
 GET     /allMyJobCompleted          controllers.Application.allMyJobCompleted()
-
 GET     /allMyJobFailed             controllers.Application.allMyJobFailed()
-
 GET     /allMyJobAbondonned             controllers.Application.allMyJobAbondonned()
-
-
 GET     /testJson/:id                   controllers.Application.testJson(id : Long)
-
-
 GET     /lockScreen                 controllers.Application.lockScreen()
-
 POST    /delockScreen               controllers.Application.delockScreen()
-
 
 GET     /classes                    controllers.Application.getClasses()
 
@@ -50,33 +44,24 @@ GET     /editPass                     controllers.Application.editPass()
 POST     /editPassword                     controllers.Application.editPassword()
 
 # An example controller showing a sample home page
-POST     /upload                   controllers.Application.upload()
+POST     /csvHeader                   controllers.Application.csvHeader
+
+POST    /csvHeaderColsSelected       controllers.Application.csvHeaderColsSelected
+
+POST    /addAttributeReader           controllers.Application.addAttributeReader
 
 POST    /getTypes                      controllers.Application.getTypes()
 
-POST    /validate                       controllers.Application.validate()
+POST    /nbColCsvNoHead                 controllers.Application.nbColCsvNoHead()
 
-
-POST    /cols                           controllers.Application.cols()
-
-
-POST   /cols001                         controllers.Application.cols001()
-
-
-POST   /colsxml                         controllers.Application.colsxml()
-
-
-POST  /path                             controllers.Application.path()
-
+POST   /colsxml                         controllers.Application.colsXml()
 
 POST /metadata                          controllers.Application.metadata()
-
 
 GET    /delete                          controllers.Application.delete(id : Int)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
-
 
 # Home page
 #GET     /index                          controllers.HomeController.getIndex(id: Long ?= 0)

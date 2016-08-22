@@ -11,7 +11,6 @@ import java.util.List;
 @Entity
 @Table(name="A_MBS3_Attribute")
 public class Attribute extends Model {
-    @Id
     public Long id;
     public String type;
     public String nameo;
@@ -20,8 +19,8 @@ public class Attribute extends Model {
     public boolean nonNull;
     public String defautlVal;
     public String commentaire;
-    @ManyToOne
-    public Classe classe;
+    public String classe;
+
     public Attribute() {
     }
 
@@ -29,8 +28,21 @@ public class Attribute extends Model {
 
     public static List<Attribute> findInvolving(String classe) {
         //return find.fetch("project").where().eq("done", false).eq("project.members.email", classe).findList();
-        return  find.where().eq("classe.className",classe).findList();
+        return  find.where().eq("classe",classe).findList();
     }
+
+    public static void dropInvolving(String classe){
+        List<Attribute> attributes = findInvolving(classe);
+
+        for (Attribute attribute:attributes) {
+            find.where().eq("classe",attribute.classe).delete();
+        }
+    }
+    public static void dropAttributeByNameo(String nameo){
+        find.where().eq("nameo",nameo).findUnique().delete();
+    }
+
+
 
     public Long getId() {
         return id;
@@ -96,12 +108,19 @@ public class Attribute extends Model {
         this.commentaire = commentaire;
     }
 
+    public String getClasse() {
+        return classe;
+    }
 
+    public void setClasse(String classe) {
+        this.classe = classe;
+    }
 
     @Override
     public String toString() {
         return "Attribute{" +
                 "id=" + id +
+                ", classe=" + classe +
                 ", type='" + type + '\'' +
                 ", nameo='" + nameo + '\'' +
                 ", sizeo='" + sizeo + '\'' +
@@ -109,7 +128,6 @@ public class Attribute extends Model {
                 ", nonNull=" + nonNull +
                 ", defautlVal='" + defautlVal + '\'' +
                 ", commentaire='" + commentaire + '\'' +
-                ", classe=" + classe +
                 '}';
     }
 }

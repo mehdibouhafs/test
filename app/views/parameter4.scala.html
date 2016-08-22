@@ -1,0 +1,99 @@
+@*
+* Call the `main` template with two arguments. The first
+* argument is a `String` with the title of the page, the second
+* argument is an `Html` object containing the body of the page.
+*@
+@import batch.model.User
+@(user: User)
+    @main2("ITN MIGRATION",user) {
+        @*
+        * Get an `Html` object by calling the built-in Play welcome
+        * template and passing a `String` message.
+        *@
+        <!-- Navigation -->
+        <div class="container">
+            <div class="panel panel-primary">
+                <div class="panel-heading" style="background-color: #3c8dbc;"> <h1 style="margin: 1px;margin-left: 130px;">CSV FILE WITH HEADER WITHOUT CONFIGURATION DATA </h1> </div>
+                <div class="panel-body">
+                    <div class="row form-group">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <ul class="nav nav-pills nav-justified thumbnail setup-panel" style="rgb(255, 255, 255);">
+                                <li class="active first_element_to_target"><a   id="step111" href="#step-1" >
+                                    <h4 class="list-group-item-heading">Step 1</h4>
+                                    <p class="list-group-item-text">File configuration</p>
+                                </a></li>
+                                    <!--<li id="step33" class="disabled"><a id="step33" href="#step-3" >
+                        <h4 class="list-group-item-heading">Step 3</h4>
+                        <p class="list-group-item-text">Validation configuration</p>
+                    </a></li>-->
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="row setup-content" id="step-1">
+                        <div class="col-xs-12 col-sm-12 col-md-12">
+                            <div class="col-md-12 well" style="background-color: #ffffff;">
+                                <div class="text-center data-block" style="padding-bottom: 25px">
+                                    <h1> Configuration File </h1>
+                                </div>
+                                <form class="form-horizontal" id="form00" name="form00" action="@routes.Application.existXml()" method="POST">
+                                    <div class="form-group second_element_to_target">
+                                        <label class="control-label col-xs-12 col-sm-2" style="color: black;" for="filePath">File Path</label>
+                                        <div class="col-xs-12 col-sm-7">
+                                            <div class='input-group'>
+                                                <span class='input-group-addon'> <i class="fa fa-file"></i></span>
+                                                <input type="text" class="form-control" id="filePath" name="filePath" placeholder="\\itnsa.net\path\file...">
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-offset-0  col-sm-3">
+                                            <span class="help-block" style="color:#ffffff;" > Please enter the File Path . (required)</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="table-responsive">
+                                        <table id="latestTabId" class="table no-margin" >
+                                            <thead>
+                                                <tr>
+                                                    <th>Table Name</th>
+                                                    <th>Show </th>
+                                                    <th>Delete </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="latestTab">
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <button id="existeXml" class="btn btn-primary btn-success pull-right eight_element_to_target"  type="submit" style="padding: 10px 70px;background-color: #3c8dbc;"><span class='glyphicon glyphicon-ok'>&nbsp;Valider&nbsp;</span></button>
+                                </form>
+
+
+                                <div class="col-sm-2 col-md-4">
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+                    <div id="modal-danger" class="modal modal-message modal-danger fade" style="padding-top: 250px;" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <i class="glyphicon glyphicon-exclamation-sign"></i>
+                                </div>
+                                <div class="modal-title">ERROR</div>
+                                <div id="modal-body-danger" class="modal-body">
+                                </div>
+                                <div class="modal-footer">
+                                    <button id="thanks" type="button" class="btn btn-danger" data-dismiss="modal">Try Again</button>
+                                </div>
+                            </div> <!-- / .modal-content -->
+                        </div> <!-- / .modal-dialog -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    }

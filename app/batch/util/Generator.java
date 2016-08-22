@@ -1,7 +1,6 @@
 package batch.util;
 
-import batch.model.Classe;
-import batch.model.ReaderGenerique;
+import batch.model.Reader;
 import javassist.*;
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.ClassFile;
@@ -11,14 +10,12 @@ import org.springframework.context.ApplicationContext;
 import running.Global;
 
 import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import java.io.IOException;
 import java.io.Serializable;
-import java.lang.reflect.*;
+import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Date;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 
@@ -27,19 +24,40 @@ import java.util.Map;
  *
  */
 public class Generator {
-
 		private Map<String, Class<?>> properties = new LinkedHashMap<>();
-
 		private Class<?> classGenerate = Object.class;
-
 		private static int counter2 = 0;
+		private ApplicationContext applicationContext = Global.getApplicationContext();
 
 	public Generator() {
 		}
 
+	public static void main(String[] args) {
+		Class c = Generator.getClass("app.batch.generate.A.class");
+	}
+
+		public static Class<?> getClass(String name){
+			/*ClassPool pool = ClassPool.getDefault();
+			try {
+				Class<?> c = pool.get(name).toClass();
+				return  c;
+			} catch (NotFoundException e) {
+				e.printStackTrace();
+			} catch (CannotCompileException e) {
+				e.printStackTrace();
+			}
+			return null;*/
+			ClassLoader classLoader = Generator.class.getClassLoader();
+			try {
+				Class aClass = classLoader.loadClass(name);
+				return aClass;
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
+
 		public Class<?> generator(String name, String typeXml) throws CannotCompileException, NotFoundException{
-			ApplicationContext applicationContext = Global.getApplicationContext();
-			ReaderGenerique readerGenerique = applicationContext.getBean("readerGenerique", ReaderGenerique.class);
 			Class<?> rowObjectClass = null;
 			try {
 				rowObjectClass = Generator.buildCSVClassNamexml(this.properties, name,typeXml);
@@ -52,61 +70,36 @@ public class Generator {
 			return null;
 		}
 
-		/*public static Class<?> buildCSVClassName(Map<String, Class<?>> properties,String classeName) throws CannotCompileException, NotFoundException, IOException {
-			ClassPool pool = new ClassPool(true);//ClassPool.getDefault();
-			CtClass result = pool.makeClass("app.batch.generate."+classeName+"csv$" + (counter1));
-			counter1++;
-			result.setSuperclass(pool.get((Serializable.class).getName()));
-			ClassFile classFile = result.getClassFile();
-			ConstPool constPool = classFile.getConstPool();
-			classFile.setSuperclass(Object.class.getName());
-			for (Map.Entry<String, Class<?>> entry : properties.entrySet()) {
-				CtField field = new CtField(ClassPool.getDefault().get(entry.getValue().getName()), entry.getKey(), result);
-				CtMethod setter =  CtNewMethod.setter("set"+entry.getKey(), field);
-				CtMethod getter =  CtNewMethod.getter("get"+entry.getKey(), field);
-				result.addField(field);
-				result.addMethod(setter);
-				result.addMethod(getter);
-			}
-			classFile.setVersionToJava5();
-			result.writeFile();
-			result.defrost();
-			result.detach();
-			return result.toClass();
-		}*/
-
-		public static Class<?> buildCSVClassNamexml(Map<String, Class<?>> properties,String classeName,String typeXml) throws CannotCompileException, NotFoundException, IOException {
-			ApplicationContext context = Global.getApplicationContext();
-			ReaderGenerique readerGenerique = context.getBean("readerGenerique", ReaderGenerique.class);
-			ClassPool pool = new ClassPool(true);//ClassPool.getDefault();
-			CtClass result;
-			String classeN;
-			if(readerGenerique.getExt().equals("csv")){
-				classeN = classeName;
-				result = pool.makeClass("app.batch.generate."+classeN+"csv$"+counter2);
-			}else {
-				classeN = readerGenerique.getFragmentRootElementName();
-				result = pool.makeClass("app.batch.generate." + classeN + "xml$"+counter2);
-			}
-
+	public static Class<?> buildCSVClassNamexml(Map<String, Class<?>> properties,String classeName,String typeXml) throws CannotCompileException, NotFoundException, IOException {
+		ApplicationContext context = Global.getApplicationContext();
+		ClassPool pool = ClassPool.getDefault();
+		Reader reader =context.getBean("reader",Reader.class);
+		CtClass result;
+		String classeN;
+		if(typeXml.equals("csv")){
+			result = pool.makeClass("app.batch.generate."+classeName+"csv$"+counter2);
+		}else {
+			//classeN = readerGenerique.getFragmentRootElementName();
+			result = pool.makeClass("app.batch.generate."+classeName +"xml$"+counter2);
+		}
 		counter2++;
 		result.setSuperclass(pool.get((Serializable.class).getName()));
 		ClassFile classFile = result.getClassFile();
 		ConstPool constPool = classFile.getConstPool();
 		classFile.setSuperclass(Object.class.getName());
 		AnnotationsAttribute attr = new AnnotationsAttribute(constPool, AnnotationsAttribute.visibleTag);
-			System.out.println("Generator type"+typeXml);
-			if(!typeXml.equals("undefined")) {
-				Annotation annot = new Annotation("javax.xml.bind.annotation.XmlRootElement", constPool);
-				annot.addMemberValue("name", new StringMemberValue(readerGenerique.getFragmentRootElementName(), classFile.getConstPool()));
-				attr.addAnnotation(annot);
-			}
-			Annotation annotation= new Annotation("javax.xml.bind.annotation.XmlAccessorType",constPool);
-			EnumMemberValue emb=new EnumMemberValue(constPool);
-			emb.setType(XmlAccessType.class.getName());
-			emb.setValue("FIELD");
-			annotation.addMemberValue("value",emb);
-			attr.addAnnotation(annotation);
+		System.out.println("Generator type"+typeXml);
+		if(!typeXml.equals("csv")) {
+			Annotation annot = new Annotation("javax.xml.bind.annotation.XmlRootElement", constPool);
+			annot.addMemberValue("name", new StringMemberValue(reader.fragmentRootName, classFile.getConstPool()));
+			attr.addAnnotation(annot);
+		}
+		Annotation annotation= new Annotation("javax.xml.bind.annotation.XmlAccessorType",constPool);
+		EnumMemberValue emb=new EnumMemberValue(constPool);
+		emb.setType(XmlAccessType.class.getName());
+		emb.setValue("FIELD");
+		annotation.addMemberValue("value",emb);
+		attr.addAnnotation(annotation);
 		classFile.addAttribute(attr);
 		for (Map.Entry<String, Class<?>> entry : properties.entrySet()) {
 			CtField field = new CtField(ClassPool.getDefault().get(entry.getValue().getName()), entry.getKey(), result);
@@ -116,18 +109,8 @@ public class Generator {
 			result.addMethod(setter);
 			result.addMethod(getter);
 			AnnotationsAttribute attra = new AnnotationsAttribute(constPool, AnnotationsAttribute.visibleTag);
-			if(typeXml.equals("type1")) {
-				Annotation annota = new Annotation("javax.xml.bind.annotation.XmlElement", constPool);
-				annota.addMemberValue("name", new StringMemberValue(entry.getKey(), classFile.getConstPool()));
-				attra.addAnnotation(annota);
-			}else{
-				if(typeXml.equals("type2")){
-					Annotation annota = new Annotation("javax.xml.bind.annotation.XmlAttribute", constPool);
-					annota.addMemberValue("name", new StringMemberValue(entry.getKey(), classFile.getConstPool()));
-					attra.addAnnotation(annota);
-				}else{
-					if(typeXml.equals("type3")){
-						if(readerGenerique.getElements().contains(entry.getKey())) {
+					if(typeXml.equals("xml")){
+						if(reader.cols.contains(entry.getKey())) {
 							Annotation annota = new Annotation("javax.xml.bind.annotation.XmlElement", constPool);
 							annota.addMemberValue("name", new StringMemberValue(entry.getKey(), classFile.getConstPool()));
 							attra.addAnnotation(annota);
@@ -138,8 +121,6 @@ public class Generator {
 							attra.addAnnotation(annota);
 						}
 					}
-				}
-			}
 			if(entry.getValue()== Date.class){
 				Annotation annota1 = new Annotation("javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter", constPool);
 				annota1.addMemberValue("type", new ClassMemberValue("batch.model.adapters.LocalDateAdapter",classFile.getConstPool()));
@@ -150,10 +131,9 @@ public class Generator {
 			result.addField(field);
 		}
 		classFile.setVersionToJava5();
-		result.writeFile();
 		result.defrost();
+		result.writeFile();
 		result.detach();
-
 		return result.toClass();
 	}
 

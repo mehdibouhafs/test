@@ -17,11 +17,11 @@
 
 		<property name="resource" value="file:#{jobParameters['input.file.name']}" />
 
-		<property name="fragmentRootElementName" value="#{readerGenerique.getFragmentRootElementName()}" />
+		<property name="fragmentRootElementName" value="#{reader.fragmentRootName}" />
 
 		<property name="unmarshaller">
 			<bean class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
-				<property name="classesToBeBound" value="#{readerGenerique.getClassXml()}" >
+				<property name="classesToBeBound" value="#{reader.packageClasse}" >
 				</property>
 			</bean>
 		</property>

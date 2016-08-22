@@ -1,5 +1,6 @@
 package running;
 
+import com.google.inject.Injector;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -16,21 +17,24 @@ import play.Logger;
 public class Global extends GlobalSettings {
 
     private static ConfigurableApplicationContext applicationContext;
+    private Injector injector;
     String[] springConfig  =
             {
                     "JobConfig/jobCsv.xml",
                     "JobConfig/jobXML.xml"
-
             };
 
     @Override
     public void onStart(Application app) {
-
         //Normal c = new Normal();
         //controllers.Application application = (controllers.Application) context.getBean("application");
+
         applicationContext = new ClassPathXmlApplicationContext(springConfig);
-        Logger.info("Application has started by Mehdi diricted by MIMO");
+
+        //Logger.info("Application has started by Mehdi diricted by MIMO");
     }
+
+
 
 
     @Override
@@ -43,7 +47,6 @@ public class Global extends GlobalSettings {
     }
 
     public static ApplicationContext getApplicationContext() {
-
         return applicationContext;
     }
 

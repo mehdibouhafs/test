@@ -1,137 +1,204 @@
 package batch.dao;
 
-import batch.model.batch.BatchStepExecution;
-import batch.model.batch.BatchExecutionParam;
+import batch.model.Attribute;
+import batch.model.Reader;
+import com.avaje.ebean.annotation.Transactional;
+import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.datasource.DataSourceUtils;
+import running.Global;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by MBS on 16/08/2016.
  */
 
 public class BatchJobJdbc extends JdbcTemplate implements BatchJobDao {
+    private String cData;
 
-
+    @Transactional
     @Override
-    public List<BatchStepExecution> selectAllStepExectuion() {
-        /*
-        System.out.println("SELECT ////////////////////////////////////////////////////////////////////////////////////");
-      List<BatchStepExecution> batchStepExecutions = query("select * from BATCH_STEP_EXECUTION", new RowMapper<BatchStepExecution>() {
-          @Override
-          public BatchStepExecution mapRow(ResultSet rs, int rowNum) throws SQLException {
-             BatchStepExecution batchStepExecution = new BatchStepExecution();
-              batchStepExecution.setStep_execution_id(rs.getLong("STEP_EXECUTION_ID"));
-              batchStepExecution.setVersion(rs.getLong("VERSION"));
-              batchStepExecution.setStep_name(rs.getString("STEP_NAME"));
-           //   batchExecution.setJob_execution_id(rs.getLong("JOB_EXECUTION_ID"));
-              batchStepExecution.setCommit_count(rs.getLong("COMMIT_COUNT"));
-              batchStepExecution.setEnd_time(rs.getTime("END_TIME"));
-              batchStepExecution.setProcess_skip_count(rs.getLong("PROCESS_SKIP_COUNT"));
-              batchStepExecution.setFilter_count(rs.getLong("FILTER_COUNT"));
-              batchStepExecution.setExit_code(rs.getString("EXIT_CODE"));
-              batchStepExecution.setRead_count(rs.getLong("READ_COUNT"));
-              batchStepExecution.setRead_skip_count(rs.getLong("READ_SKIP_COUNT"));
-              batchStepExecution.setLast_updated(rs.getTime("LAST_UPDATED"));
-              //batchExecution.setStatuts(rs.getString("STATUS"));
-              batchStepExecution.setWrite_count(rs.getLong("WRITE_COUNT"));
-              batchStepExecution.setStart_time(rs.getTime("START_TIME"));
-              batchStepExecution.setWrite_skip_count(rs.getLong("WRITE_SKIP_COUNT"));
-              batchStepExecution.setRollback_count(rs.getLong("ROLLBACK_COUNT"));
-              batchStepExecution.setExit_message(rs.getString("EXIT_MESSAGE"));
-              return batchStepExecution;
-          }
-      });*/
-        return null;//batchStepExecutions;
-    }
+    public boolean createTableOracle(String name, Map<String, String> columnsTable,List<Attribute> attributes) {
+        ApplicationContext context = Global.getApplicationContext();
+        Reader reader = context.getBean("reader",Reader.class);
+        int i = 0;
+        StringBuffer query = new StringBuffer();
+        StringBuffer query2 = new StringBuffer();
+        StringBuffer query3 = new StringBuffer();
+        StringBuffer primaryKey = new StringBuffer();
+        String commentaire;
 
-    @Override
-    public BatchStepExecution selectStepExecution(Long id) {
-        /*BatchExecution batchExecution = queryForObject(
-                "select * from BATCH_STEP_EXECUTION where STEP_EXECUTION_ID = ?",
-                new Object[]{id},
-                new RowMapper<BatchExecution>() {
-                    public BatchExecution mapRow(ResultSet rs, int rowNum) throws SQLException {
-                        BatchExecution batchExecution1 = new BatchExecution();
-                        batchExecution1.setStep_execution_id(rs.getLong("STEP_EXECUTION_ID"));
-                       // batchExecution1.setJob_execution_id(rs.getLong("JOB_EXECUTION_ID"));
-                        batchExecution1.setVersion(rs.getLong("VERSION"));
-                        batchExecution1.setStep_name(rs.getString("STEP_NAME"));
-                        batchExecution1.setCommit_count(rs.getLong("COMMIT_COUNT"));
-                        batchExecution1.setEnd_time(rs.getTime("END_TIME"));
-                        batchExecution1.setProcess_skip_count(rs.getLong("PROCESS_SKIP_COUNT"));
-                        batchExecution1.setFilter_count(rs.getLong("FILTER_COUNT"));
-                        batchExecution1.setExit_code(rs.getString("EXIT_CODE"));
-                        batchExecution1.setRead_count(rs.getLong("READ_COUNT"));
-                        batchExecution1.setLast_updated(rs.getTime("LAST_UPDATED"));
-                        batchExecution1.setStatuts(rs.getString("STATUS"));
-                        batchExecution1.setWrite_count(rs.getLong("WRITE_COUNT"));
-                        batchExecution1.setStart_time(rs.getTime("START_TIME"));
-                        batchExecution1.setWrite_skip_count(rs.getLong("WRITE_SKIP_COUNT"));
-                        batchExecution1.setRollback_count(rs.getLong("ROLLBACK_COUNT"));
-                        batchExecution1.setExit_message(rs.getString("EXIT_MESSAGE"));
-                        return batchExecution1;
-                    }
-                });
-        return batchExecution;*/
-       return  null;//BatchStepExecution.find.byId(1L);
-    }
+        List<String> comments = new ArrayList<>();
 
-    @Override
-    public Long getLastIDTable(String id,String table) {
+        boolean b = false;
 
-            return queryForObject("select MAX ("+id+")from"+table, Long.class);
 
-    }
+        if (columnsTable.size() <= 0 || name.equals("")) {
+            System.out.println("Columns < 0");
+            return false;
+        }
+        for (Map.Entry<String, String> entry : columnsTable.entrySet()) {
+            String[] typeSize = entry.getValue().split("-");
 
-    @Override
-    public BatchExecutionParam selectBatchExecParam(Long id) {
-       /* BatchExecutionParam batchExecutionParam = queryForObject(
-                "select * from BATCH_JOB_EXECUTION_PARAMS where JOB_EXECUTION_ID = ? AND KEY_NAME <> ?",
-                new Object[]{id,"time"},
-                new RowMapper<BatchExecutionParam>() {
-                    public BatchExecutionParam mapRow(ResultSet rs, int rowNum) throws SQLException {
-                        BatchExecutionParam batchExecutionParam1 = new BatchExecutionParam();
-                        batchExecutionParam1.setJob_execution_id(rs.getLong("JOB_EXECUTION_ID"));
-                        batchExecutionParam1.setDate_val(rs.getDate("DATE_VAL"));
-                        batchExecutionParam1.setIdentifying(rs.getString("IDENTIFYING").charAt(0));
-                        batchExecutionParam1.setKey_name(rs.getString("KEY_NAME"));
-                        batchExecutionParam1.setLong_val(rs.getLong("LONG_VAL"));
-                        batchExecutionParam1.setDouble_val(rs.getDouble("DOUBLE_VAL"));
-                        batchExecutionParam1.setString_val(rs.getString("STRING_VAL"));
-                        batchExecutionParam1.setType_cd(rs.getString("TYPE_CD"));
-                        return batchExecutionParam1;
-                    }
-                });
-        return batchExecutionParam;*/
-        return null;//BatchExecutionParam.find.byId(id);
-    }
-
-    @Override
-    public List<BatchExecutionParam> selectAllBatchExecParam() {
-        /*List<BatchExecutionParam> batchExecutionParams = query("select * from BATCH_JOB_EXECUTION_PARAMS ", new RowMapper<BatchExecutionParam>() {
-            @Override
-            public BatchExecutionParam mapRow(ResultSet rs, int rowNum) throws SQLException {
-                BatchExecutionParam batchExecutionParam1 = new BatchExecutionParam();
-                batchExecutionParam1.setJob_execution_id(rs.getLong("JOB_EXECUTION_ID"));
-                batchExecutionParam1.setDate_val(rs.getDate("DATE_VAL"));
-                batchExecutionParam1.setIdentifying(rs.getString("IDENTIFYING").charAt(0));
-                batchExecutionParam1.setKey_name(rs.getString("KEY_NAME"));
-                batchExecutionParam1.setLong_val(rs.getLong("LONG_VAL"));
-                batchExecutionParam1.setDouble_val(rs.getDouble("DOUBLE_VAL"));
-                batchExecutionParam1.setString_val(rs.getString("STRING_VAL"));
-                batchExecutionParam1.setType_cd(rs.getString("TYPE_CD"));
-                return batchExecutionParam1;
+            if (!typeSize[5].equals("")) {
+                commentaire = "COMMENT ON COLUMN " + name + "." + entry.getKey() + " IS '" + typeSize[5] + "'";
+                comments.add(commentaire);
             }
-        });*/
-        return null;//batchExecutionParams;
+            if (typeSize[3].equals("PrimaryKey") && b == true) {
+                primaryKey.append("," + entry.getKey());
+            }
+            if (b == false) {
+                if (typeSize[3].equals("PrimaryKey")) {
+                    primaryKey = new StringBuffer(", CONSTRAINT " + name + "_PK PRIMARY KEY (" + entry.getKey());
+                    b = true;
+                }
+            }
+            if (i == 0) {
+                System.out.println(typeSize[0]);
+                if (typeSize[1].equals("")) {
+                    System.out.println("Containe NUmber or Float");
+                    query = new StringBuffer("CREATE TABLE " + name + " ("
+                            + entry.getKey() + " " + typeSize[0] + typeSize[4] + typeSize[2]);
+                } else {
+                    if (typeSize[1].equals("DATE")) {
+                        query = new StringBuffer("CREATE TABLE " + name + " ("
+                                + entry.getKey() + " " + typeSize[0] + typeSize[4] + typeSize[2]);
+                    } else {
+                        query = new StringBuffer("CREATE TABLE " + name + " ("
+                                + entry.getKey() + " " + typeSize[0] + "(" + typeSize[1] + ")" + typeSize[4] + typeSize[2]);
+                    }
+                }
+                query2 = new StringBuffer("INSERT INTO " + name + " ("
+                        + entry.getKey());
+                query3 = new StringBuffer("(?");
+                i++;
+            } else {
+                if (typeSize[1].equals("")) {
+                    query.append(", " + entry.getKey() + " " + typeSize[0] + typeSize[4] + typeSize[2]);
+                } else {
+                    if (typeSize[1].equals("DATE")) {
+                        query.append(", " + entry.getKey() + typeSize[2] + typeSize[3]);
+                    } else {
+                        query.append(", " + entry.getKey() + " " + typeSize[0] + "(" + typeSize[1] + ")" + typeSize[4] + typeSize[2]);
+                    }
+                }
+                query2.append(", " + entry.getKey());
+                query3.append(",?");
+            }
+        }
+        if (b == true) {
+            primaryKey.append(") ENABLE ");
+            query.append(primaryKey);
+        }
+        query.append(")");
+        query2.append(") VALUES ");
+        query3.append(")");
+
+        try {
+            System.out.println("Query" + query.toString());
+            System.out.println("Query" + query2.toString());
+            System.out.println("Query" + query3.toString());
+            String cData = (query2.append(query3)).toString();
+            this.cData = cData;
+            execute(query.toString());
+            for (String s : comments) {
+                System.out.println("com " + s);
+                execute(s);
+            }
+            reader.cData = cData;
+            for (Attribute attribute :attributes){
+                attribute.save();
+            }
+
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+
     }
 
 
+    public boolean dropTable(String table) {
+        String q = "DROP TABLE " + table;
+        try {
+            execute(q);
+            return true;
+        } catch (Exception e) {
+            System.out.println("Erreur : " + e.getMessage());
+            e.printStackTrace();
+            return  false;
+        }
+    }
+
+    public Map<String, String> dataTable(String table) {
+        Map<String, String> map = new LinkedHashMap<>();
+        String query = "SELECT * FROM " + table;
+        Connection con = DataSourceUtils.getConnection(getDataSource()); // your datasource
+        Statement s = null;
+        ResultSet rs = null;
+        ResultSetMetaData rsmd = null;
+        ResultSet rstab = null;
+        try {
+            DatabaseMetaData dbm = con.getMetaData();
+            rstab = dbm.getTables(null, null, table, null);
+            if (rstab.next()) {
+                s = con.createStatement();
+                rs = s.executeQuery(query); // your query
+                rsmd = rs.getMetaData();
+                int colCount = rsmd.getColumnCount();
+                System.out.println("Number Of Columns : " + colCount);
+                for (int i = 1; i <= colCount; i++) {
+                    //getting column name of index 'i'
+                    String colName = rsmd.getColumnName(i);
+                    //getting column's data type of index 'i'
+                    String colType = rsmd.getColumnTypeName(i);
+                    map.put(colName, colType);
+                }
+            } else {
+                map.put("existe", "notExiste");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            //Closing The DB Resources
+            //Closing the ResultSet object
+            try {
+                if (rstab != null) {
+                    rstab.close();
+                    rstab = null;
+                }
+                if (rs != null) {
+                    rs.close();
+                    rs = null;
+                }
+                if (s != null) {
+                    s.close();
+                    s = null;
+                }
+                if (con != null) {
+                    con.close();
+                    con = null;
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+        }
+        return map;
+    }
+
+    @Override
+    public String getCdata() {
+        return cData;
+    }
 }
+
 
 
 

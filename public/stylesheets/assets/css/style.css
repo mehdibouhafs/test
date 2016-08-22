@@ -86,7 +86,7 @@ input.chk-btn:checked + label {
 
 a, a:visited {
     outline:none;
-    color:rgb(0, 255, 85);
+    color:rgb(60, 141, 188);
 }
 
 a:hover{
@@ -96,7 +96,7 @@ a:hover{
 .custom-header {
     text-align: center;
     padding: 3px;
-    background: #18bc9c;
+    background: #3c8dbc;
     color: #FFF;
     font-family:'Titillium Web', sans-serif;
     font-size: 14px;
