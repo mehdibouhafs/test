@@ -12,6 +12,7 @@ import javax.persistence.Table;
 import javax.validation.Constraint;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by bouhafs on 11/08/2016.
@@ -50,6 +51,10 @@ public class InputError extends Model {
     }
 
     public static Finder<Long, InputError> find = new Finder<Long,InputError>(InputError.class);
+
+    public static List<InputError> findByJobExecutionId(Long id){
+        return  find.where().eq("job_execution_id",id).findList();
+    }
 
 
 }

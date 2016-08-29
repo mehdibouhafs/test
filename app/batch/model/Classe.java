@@ -22,9 +22,7 @@ public class Classe extends Model {
     public String className;
     public String user_email;
     public int viewed;
-    public String cData;
-    public String columns;
-    public String classeGenerated;
+
 
     @Transient
     public int nbNotViewed;

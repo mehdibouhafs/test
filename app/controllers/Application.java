@@ -34,30 +34,37 @@ import views.html.*;
 import java.io.*;
 import java.util.*;
 
-
 /**
  * Created by MBS on 27/06/2016.
  */
+
 public class Application extends Controller {
 
     public Application() {
-        System.out.println(" -----------------------------Demarage application-------------------------");
     }
 
     public Result csvHeader() throws IOException {
         BatchJobService batchJobService = new BatchJobServiceImpl();
-        Form<Reader> form = Form.form(Reader.class).bindFromRequest();
-        System.out.println(form.get());
-        if(Reader.getReaderUser(session("email")) != null){
-            Reader.getReaderUser(session("email")).delete();
-        }
+        DynamicForm form = Form.form().bindFromRequest();
         Reader reader = new Reader();
-        reader.filePath = form.get().filePath;
-        reader.separator = form.get().separator;
-        reader.nbLineToSkip = form.get().nbLineToSkip;
+        reader.filePath = form.field("filePath").value();
+        reader.separator =  form.field("separator").value();
+        reader.nbLineToSkip =  Integer.parseInt(form.field("nbLineToSkip").value());
         reader.emailUser = session("email");
-        String[] s = batchJobService.firstLineCsvFile(new File(reader.filePath),reader.separator) ;
+        String entete = form.field("entete").value();
         StringBuffer cols = new StringBuffer();
+        List<String> s;
+        if(entete != null){
+            s = batchJobService.firstLineCsvFile(new File(reader.filePath),reader.separator) ;
+        }else{
+            int i = 0;
+            List<String> colss = new ArrayList<>();
+            while(form.field("cols["+i+"]").value()!=null){
+                colss.add(form.field("cols["+i+"]").value());
+                i++;
+            }
+            s = colss;
+        }
         int i = 0;
         for (String col : s ) {
             if(i == 0) {
@@ -71,6 +78,135 @@ public class Application extends Controller {
         reader.save();
         return ok(Json.toJson(s));
     }
+
+    public Result csvExistConfig(){
+        BatchJobService batchJobService = new BatchJobServiceImpl();
+        DynamicForm form = Form.form().bindFromRequest();
+        String classe = form.field("classe").value();
+        Reader reader = new Reader();
+        reader.filePath = form.field("filePath").value();
+        reader.separator =  form.field("separator").value();
+        reader.nbLineToSkip =  Integer.parseInt(form.field("nbLineToSkip").value());
+        reader.emailUser = session("email");
+        reader.tableName = form.field("tableName").value();
+        reader.classeName = form.field("tableName").value();
+        reader.dateCreation = new Date();
+        String entete = form.field("entete").value();
+        StringBuffer cols = new StringBuffer();
+        List<String> s;
+        if(entete != null){
+            s = batchJobService.firstLineCsvFile(new File(reader.filePath),reader.separator) ;
+        }else{
+            int i = 0;
+            List<String> colss = new ArrayList<>();
+            while(form.field("cols["+i+"]").value()!=null){
+                colss.add(form.field("cols["+i+"]").value());
+                i++;
+            }
+            s = colss;
+        }
+        int i = 0;
+        for (String col : s ) {
+            if(i == 0) {
+                cols.append(col);
+                i++;
+            }else{
+                cols.append(","+col);
+            }
+        }
+        Attribute newAttribute;
+        int ii=0;
+        for(Attribute attribute : Attribute.findInvolving(classe)){
+            newAttribute = new Attribute();
+            newAttribute.setType(attribute.getType());
+            newAttribute.setSizeo(attribute.getSizeo());
+            newAttribute.setNonNull(attribute.isNonNull());
+            newAttribute.setCommentaires(attribute.getCommentaires());
+            newAttribute.setClasse(form.field("tableName").value());
+            newAttribute.setNameo(s.get(ii));
+            newAttribute.save();
+            ii++;
+        }
+        Classe c = new Classe();
+        c.className = form.field("tableName").value();
+        c.user_email = session("email");
+        c.save();
+        reader.columns = cols.toString();
+        reader.tableName=form.field("tableName").value();
+        reader.save();
+        return  ok(Json.toJson(Attribute.findInvolving(form.field("tableName").value())));
+    }
+
+
+
+    public Result colsXml() throws IOException {
+        BatchJobService batchJobService = new BatchJobServiceImpl();
+        Form<Reader> form = Form.form(Reader.class).bindFromRequest();
+        Reader reader = new Reader();
+        reader.filePath = form.get().filePath;
+        reader.emailUser = session("email");
+        reader.dateCreation = new Date();
+        reader.save();
+        String[] s = batchJobService.getElementAndAttributesFileXml(reader);
+        StringBuffer cols = new StringBuffer();
+        int i = 0;
+        for (String col : s ) {
+            if(i == 0) {
+                cols.append(col);
+                i++;
+            }else{
+                cols.append(","+col);
+            }
+        }
+        reader.columns = cols.toString();
+        reader.update();
+        return ok(Json.toJson(s));
+    }
+
+
+
+    public Result xmlExistConfig(){
+        BatchJobService batchJobService = new BatchJobServiceImpl();
+        DynamicForm form = Form.form().bindFromRequest();
+        String classe = form.field("classe").value();
+        Reader reader = new Reader();
+        reader.filePath = form.field("filePath").value();
+        reader.emailUser = session("email");
+        String[] s = batchJobService.getElementAndAttributesFileXml(reader);
+        StringBuffer cols = new StringBuffer();
+        int i = 0;
+        for (String col : s ) {
+            if(i == 0) {
+                cols.append(col);
+                i++;
+            }else{
+                cols.append(","+col);
+            }
+        }
+        reader.columns = cols.toString();
+        reader.update();
+        Attribute newAttribute;
+        int ii=0;
+        for(Attribute attribute : Attribute.findInvolving(classe)){
+            newAttribute = new Attribute();
+            newAttribute.setType(attribute.getType());
+            newAttribute.setSizeo(attribute.getSizeo());
+            newAttribute.setNonNull(attribute.isNonNull());
+            newAttribute.setCommentaires(attribute.getCommentaires());
+            newAttribute.setClasse(form.field("tableName").value());
+            newAttribute.setNameo(Arrays.asList(s).get(ii));
+            newAttribute.save();
+            ii++;
+        }
+        Classe c = new Classe();
+        c.className = reader.tableName;
+        c.user_email = session("email");
+        c.update();
+        reader.columns = cols.toString();
+        reader.save();
+        return  ok(Json.toJson(Attribute.findInvolving(classe)));
+    }
+
 
     public Result csvHeaderColsSelected(){
         Reader reader = Reader.getReaderUser(session("email"));
@@ -81,30 +217,36 @@ public class Application extends Controller {
         return  ok(Json.toJson(list));
     }
 
+
     public Result addAttributeReader(){
         Form<Reader> form = Form.form(Reader.class).bindFromRequest();
         return  ok(Json.toJson(form.get().cols));
     }
 
+
     public Result getTypes() throws NoSuchMethodException, IllegalAccessException, ClassNotFoundException, InstantiationException, CannotCompileException, NotFoundException {
         ApplicationContext context = Global.getApplicationContext();
+        Map<String,String> columnTable =  new LinkedHashMap<>();
         DynamicForm form = Form.form().bindFromRequest();
         JobCompletionNotificationListener jobCompletionNotificationListener = (JobCompletionNotificationListener) context.getBean("listener");
         jobCompletionNotificationListener.setUser(User.find.byId(session("email")));
-        Reader reader = Reader.getReaderUser(session("email"));
+        Reader reader = Reader.find.byId(Reader.maxId());
         List<Attribute> attributes = new ArrayList<>();
         String classe = form.field("tableName").value();
         reader.classeName = classe;
-        reader.update();
+        Reader readerDelete = Reader.getbyClasse(reader.classeName);
+        if(readerDelete != null){
+            readerDelete.delete();
+        }
         int i= 0;
+        Attribute attribute;
         while(form.field("cols["+i+"]").value()!= null){
-            Attribute attribute = new Attribute();
+            attribute = new Attribute();
             if(form.field("pk["+i+"]").value() !=null) {
                 if (form.field("pk[" + i + "]").value().equals("primaryKey")) {
                     attribute.setPko(true);
                 }
             }
-            attribute.setId(reader.id);
             attribute.setNameo(form.field("cols["+i+"]").value());
             attribute.setType(form.field("type["+i+"]").value());
             attribute.setSizeo(form.field("size["+i+"]").value());
@@ -113,109 +255,57 @@ public class Application extends Controller {
                     attribute.setNonNull(true);
                 }
             }
-            attribute.setDefautlVal(form.field("defaultVal["+i+"]").value());
-            attribute.setCommentaire(form.field("commentaire["+i+"]").value());
+               attribute.setDefaut(form.field("defaultVal[" + i + "]").value());
+                attribute.setCommentaires(form.field("commentaire[" + i + "]").value());
             attribute.setClasse(form.field("tableName").value());
             attributes.add(attribute);
             i++;
         }
         BatchJobDao batchJobDao = (BatchJobDao) context.getBean("batchJobDao");
-        BatchJobService batchJobService = new BatchJobServiceImpl(reader,classe,batchJobDao);
-        Map<String,String> columnTable =   batchJobService.columnsWithTypeAndSize(attributes);
-        batchJobService.typeAttributes(attributes);
+        BatchJobService batchJobService = new BatchJobServiceImpl(reader,batchJobDao);
+        batchJobService.typeAttributes(attributes,reader);
         String dropeTable = form.field("dropeTable").value();
         if (dropeTable.equals("true")) {
             batchJobDao.dropTable(classe);
         }
-        Boolean create = batchJobDao.createTableOracle(classe, columnTable,attributes);
-        if (create) {
-            Resume resume = batchJobService.doJob(reader,classe);
-            return ok(Json.toJson(resume));
+        Boolean create = batchJobDao.createTableOracle(reader,attributes);
+        if(create) {
+            return ok(Json.toJson(attributes));
         }else{
-            return ok("errors");
+            return null;
         }
     }
 
-    public Result csvNoHead(){
-        Form<Reader> form = Form.form(Reader.class).bindFromRequest();
-        System.out.println(form.get());
-        if (form.hasErrors()) {
-            // Don't call formData.get() when there are errors, pass 'null' to helpers instead.
-            flash("error", "Please correct errors above.");
-            return badRequest(index.render(batch.model.User.find.byId(request().username())));
-        }
-        if(Reader.getReaderUser(session("email")) != null){
-            Reader.getReaderUser(session("email")).delete();
-        }
-        Reader reader = new Reader();
-        reader.filePath = form.get().filePath;
-        reader.separator = form.get().separator;
-        reader.nbLineToSkip = form.get().nbLineToSkip;
-        reader.emailUser = session("email");
-        reader.cols = form.get().cols;
-
-        StringBuffer cols = new StringBuffer();
-        int i=0;
-        for (String col: reader.cols
-             ) {
-            if(i==0){
-                cols.append(col);
-            }else{
-                cols.append(","+col);
-            }
-            i++;
-        }
-        reader.columns = cols.toString();
-        reader.save();
-        System.out.println("cols "+ cols);
-        return ok(Json.toJson(reader.cols));
+    public Result runjob(){
+        DynamicForm form = Form.form().bindFromRequest();
+        Long id = Long.valueOf(form.field("id").value());
+        Reader reader = Reader.find.byId(id);
+        reader.executed_by = session("email");
+        reader.dateLancement = new Date();
+        reader.update();
+        BatchJobService service = new BatchJobServiceImpl();
+        Resume resume =  service.doJob(reader);
+        return ok(Json.toJson(resume));
     }
+
+
+
+
 
     public Result nbColCsvNoHead(){
         BatchJobService batchJobService = new BatchJobServiceImpl();
         DynamicForm form = Form.form().bindFromRequest();
-        System.out.println(form.data());
         String path = form.field("filePath").value();
         String separator = form.field("separator").value();
-        System.out.println("sep "+ separator);
-            String[] s = batchJobService.firstLineCsvFile(new File(path),separator);
+            List<String> s = batchJobService.firstLineCsvFile(new File(path),separator);
             ObjectNode result = play.libs.Json.newObject();
-            for (String ss:s){
-                System.out.println("s"+ss);
-            }
-            result.put("size",s.length);
+            result.put("size",s.size());
             return ok(result);
-
     }
 
 
-    public Result colsXml() throws IOException {
-        BatchJobService batchJobService = new BatchJobServiceImpl();
-        Form<Reader> form = Form.form(Reader.class).bindFromRequest();
-        Reader reader = Global.getApplicationContext().getBean("reader",Reader.class);
-        if(Reader.getReaderUser(session("email")) != null){
-            Reader.getReaderUser(session("email")).delete();
-        }
-        Reader reader1 = new Reader();
-        reader1.filePath = form.get().filePath;
-        reader1.emailUser = session("email");
-        String[] s = batchJobService.getElementAndAttributesFileXml(new File(reader1.filePath));
-        StringBuffer cols = new StringBuffer();
-        int i = 0;
-        for (String col : s ) {
-            if(i == 0) {
-                cols.append(col);
-                i++;
-            }else{
-                cols.append(","+col);
-            }
-        }
-        reader1.columns = cols.toString();
 
-        reader1.save();
-        reader = reader1;
-        return ok(Json.toJson(s));
-    }
+
 
     public Result delete(int id) {
         //colsSelectedMap.remove(id);
@@ -223,12 +313,12 @@ public class Application extends Controller {
         return ok("removed");
     }
 
+
     public Result metadata() {
         ApplicationContext context = Global.getApplicationContext();
         BatchJobDao batchJobDao = (BatchJobDao) context.getBean("batchJobDao");
         BatchJobService batchJobService = new BatchJobServiceImpl(batchJobDao);
         String[] table = request().body().asFormUrlEncoded().get("tableName");
-        System.out.println("metada table" + table[0]);
         Map<String, String> metadats = batchJobService.dataTable(table[0]);
         ObjectNode result;
         //JsonArrayBuilder jsa =  Json.createArrayBuilder();
@@ -243,6 +333,7 @@ public class Application extends Controller {
 
         return ok(Json.toJson(resuls));
     }
+
 
 
     public Result testJson(Long id){
@@ -267,11 +358,6 @@ public class Application extends Controller {
     }
 
     @Security.Authenticated(Secured.class)
-    public Result param1() {
-        return ok(parameter1.render(batch.model.User.find.byId(request().username())));
-    }
-
-    @Security.Authenticated(Secured.class)
     public Result param2() {
         return ok(parameter2.render(batch.model.User.find.byId(request().username())));
     }
@@ -293,6 +379,8 @@ public class Application extends Controller {
         return redirect(routes.Application.login());
     }
 
+
+
     @Security.Authenticated(Secured.class)
     public Result edit(){
         batch.model.User user = batch.model.User.find.byId(request().username());
@@ -310,16 +398,15 @@ public class Application extends Controller {
         return ok(editPassword.render(form,user));
     }
 
+
     @Security.Authenticated(Secured.class)
     public Result editPassword(){
         batch.model.User user = batch.model.User.find.byId(request().username());
-        System.out.println("User "+ user);
         Form<EditPassword> form = Form.form(EditPassword.class).bindFromRequest();
         if (form.hasErrors()) {
             return badRequest(editPassword.render(form,user));
         }else{
             if(BCrypt.checkpw(form.get().exPassword, user.password)){
-                System.out.println("Her");
                 user.password = BCrypt.hashpw(form.get().password, BCrypt.gensalt());
                 user.update();
                 return ok(editPassword.render(form,user));
@@ -368,40 +455,24 @@ public class Application extends Controller {
         }
     }
 
+
     public Result allMyJobs(){
-        List<BatchExecutionParam> batchExecutionParams = BatchExecutionParam.find.where().eq("STRING_VAL",session("email")).findList();
-        List<BatchJobExecution> batchJobExecutions = new ArrayList<>();
-        for (BatchExecutionParam batchExecutionParam : batchExecutionParams){
-            BatchJobExecution batchJobExecution =  BatchJobExecution.find.byId(batchExecutionParam.getJob_execution_id());
-            batchJobExecutions.add(batchJobExecution);
-        }
-        return ok(Json.toJson(batchJobExecutions));
+        List<Reader> readers = Reader.getByUser(session("email"));
+        return ok(Json.toJson(readers));
     }
 
+
     public Result allMyJobCompleted(){
-        List<BatchExecutionParam> batchExecutionParams = BatchExecutionParam.find.where().eq("STRING_VAL",session("email")).findList();
-        List<BatchJobExecution> batchJobExecutionsStatusCompleted = new ArrayList<>();
-        for (BatchExecutionParam batchExecutionParam : batchExecutionParams){
-            BatchJobExecution batchJobExecution =  BatchJobExecution.find.byId(batchExecutionParam.getJob_execution_id());
-            if(batchJobExecution.status.equals("COMPLETED")) {
-                batchJobExecutionsStatusCompleted.add(batchJobExecution);
-            }
-        }
-        return ok(Json.toJson(batchJobExecutionsStatusCompleted));
+        List<Reader> readers = Reader.getByUserAndCompleted(session("email"));
+        return ok(Json.toJson(readers));
     }
 
 
     public Result allMyJobFailed(){
-        List<BatchExecutionParam> batchExecutionParams = BatchExecutionParam.find.where().eq("STRING_VAL",session("email")).findList();
-        List<BatchJobExecution> batchJobExecutionsStatusFailed = new ArrayList<>();
-        for (BatchExecutionParam batchExecutionParam : batchExecutionParams){
-            BatchJobExecution batchJobExecution =  BatchJobExecution.find.byId(batchExecutionParam.getJob_execution_id());
-            if(batchJobExecution.status.equals("FAILED")) {
-                batchJobExecutionsStatusFailed.add(batchJobExecution);
-            }
-        }
-        return ok(Json.toJson(batchJobExecutionsStatusFailed));
+        List<Reader> readers = Reader.getByUserAndNotCompleted(session("email"));
+        return ok(Json.toJson(readers));
     }
+
 
     public Result allMyJobAbondonned(){
         List<BatchExecutionParam> batchExecutionParams = BatchExecutionParam.find.where().eq("STRING_VAL",session("email")).findList();
@@ -414,6 +485,8 @@ public class Application extends Controller {
         }
         return ok(Json.toJson(batchJobExecutionsStatusAbondonned));
     }
+
+
 
     public Result login() {
         Form form = Form.form(Login.class);
@@ -434,10 +507,10 @@ public class Application extends Controller {
         return ok(login.render(form));
     }
 
+
+
     public Result authenticate() {
         Form<Login> loginForm = Form.form(Login.class).bindFromRequest();
-        System.out.println(loginForm);
-        System.out.println(loginForm);
         if (loginForm.hasErrors()) {
             return badRequest(login.render(loginForm));
         } else {
@@ -446,7 +519,6 @@ public class Application extends Controller {
             session().clear();
             session("email", loginForm.get().email);
                 if(loginForm.get().rememberMe == true) {
-                    System.out.println("REmember me check cookie");
                     response().setCookie("rememberme", play.api.libs.Crypto.crypto().sign(loginForm.get().email) + "-" + loginForm.get().email, 60*60*24*360);
                 }
             return redirect(
@@ -458,15 +530,16 @@ public class Application extends Controller {
         }
     }
 
+
     public Result lockScreen(){
         batch.model.User user = batch.model.User.find.byId(session(("email")));
         return  ok(lockscreen.render(user));
     }
 
+
+
     public Result delockScreen(){
-        System.out.println("delock");
         String[] password = request().body().asFormUrlEncoded().get("password");
-        System.out.println("password"+password[0]);
         batch.model.User user = batch.model.User.authenticate(session(("email")),password[0]);
         if(user != null){
             session("email",user.email);
@@ -477,87 +550,126 @@ public class Application extends Controller {
         }
     }
 
-    public Result getClasses(){
-        if(Classe.find.all()!=null){
-        return ok(Json.toJson(Classe.find.all()));
+
+
+    public Result getReaders(){
+        for (Reader r: Reader.find.all()) {
+            if(r.classeName == null){
+                r.delete();
+            }
+        }
+        if(Reader.find.where().orderBy("DATE_CREATION DESC").findList()!=null){
+        return ok(Json.toJson(Reader.find.where().orderBy("DATE_CREATION DESC").findList()));
         }else{
-            return ok(Json.toJson(new Classe()));
+            return ok(Json.toJson(new Reader()));
         }
     }
+
 
     public Result getAttributes(String  id){
-        System.out.println("id " + id);
-        System.out.println("attribute "+Attribute.findInvolving(id));
-        return  ok(Json.toJson(Attribute.findInvolving(id)));
+        return  ok(Json.toJson(Attribute.findInvolvingNotEqual(id)));
     }
 
-    public Result deleteClasse(String id){
-        List<Attribute> attributes =  Attribute.findInvolving(id);
-        for (Attribute e : attributes){
-            e.find.where().eq("classe",id).delete();
-        }
-        Classe.find.byId(id).delete();
+    public Result getResume(String id){
+        Resume resume = new Resume();
+        Reader reader = Reader.getbyClasse(id);
+        resume.setReader(reader);
+        BatchStepExecution stepExecution = BatchStepExecution.findByJobExecID(reader.jobId);
+        resume.setBatchStepExecution(stepExecution);
+        List<Attribute> attributes = Attribute.findInvolvingNotEqual(id);
+        resume.setAttributes(attributes);
+        List<InputError> inputErrors = InputError.findByJobExecutionId(reader.jobId);
+        resume.setInputError(inputErrors);
+        User user = User.find.byId(session("email"));
+        resume.setUser(user);
+
+        return ok(Json.toJson(resume));
+    }
+
+
+    public Result deleteReader(Long id){
+        Reader r = Reader.find.byId(id);
+        Classe.find.byId(r.classeName).delete();
+        Attribute.dropInvolving(r.classeName);
+        r.delete();
         return ok("deleted");
     }
+
+
 
     public Result register(){
         Form form = Form.form(batch.model.User.class);
         return ok(register.render(form));
     }
 
+
+
+
+
     public Result addUser(){
         Http.MultipartFormData<File> body = request().body().asMultipartFormData();
         Http.MultipartFormData.FilePart<File> picture = body.getFile("picture");
-        batch.model.User user = Form.form(batch.model.User.class).bindFromRequest().get();
-        if (picture != null) {
-            String fileName = picture.getFilename();
-            String contentType = picture.getContentType();
-            File file = picture.getFile();
-            OutputStream out = null;
-            InputStream filecontent = null;
-            try {
-                out = new FileOutputStream(new File("public/template/dist/img/"+fileName));
-                filecontent = new FileInputStream(file);
-                int read = 0;
-                final byte[] bytes = new byte[1024];
+        Form<User> form = Form.form(batch.model.User.class).bindFromRequest();
+        if (form.hasErrors()) {
+            return badRequest(register.render(form));
+        }else {
+            batch.model.User user = Form.form(batch.model.User.class).bindFromRequest().get();
+            if (picture != null) {
+                String fileName = picture.getFilename();
+                String contentType = picture.getContentType();
+                File file = picture.getFile();
+                OutputStream out = null;
+                InputStream filecontent = null;
+                try {
+                    out = new FileOutputStream(new File("public/template/dist/img/" + fileName));
+                    filecontent = new FileInputStream(file);
+                    int read = 0;
+                    final byte[] bytes = new byte[1024];
 
-                while ((read = filecontent.read(bytes)) != -1) {
-                    out.write(bytes, 0, read);
-                }
-                batch.model.User user1 = batch.model.User.create(user.email,user.password,user.first_name,user.last_name,"assets/template/dist/img/"+fileName);
-                user1.save();
-        } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                if (out != null) {
-                    try {
-                        out.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    while ((read = filecontent.read(bytes)) != -1) {
+                        out.write(bytes, 0, read);
+                    }
+                    batch.model.User user1 = batch.model.User.create(user.email, user.password, user.first_name, user.last_name, "assets/template/dist/img/" + fileName);
+                    user1.save();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    if (out != null) {
+                        try {
+                            out.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    if (filecontent != null) {
+                        try {
+                            filecontent.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
-                if (filecontent != null) {
-                    try {
-                        filecontent.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
+            } else {
+                flash("error", "Missing file");
+                return badRequest();
             }
+            return redirect(routes.Application.login());
         }
-            else {
-            flash("error", "Missing file");
-            return badRequest();
-        }
-        return redirect(routes.Application.login());
     }
+
+
+
+
 
     public Result viewedClasses(){
         List<Classe> classe = Classe.find.where().eq("viewed",0).findList();
         return ok(Json.toJson(classe));
     }
+
+
+
 
     public Result viewedClasse(){
         List<Classe> classes = Classe.find.where().eq("viewed",0).findList();
@@ -568,127 +680,19 @@ public class Application extends Controller {
         return ok("ok");
     }
 
-    public Result csvExistHeader(){
-        ApplicationContext context = Global.getApplicationContext();
-        Form<Reader> form = Form.form(Reader.class).bindFromRequest();
-        BatchJobDao batchJobDao = (BatchJobDao) context.getBean("batchJobDao");
+    public Result getReadersdXml(){
+        return  ok(Json.toJson(Reader.getReaderXMl()));
+    }
 
-        Reader reader1 = context.getBean("reader",Reader.class);
-        if(Reader.getReaderUser(session("email")) != null){
-            Reader.getReaderUser(session("email")).delete();
-        }
-        Reader reader = new Reader();
-        reader.fragmentRootName = form.get().fragmentRootName;
-        reader.filePath = form.get().filePath;
-        reader.separator = form.get().separator;
-        reader.nbLineToSkip = form.get().nbLineToSkip;
-        Classe classe = Classe.find.byId(reader.fragmentRootName);
-        System.out.println ("Reader BY CLASSe " +  classe);
-        reader.columns = classe.columns;
-        List<Attribute> attributes = Attribute.findInvolving(reader.fragmentRootName);
-        reader.save();
-        BatchJobService batchJobService = new BatchJobServiceImpl(reader,reader.fragmentRootName,batchJobDao);
-        Map<String,Class<?>> properties = batchJobService.typeAttributes(Attribute.findInvolving(classe.className));
-        JobParameters param = new JobParametersBuilder()
-                .addString("input.file.name", reader.filePath)
-                .addString("separator",reader.separator)
-                .addString("columns",reader.columns)
-                .addString("nbLineToSkip",reader.nbLineToSkip+"")
-                .addString("cData",batchJobDao.getCdata())
-                .addLong("time", System.currentTimeMillis()).toJobParameters();
-
-        JobLauncher jobLauncher = (JobLauncher) context.getBean("jobLauncher");
-        try {
-            if (batchJobService.getExtension(reader.filePath).equals("csv")) {
-                Job job = (Job) context.getBean("csvJob");
-                JobExecution jobExecution = jobLauncher.run(job, param);
-                if (jobExecution.getStatus().equals(BatchStatus.COMPLETED)) {
-                    List<InputError> inputErros = InputError.find.where().eq("job_execution_id",jobExecution.getId()).findList();
-                    Resume resume = new Resume();
-                    System.out.println("job ID " + jobExecution.getId());
-                    System.out.println("Batch "+ BatchStepExecution.find.byId(jobExecution.getId()));
-                    resume.setBatchStepExecution(BatchStepExecution.findByJobExecID(jobExecution.getId()));
-                    resume.setInputError(inputErros);
-                    Generator c = context.getBean("generator", Generator.class);
-                    c.setClassGenerate(null);
-                    return ok(Json.toJson(resume));
-                }else{
-                    //batchJobDao.dropTable(reader.fragmentRootName);
-                    //Classe.dropClasseAndAttribute(reader.fragmentRootName);
-                }
-            }
-        } catch (FlatFileParseException e) {
-            System.out.println("CATCH IT ");
-            e.printStackTrace();
-        } catch (JobExecutionAlreadyRunningException e) {
-            e.printStackTrace();
-        } catch (JobRestartException e) {
-            e.printStackTrace();
-        } catch (JobInstanceAlreadyCompleteException e) {
-            e.printStackTrace();
-        } catch (JobParametersInvalidException e) {
-            e.printStackTrace();
-        }
-        return null;
+    public Result getReadersCsv(){
+        return ok(Json.toJson(Reader.getReaderCSV()));
     }
 
 
-    public Result existXml(){
-        ApplicationContext context = Global.getApplicationContext();
-        Form<Reader> form = Form.form(Reader.class).bindFromRequest();
-        BatchJobDao batchJobDao = (BatchJobDao) context.getBean("batchJobDao");
-        Reader reader1 = context.getBean("reader",Reader.class);
-        if(Reader.getReaderUser(session("email")) != null){
-            Reader.getReaderUser(session("email")).delete();
-        }
-        Reader reader = new Reader();
-        reader.fragmentRootName = form.get().fragmentRootName;
-        reader.filePath = form.get().filePath;
-        Classe classe = Classe.find.byId(reader.fragmentRootName);
-        System.out.println ("Reader BY CLASSe " +  classe);
-        reader.columns = classe.columns;
-        System.out.println("reader columns " +  reader.columns);
-        System.out.println("Attribute");
-        reader.save();
-        BatchJobService batchJobService = new BatchJobServiceImpl(reader,reader.fragmentRootName,batchJobDao);
-        batchJobService.getElementAndAttributesFileXml(new File(reader.filePath));
-        batchJobService.typeAttributes(Attribute.findInvolving(classe.className));
-        JobParameters param = new JobParametersBuilder()
-                .addString("input.file.name", reader.filePath)
-                .addString("cData",classe.cData)
-                .addLong("time", System.currentTimeMillis()).toJobParameters();
-        JobLauncher jobLauncher = (JobLauncher) context.getBean("jobLauncher");
-        try {
-            Job job = (Job) context.getBean("importXML");
-            JobExecution jobExecution = jobLauncher.run(job, param);
-            JobCompletionNotificationListener listener = context.getBean("listener", JobCompletionNotificationListener.class);
-            if (jobExecution.getStatus().equals(BatchStatus.COMPLETED)) {
-                List<InputError> inputErros = InputError.find.where().eq("job_execution_id",jobExecution.getId()).findList();
-                Resume resume = new Resume();
-                System.out.println("job ID " + jobExecution.getId());
-                System.out.println("Batch "+ BatchStepExecution.find.byId(jobExecution.getId()));
-                resume.setBatchStepExecution(BatchStepExecution.findByJobExecID(jobExecution.getId()));
-                resume.setInputError(inputErros);
-                Generator c = context.getBean("generator", Generator.class);
-                c.setClassGenerate(null);
-                return ok(Json.toJson(resume));
-            }else{
-               // batchJobDao.dropTable(reader.fragmentRootName);
-            }
-    } catch (FlatFileParseException e) {
-        System.out.println("CATCH IT ");
-        e.printStackTrace();
-    } catch (JobExecutionAlreadyRunningException e) {
-        e.printStackTrace();
-    } catch (JobRestartException e) {
-        e.printStackTrace();
-    } catch (JobInstanceAlreadyCompleteException e) {
-        e.printStackTrace();
-    } catch (JobParametersInvalidException e) {
-        e.printStackTrace();
-    }
-    return null;
 
-    }
+
+
+
 
 }
+

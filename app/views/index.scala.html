@@ -65,13 +65,12 @@
     </div>
    </div>
   </div>
-
 <div class="row">
  <!-- PRODUCT LIST -->
- <div class="col-md-9">
+ <div class="col-xs-12">
   <div class="box box-info">
    <div class="box-header with-border">
-    <h3 class="box-title">Latest Table Created </h3>
+    <h3 class="box-title"> Les derniers Jobs paramétrer </h3>
 
     <div class="box-tools pull-right">
      <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
@@ -81,19 +80,27 @@
    </div>
     <!-- /.box-header -->
    <div class="box-body">
-    <div class="table-responsive">
-     <table id="latestTabId" class="table no-margin" >
+
+     <table id="latestTabId" class="table table-striped" cellspacing="0" width="100%" style="font-size:15px;">
       <thead>
        <tr>
-        <th>Table Name</th>
-        <th>Show </th>
-        <th>Delete </th>
+        <th > Date Création</th>
+        <th > File </th>
+        <th>Nb line skiped</th>
+        <th > Table </th>
+        <th > Date Lancement</th>
+        <th > Executed by </th>
+        <th >  Resultat </th>
+        <th >Nombre de lines ajouter</th>
+        <th >Nombre de lines Non ajouter </th>
+        <th > Lancer  </th>
+        <th > Supprimer  </th>
+        <th > More Détail  </th>
        </tr>
       </thead>
       <tbody id="latestTab">
       </tbody>
      </table>
-    </div>
      <!-- /.table-responsive -->
    </div>
     <!-- /.box-body -->
@@ -104,5 +111,55 @@
   </div>
   </div>
 </div>
+
+
+
+
+
+
+
+
+
+
+
+
+ <div id="myModalx" class="modal modal-fullscreen fade"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog " style="width:1124px;">
+   <div class="modal-content">
+    <div class="modal-header">
+     <button type="button" class="close" data-dismiss="modal">
+      <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+     </button>
+     <h4 class="modal-title" id="myModalLabel">Report de batch </h4>
+    </div>
+    <div class="modal-body" id="resume">
+
+    </div>
+ </div>
+   <div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+   </div>
+ </div>
+ </div>
+
+
+ <div id="myModalxy" class="modal modal-fullscreen fade"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog " style="width:1124px;">
+   <div class="modal-content">
+    <div class="modal-header">
+     <button type="button" class="close" data-dismiss="modal">
+      <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+     </button>
+     <h4 class="modal-title" id="myModalLabel">Report de batch </h4>
+    </div>
+    <div class="modal-body" id="resume1">
+
+    </div>
+   </div>
+   <div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+   </div>
+  </div>
+ </div>
 
 }

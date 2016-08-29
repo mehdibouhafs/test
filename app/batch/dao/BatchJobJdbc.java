@@ -1,6 +1,9 @@
 package batch.dao;
 
+import batch.business.BatchJobService;
+import batch.business.BatchJobServiceImpl;
 import batch.model.Attribute;
+import batch.model.Classe;
 import batch.model.Reader;
 import com.avaje.ebean.annotation.Transactional;
 import org.springframework.context.ApplicationContext;
@@ -9,84 +12,191 @@ import org.springframework.jdbc.datasource.DataSourceUtils;
 import running.Global;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.Date;
 
 /**
  * Created by MBS on 16/08/2016.
  */
 
 public class BatchJobJdbc extends JdbcTemplate implements BatchJobDao {
-    private String cData;
 
-    @Transactional
+    public BatchJobJdbc() {
+
+    }
+
+    public Map<String, String> generatedColumnsTable(List<Attribute> attributes) {
+        Map<String, String> columnsTable = new LinkedHashMap<>();
+        StringBuffer query;
+        for (Attribute attribute : attributes){
+            if(!attribute.getType().equals("object")) {
+                query = new StringBuffer();
+                if (attribute.getSizeo() != null && !attribute.getSizeo().equals("")) {
+                    //columnsTable.put(attribute.getNameo(), attribute.getType() + "-" + attribute.getSizeo());
+                    query.append(attribute.getType() + "-" + attribute.getSizeo());
+                } else {
+                    columnsTable.put(attribute.getNameo(), attribute.getType() + "-nul");
+                    query.append(attribute.getType() + "-nul");
+                }
+                if (attribute.isPko()) {
+                    query.append("-pk");
+                } else {
+                    query.append("-nul");
+                }
+                if (attribute.getDefaut() != null && !attribute.getDefaut().equals("")) {
+                    query.append("-" + attribute.getDefaut());
+                } else {
+                    query.append("-nul");
+                }
+                if (attribute.isNonNull()) {
+                    query.append("-nonNull");
+                } else {
+                    query.append("-nul");
+                }
+                if (attribute.getCommentaires() != null && !attribute.getCommentaires().equals("")) {
+                    query.append("-" + attribute.getCommentaires());
+                } else {
+                    query.append("-nul");
+                }
+
+                columnsTable.put(attribute.getNameo(), query.toString());
+            }
+
+        }
+        System.out.println ("cols gereatedColumns"+ columnsTable);
+        return columnsTable;
+    }
+
     @Override
-    public boolean createTableOracle(String name, Map<String, String> columnsTable,List<Attribute> attributes) {
-        ApplicationContext context = Global.getApplicationContext();
-        Reader reader = context.getBean("reader",Reader.class);
+    public boolean createTableOracle(Reader reader,List<Attribute> attributes) {
+            int i = 0;
+            StringBuffer query = new StringBuffer();
+            StringBuffer query2 = new StringBuffer();
+            StringBuffer query3 = new StringBuffer();
+            StringBuffer primaryKey = new StringBuffer();
+            String commentaire;
+            boolean b = false;
+            if (attributes.size() <= 0 || reader.classeName.equals("")) {
+                System.out.println("Columns < 0");
+                return false;
+            }
+        Map<String,String> columnTable = generatedColumnsTable(attributes);
+        System.out.println("columnTable  entryset createtable  " + columnTable);
+            for (Map.Entry<String, String> entry : columnTable.entrySet()) {
+                String[] typeSize = entry.getValue().split("-");
+                if(b==false){
+                    if(typeSize[2].equals("pk")){
+                        primaryKey = new StringBuffer(", CONSTRAINT "+reader.classeName+"_PK PRIMARY KEY (" + entry.getKey());
+                        b = true;
+                    }
+                }
+                if (i == 0) {
+                    System.out.println(typeSize[0]);
+                    if (typeSize[1].equals("nul")) {
+                        query = new StringBuffer("CREATE TABLE " + reader.classeName + " ("
+                                + entry.getKey() + " " + typeSize[0]);
+                    } else {
+                        query = new StringBuffer("CREATE TABLE " + reader.classeName + " ("
+                                + entry.getKey() + " " + typeSize[0] + "(" + typeSize[1] + ")");
+                    }
+                    query2 = new StringBuffer("INSERT INTO " + reader.classeName + " ("
+                            + entry.getKey());
+                    query3 = new StringBuffer("(?");
+
+                    if(!typeSize[3].equals("nul")){
+                        query.append(" DEFAULT "+typeSize[3]);
+                    }
+                    if(!typeSize[4].equals("nul")){
+                        query.append(" NOT NULL");
+                    }
+                    i++;
+                } else {
+                    if (typeSize[1].equals("nul")) {
+                        query.append(", " + entry.getKey() + " " + typeSize[0]);
+                    } else {
+                        query.append(", " + entry.getKey() + " " + typeSize[0] + "(" + typeSize[1] + ")" );
+                    }
+                    if(!typeSize[3].equals("nul")){
+                        query.append(" DEFAULT "+typeSize[3]);
+                    }
+                    if(!typeSize[4].equals("nul")){
+                        query.append(" NOT NULL");
+                    }
+
+
+                    query2.append(", " + entry.getKey());
+                    query3.append(",?");
+                }
+            }
+            if (b == true) {
+                primaryKey.append(") ENABLE ");
+                query.append(primaryKey);
+            }
+            query.append(")");
+            query2.append(") VALUES ");
+            query3.append(")");
+
+            System.out.println("Query 1 : " + query.toString());
+            System.out.println("Query2 :" + query2.toString());
+            System.out.println("Query 3: " + query3.toString());
+            reader.dateCreation = new Date();
+            reader.update();
+            //execute(query.toString());
+            return true;
+    }
+
+
+    public String buildCdata(Reader reader,List<Attribute> attributes) {
         int i = 0;
         StringBuffer query = new StringBuffer();
         StringBuffer query2 = new StringBuffer();
+        StringBuffer columns = new StringBuffer();
         StringBuffer query3 = new StringBuffer();
         StringBuffer primaryKey = new StringBuffer();
-        String commentaire;
-
-        List<String> comments = new ArrayList<>();
-
         boolean b = false;
-
-
-        if (columnsTable.size() <= 0 || name.equals("")) {
-            System.out.println("Columns < 0");
-            return false;
-        }
-        for (Map.Entry<String, String> entry : columnsTable.entrySet()) {
+        Map<String,String> columnTable = generatedColumnsTable(attributes);
+        System.out.println("columnTable  entryset createtable  " + columnTable);
+        for (Map.Entry<String, String> entry : columnTable.entrySet()) {
             String[] typeSize = entry.getValue().split("-");
-
-            if (!typeSize[5].equals("")) {
-                commentaire = "COMMENT ON COLUMN " + name + "." + entry.getKey() + " IS '" + typeSize[5] + "'";
-                comments.add(commentaire);
-            }
-            if (typeSize[3].equals("PrimaryKey") && b == true) {
-                primaryKey.append("," + entry.getKey());
-            }
-            if (b == false) {
-                if (typeSize[3].equals("PrimaryKey")) {
-                    primaryKey = new StringBuffer(", CONSTRAINT " + name + "_PK PRIMARY KEY (" + entry.getKey());
+            if(b==false){
+                if(typeSize[2].equals("pk")){
+                    primaryKey = new StringBuffer(", CONSTRAINT "+reader.classeName+"_PK PRIMARY KEY (" + entry.getKey());
                     b = true;
                 }
             }
             if (i == 0) {
                 System.out.println(typeSize[0]);
-                if (typeSize[1].equals("")) {
-                    System.out.println("Containe NUmber or Float");
-                    query = new StringBuffer("CREATE TABLE " + name + " ("
-                            + entry.getKey() + " " + typeSize[0] + typeSize[4] + typeSize[2]);
+                if (typeSize[1].equals("nul")) {
+                    query = new StringBuffer("CREATE TABLE " + reader.classeName + " ("
+                            + entry.getKey() + " " + typeSize[0]);
                 } else {
-                    if (typeSize[1].equals("DATE")) {
-                        query = new StringBuffer("CREATE TABLE " + name + " ("
-                                + entry.getKey() + " " + typeSize[0] + typeSize[4] + typeSize[2]);
-                    } else {
-                        query = new StringBuffer("CREATE TABLE " + name + " ("
-                                + entry.getKey() + " " + typeSize[0] + "(" + typeSize[1] + ")" + typeSize[4] + typeSize[2]);
-                    }
+                    query = new StringBuffer("CREATE TABLE " + reader.classeName + " ("
+                            + entry.getKey() + " " + typeSize[0] + "(" + typeSize[1] + ")");
                 }
-                query2 = new StringBuffer("INSERT INTO " + name + " ("
+                query2 = new StringBuffer("INSERT INTO " + reader.classeName + " ("
                         + entry.getKey());
                 query3 = new StringBuffer("(?");
+
+                if(!typeSize[3].equals("nul")){
+                    query.append(" DEFAULT '"+typeSize[3]+"'");
+                }
+                if(!typeSize[4].equals("nul")){
+                    query.append(" NOT NULL");
+                }
                 i++;
             } else {
-                if (typeSize[1].equals("")) {
-                    query.append(", " + entry.getKey() + " " + typeSize[0] + typeSize[4] + typeSize[2]);
+                if (typeSize[1].equals("nul")) {
+                    query.append(", " + entry.getKey() + " " + typeSize[0]);
                 } else {
-                    if (typeSize[1].equals("DATE")) {
-                        query.append(", " + entry.getKey() + typeSize[2] + typeSize[3]);
-                    } else {
-                        query.append(", " + entry.getKey() + " " + typeSize[0] + "(" + typeSize[1] + ")" + typeSize[4] + typeSize[2]);
-                    }
+                    query.append(", " + entry.getKey() + " " + typeSize[0] + "(" + typeSize[1] + ")" );
                 }
+                if(!typeSize[3].equals("nul")){
+                    query.append(" DEFAULT '"+typeSize[3]+"'");
+                }
+                if(!typeSize[4].equals("nul")){
+                    query.append(" NOT NULL");
+                }
+
                 query2.append(", " + entry.getKey());
                 query3.append(",?");
             }
@@ -99,27 +209,26 @@ public class BatchJobJdbc extends JdbcTemplate implements BatchJobDao {
         query2.append(") VALUES ");
         query3.append(")");
 
-        try {
-            System.out.println("Query" + query.toString());
-            System.out.println("Query" + query2.toString());
-            System.out.println("Query" + query3.toString());
-            String cData = (query2.append(query3)).toString();
-            this.cData = cData;
-            execute(query.toString());
-            for (String s : comments) {
-                System.out.println("com " + s);
-                execute(s);
-            }
-            reader.cData = cData;
-            for (Attribute attribute :attributes){
-                attribute.save();
-            }
+        System.out.println("Query 1 : " + query.toString());
+        System.out.println("Query2 :" + query2.toString());
+        System.out.println("Query 3: " + query3.toString());
+        String cData = (query2.append(query3)).toString();
+        return cData +";"+query.toString()+";"+columns.toString();
+    }
 
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+    public List<String> getCommentaires(String table,List<Attribute> attributes){
+        String commentaire;
+        List<String> comments = new ArrayList<>();
+        Map<String,String> columnTable = generatedColumnsTable(attributes);
+        for (Map.Entry<String,String> entry : columnTable.entrySet()) {
+            String[] typeSize = entry.getValue().split("-");
+
+            if(!typeSize[5].equals("")){
+                commentaire="COMMENT ON COLUMN "+table+"."+entry.getKey()+" IS '"+typeSize[5]+"'";
+                comments.add(commentaire);
+            }
         }
+        return  comments;
 
     }
 
@@ -193,9 +302,16 @@ public class BatchJobJdbc extends JdbcTemplate implements BatchJobDao {
         return map;
     }
 
+
     @Override
-    public String getCdata() {
-        return cData;
+    public Boolean executer(String query) {
+        try {
+            execute(query);
+            return true;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return false;
     }
 }
 

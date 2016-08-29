@@ -17,14 +17,12 @@ import java.util.Map;
  */
 public interface BatchJobService {
 
-    public Resume doJob(Reader reader,String classe);
-    public String[] firstLineCsvFile(File f, String delimiter);
-    public String[] getElementAndAttributesFileXml(File f);
-    public Map<String, Class<?>> typeAttributes(List<Attribute> attributes);
-    public Map<String, String> columnsWithTypeAndSize(List<Attribute> attributes);
-    public boolean createTable(String name, Map<String,String> columnsTable,List<Attribute> attributes);
-    public boolean dropTable(String name);
+    public Resume doJob(Reader reader);
+    public List<String> firstLineCsvFile(File f, String delimiter);
+    public String[] getElementAndAttributesFileXml(Reader reader);
+    public Map<String, Class<?>> typeAttributes(List<Attribute> attributes,Reader reader);
     public Map<String,String > dataTable(String table);
     public String getExtension(String fileName);
-   //public String[] firstLine(File f);
+
+
 }

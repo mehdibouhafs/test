@@ -4,16 +4,18 @@
 # --- !Ups
 
 create table a_mbs3_attribute (
-  id                            number(19),
+  id                            number(19) not null,
   type                          varchar2(255),
   nameo                         varchar2(255),
   sizeo                         varchar2(255),
   pko                           number(1),
   non_null                      number(1),
-  defautl_val                   varchar2(255),
-  commentaire                   varchar2(255),
-  classe                        varchar2(255)
+  commentaires                  varchar2(255),
+  defaut                        varchar2(255),
+  classe                        varchar2(255),
+  constraint pk_a_mbs3_attribute primary key (id)
 );
+create sequence A_MBS3_Attribute_seq;
 
 create table batch_job_execution_params (
   job_execution_id              number(19) not null,
@@ -80,9 +82,6 @@ create table a_mbs3_classe (
   class_name                    varchar2(255) not null,
   user_email                    varchar2(255),
   viewed                        number(10),
-  c_data                        varchar2(255),
-  columns                       varchar2(255),
-  classe_generated              varchar2(255),
   constraint pk_a_mbs3_classe primary key (class_name)
 );
 
@@ -103,8 +102,16 @@ create table a_mbs3_reader (
   nb_line_to_skip               number(10),
   classe_name                   varchar2(255),
   columns                       varchar2(255),
-  id_attribute                  number(19),
   email_user                    varchar2(255),
+  date_creation                 timestamp,
+  date_lancement                timestamp,
+  table_name                    varchar2(255),
+  executed                      number(1),
+  resultat                      number(1),
+  executed_by                   varchar2(255),
+  job_id                        number(19),
+  nb_lines_success              number(19),
+  nb_lines_failed               number(19),
   constraint pk_a_mbs3_reader primary key (id)
 );
 create sequence a_mbs3_reader_seq;
@@ -126,6 +133,7 @@ create table a_mbs3_user (
 # --- !Downs
 
 drop table a_mbs3_attribute cascade constraints purge;
+drop sequence A_MBS3_Attribute_seq;
 
 drop table batch_job_execution_params cascade constraints purge;
 drop sequence BATCH_JOB_EXECUTION_PARAMS_seq;

@@ -13,7 +13,6 @@ libraryDependencies ++= Seq(
   cache,
   javaWs,
   filters,
-  "com.google.inject" % "guice" % "4.0-beta",
   "org.springframework.retry" % "spring-retry" % "1.1.2.RELEASE",
 "org.springframework" % "spring-context" % "4.2.4.RELEASE",
 "org.springframework" % "spring-core" % "4.2.4.RELEASE",

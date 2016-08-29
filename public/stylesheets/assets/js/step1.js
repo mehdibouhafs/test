@@ -1,10 +1,7 @@
 $(document).ready(function() {
     var allTables;
     var i = 0;
-
-
     var my_delay = 10000;
-
     // call your ajax function when the document is ready...
     $(function() {
         callAjax();
@@ -43,35 +40,91 @@ $(document).ready(function() {
             }
         });
     });
-
-
+    
     function loger() {
         console.log("ok");
     }
     
-    
     $("#home").on('click',function () {
         window.location.href = "/home";
     })
-    
 
     $.ajax({
         type: "GET",//la method à utiliser soit POST ou GET
-        url: "/classes", //lien de la servlet qui exerce le traitement sur les données
+        url: "/readers", //lien de la servlet qui exerce le traitement sur les données
         dataType: 'json',
         success: function (data) {// le cas ou la requete est bien execute en reçoi les données serialiser par JSON dans la variable msg
             //recuperation de la valeur stock dans l'attribut desactive
+            var executedBy;
+            var executed;
+            var resultat;
+            var lancement;
+            var path;
+            console.log("data[0] "  +data[0]);
             for (var i = 0; i < data.length; i++) {
-                $("#latestTab").append("<tr id='"+i+"' value='"+data[i].className+"'>" +
-                    "<td >" + data[i].className + "</td>" +
-                    "<td><button class='attribute' value='" + data[i].className + "'>" +"<span class='fa fa-eye'></span></a></button></div></td>"+
-                    "<td><button  class='btn btn-danger' value='" + data[i].className + "'><span class='glyphicon glyphicon-remove-sign'></span></button></td></tr>");
+                if (data[i].executed_by == null) {
+                    executedBy = "<span class='label label-danger'> Not Executed yet </span>";
+                } else {
+                    executedBy = "<span class='label label-success'>" + data[i].executed_by + "</span>";
+                }
+                if (data[i].executed == false) {
+                    executed = "<span class='label label-danger'> Not Executed yet </span>";
+                } else {
+                    executed = "<span class='label label-success'> True </span>";
+                }
+                if (data[i].resultat == false) {
+                    resultat = "<span class='label label-danger'> Not disponible </span>";
+                } else {
+                    resultat = "<span class='label label-success'>Success</span>";
+                }
+                if (data[i].dateLancement == null) {
+                    lancement = "<span class='label label-danger'> Pas encore lancer </span>";
+                } else {
+                    lancement = "<span class='label label-success'> " + moment(data[i].dateLancement).format("DD/MM/YYYY HH:mm:ss") + " </span>";
+                }
+                if (data[i].filePath.split("/")[data[i].filePath.split("/").length - 1].length > 20) {
+                    path = data[i].filePath.split("\\")[data[i].filePath.split("\\").length - 1];
+                } else {
+                    path = data[i].filePath.split("/")[data[i].filePath.split("/").length - 1];
+                }
+                if (data[i].executed == true) {
+                    $("#latestTab").append("<tr  class='success' id='" + i + "' value='" + data[i].id + "'>" +
+                        "<td ><span class='label label-default'>" + moment(data[i].dateCreation).format("DD/MM/YYYY HH:mm:ss") + "</span></td>" +
+                        "<td ><span class='label label-default'>" + path + "</span></td>" +
+                        "<td ><span class='label label-default'>" + data[i].nbLineToSkip + "</span></td>" +
+                        "<td ><span class='label label-default'>" + data[i].classeName + "</span></td>" +
+                        "<td >" + lancement + "</td>" +
+                        "<td >" + executedBy.split("@")[0] + "</td>" +
+                        "<td >" + resultat + "</td>" +
+                        "<td><span class='label label-default'>" + data[i].nbLinesSuccess + "</span></td>" +
+                        "<td> <span class='label label-default'>" + data[i].nbLinesFailed + "</span></td>" +
+                        "<td><button  class='btn btn-success' value='" + data[i].id + "'><span class='glyphicon glyphicon glyphicon-play'></span></button></td>" +
+                        "<td><button  class='btn btn-danger' value='" + data[i].id + "'><span class='glyphicon glyphicon-remove-sign'></span></button></td>" +
+                        "<td><button  class='btn btn-primary' value='" + data[i].classeName + "'><span class='glyphicon glyphicon-eye-open'></span></button></td></tr>");
+                } else {
+                    $("#latestTab").append("<tr  id='" + i + "' value='" + data[i].id + "'>" +
+                        "<td ><span class='label label-default'>" + moment(data[i].dateCreation).format("DD/MM/YYYY HH:mm:ss") + "</span></td>" +
+                        "<td ><span class='label label-default'>" + path + "</span></td>" +
+                        "<td ><span class='label label-default'>" + data[i].nbLineToSkip + "</span></td>" +
+                        "<td ><span class='label label-default'>" + data[i].classeName + "</span></td>" +
+                        "<td >" + lancement + "</td>" +
+                        "<td >" + executedBy.split("@")[0] + "</td>" +
+                        "<td >" + resultat + "</td>" +
+                        "<td><span class='label label-default'> " + data[i].nbLinesSuccess + "</span></td>" +
+                        "<td><span class='label label-default'>" + data[i].nbLinesFailed + "</span></td>" +
+                        "<td><button  class='btn btn-success' value='" + data[i].id + "'><span class='glyphicon glyphicon glyphicon-play'></span></button></td>" +
+                        "<td><button  class='btn btn-danger' value='" + data[i].id + "'><span class='glyphicon glyphicon-remove-sign'></span></button></td>" +
+                        "<td><button  class='btn btn-primary' value='" + data[i].classeName + "'><span class='glyphicon glyphicon-eye-open'></span></button></td></tr>");
+                }
             }
+
             allTables = $('#latestTabId').DataTable({
                 'fnClearTable': true,
-                "scrollY": "300px",
+                "order": [[ 0, "desc" ]],
+                "scrollY":        "500px",
                 "scrollCollapse": true
             });
+            
         },
         error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
             console.log("error");
@@ -91,15 +144,455 @@ $(document).ready(function() {
     });
 
 
-    $("#validateExisteCsv").on('click',function (e) {
+    /*var colSelected1;
+    $('#latestTabId1 tbody').on( 'click', 'tr', function () {
+        if ( $(this).hasClass('selected') ) {
+            $(this).removeClass('selected');
+        }
+        else {
+            allTables.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+            colSelected= $(this).attr('value');
+        }
+    });*/
+
+
+    $('#latestTabId').on('click', '.btn-danger', function (e) {
         e.preventDefault();
-        var classe = "fragmentRootName="+colSelected+"&";
-        var data = classe.concat($('#form00').serialize());
+        var table = $('#latestTabId').DataTable();
+        table
+            .row( $(this).parents('tr') )
+            .remove()
+            .draw();
         $.ajax({
-            type: "POST",//la method à utiliser soit POST ou GET
-            url: "/csvExistHeader", //lien de la servlet qui exerce le traitement sur les données
-            data:data,
-            dataType: 'json',
+            type:'GET',
+            url:'/deleteReader/'+$(this).val(),
+            dataType:'json',
+            sucess:function (data) {
+                console.log("deleted");
+            },
+            error:function () {
+                console.log("not deleted");
+            }
+        });
+    });
+
+
+
+
+    $(document).on("click", "#btn-danger", function(event){
+        event.preventDefault();
+        var table = $('#latestTabId').DataTable();
+        table
+            .row( $(this).parents('tr') )
+            .remove()
+            .draw();
+        $.ajax({
+            type:'GET',
+            url:'/deleteReader/'+$(this).val(),
+            dataType:'json',
+            sucess:function (data) {
+                console.log("deleted");
+            },
+            error:function () {
+                console.log("not deleted");
+            }
+        });
+    });
+
+
+
+    $('#latestTabId').on('click', '.btn-primary', function (e) {
+        e.preventDefault();
+        var table = $('#latestTabId').DataTable();
+        $.ajax({
+            type:'GET',
+            url:'/resume/'+$(this).val(),
+            dataType:'json',
+                success: function (data) {// le cas ou la requete est bien execute en reçoi les données serialiser par JSON dans la variable msg
+                    //recuperation de la valeur stock dans l'attribut desactive
+                    var contenu = '<div class="container-fluid"><div class="row"> <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"> <div class="panel panel-primary"> <div class="panel-heading"><h2>Configuration Fichier</h2></div>'+
+                    '<div class="panel-body"><div class="row">'+
+                        '<table class="table table-bordered table-hover" id="table_resume">'+
+                        '<thead> <tr> <th width="52%">File Path</th> <th width="1%%">Type</th> <th width="1%">Séparateur</th> <th width="8%">Nombre de ligne skipped</th> <th width="30%"> header</th> <th width="10%">Date de création</th> </tr> </thead><tbody>'+
+                    '<tr><td>'+data.reader.filePath+'</td> <td>'+data.reader.filePath.split(".")[1]+'</td> <td>'+data.reader.separator+'</td><td>'+data.reader.nbLineToSkip+'</td> <td>'+data.reader.columns+'</td> <td>'+moment(data.reader.dateCreation).format("DD/MM/YYYY HH:mm:ss")+'</td></tr></tbody> </table></div> </div> </div> </div> </div>';
+                    contenu +='<div class="row"><div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"> <div class="panel panel-primary"> <div class="panel-heading"> <h2>Table configuration </h2></div> <div class="panel-body">'+
+                                '<table id="table_auto" class="table table-striped" cellspacing="0" width="100%"> <thead> <tr> <th width="2%">Primary key</th> <th width="15%">column</th> <th width="15%">Type</th> <th width="10%">Size</th> <th width="2%"> Not null</th> <th width="20%">Default</th> <th width="36%">Commentaire</th> </tr> </thead><tbody>';
+                   console.log("length "+ data.attributes[0].pko);
+                    for(var i = 0;i<data.attributes.length;i++) {
+                        var qq,ss,object,sizeo,defaut,commentaires;
+                        if(data.attributes[i].pko == true){
+                            console.log("TRUE");
+                            qq= "<input type='checkbox'  checked='checked' disabled>";
+                        }else{
+                            console.log("FALSEE");
+                            qq = "<input type='checkbox'  disabled>";
+                        }
+                        if(data.attributes[i].nonNull == true){
+                            ss= "<input type='checkbox'  checked='checked' disabled>";
+                        }else{
+                            ss = "<input type='checkbox'  disabled>";
+                        }
+                        if(data.attributes[i].type == "object"){
+                            object = "Non Sélectionné";
+                        }else{
+                            object = data.attributes[i].type;
+                        }
+                        if(data.attributes[i].sizeo == null){
+                            sizeo="";
+                        }else{
+                            sizeo = data.attributes[i].sizeo;
+                        }
+                        if(data.attributes[i].defaut == null){
+                            defaut = "";
+                        }else{
+                            defaut=data.attributes[i].defaut;
+                        }
+                        if(data.attributes[i].commentaires==null){
+                            commentaires = "";
+                        }else{
+                            commentaires = data.attributes[i].commentaires;
+                        }
+                        contenu += '<tr> <td>'+qq+'</td><td>'+data.attributes[i].nameo+'</td><td>'+object+'</td><td>'+sizeo+'</td><td>'+ss+'</td><td>'+defaut+'</td><td>'+commentaires+'</td></tr>';
+                    }
+
+                    if(data.reader.executed == true) {
+                    contenu+='</tbody></table> </div> </div> </div></div><div class="row"> <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"><div class="panel panel-primary"> <div class="panel-heading"> <h2>Batch Report</h2></div> <div class="panel-body">'+
+                        '<table class="table table-bordered table-hover" id="table_auto"><thead> <tr> <th width="2%">Job Id</th> <th width="4%">Type de Job</th> <th width="10%">Start time</th> <th width="10%">End time </th> <th width="10%">status</th> <th width="10%">Read count</th> <th width="10%">Filter count</th> <th width="10%">Write count</th> <th width="10%">Read skip count</th> <th width="10%">Write skip count</th> <th width="10%">Process skip count</th> <th width="4%">Rollback count</th> </tr> </thead>'+
+                    '<tbody> <tr> <td>'+data.batchStepExecution.job_execution_id+'</td> <td>'+data.batchStepExecution.step_name+'</td> <td>'+moment(data.batchStepExecution.start_time).format("DD/MM/YYYY HH:mm:ss")+'</td> <td>'+moment(data.batchStepExecution.end_time).format("DD/MM/YYYY HH:mm:ss")+'</td> <td>'+data.batchStepExecution.status+'</td> <td>'+data.batchStepExecution.read_count+'</td> <td>'+data.batchStepExecution.filter_count+'</td> <td>'+data.batchStepExecution.write_count+'</td> <td>'+data.batchStepExecution.read_skip_count+'</td> <td>'+data.batchStepExecution.write_skip_count+'</td> <td>'+data.batchStepExecution.process_skip_count+'</td> <td>'+data.batchStepExecution.rollback_count+'</td> </tr> </tbody> </table> </div> </div> </div> </div>';
+
+                        if (data.inputError.length > 0) {
+                            contenu += '<div class="row"> <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"><div class="panel panel-danger"> <div class="panel-heading"><h2> Error input : </h2></div> <div class="panel-body"> <table class="table table-bordered table-hover" id="table_auto"> <thead> <tr> <th width="5%">Line Number</th> <th width="35%">Line</th> <th width="60%">Messages</th> </tr> </thead><tbody>';
+
+                            for (var jj = 0; jj < data.inputError.length; jj++) {
+                                contenu += '<tr> <td>' + data.inputError[jj].lineNumber + '</td><td>' + data.inputError[jj].line + '</td> <td>' + data.inputError[jj].messages + '</td> </tr>';
+                            }
+                            contenu += '</tbody> </table> </div> </div> </div> </div></div></div>';
+                        } else {
+                            contenu += '<div class="row"> <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"><div class="panel panel-success"> <div class="panel-heading"><h2> Success : </h2></div> <div class="panel-body"> Toutes les lines ont été ajoutés</div></div>';
+                        }
+                    }
+                    $("#resume").html("");
+                    $('#resume').append(contenu);
+                    $("#myModalx").modal().show();
+                    
+                },
+                error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
+                    console.log("error");
+                }
+            });
+    });
+
+
+
+    $('#latestTabId1').on('click', '.btn-primary', function (e) {
+        console.log("lol");
+        e.preventDefault();
+        $.ajax({
+            type:'GET',
+            url:'/resume/'+$(this).val(),
+            dataType:'json',
+            success: function (data) {// le cas ou la requete est bien execute en reçoi les données serialiser par JSON dans la variable msg
+                //recuperation de la valeur stock dans l'attribut desactive
+                var contenu = '<div class="container-fluid"><div class="row"> <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"> <div class="panel panel-primary"> <div class="panel-heading"><h2>Configuration Fichier</h2></div>'+
+                    '<div class="panel-body"><div class="row">'+
+                    '<table class="table table-bordered table-hover" id="table_resume">'+
+                    '<thead> <tr> <th width="52%">File Path</th> <th width="1%%">Type</th> <th width="1%">Séparateur</th> <th width="8%">Nombre de ligne skipped</th> <th width="30%"> header</th> <th width="10%">Date de création</th> </tr> </thead><tbody>'+
+                    '<tr><td>'+data.reader.filePath+'</td> <td>'+data.reader.filePath.split(".")[1]+'</td> <td>'+data.reader.separator+'</td><td>'+data.reader.nbLineToSkip+'</td> <td>'+data.reader.columns+'</td> <td>'+moment(data.reader.dateCreation).format("DD/MM/YYYY HH:mm:ss")+'</td></tr></tbody> </table></div> </div> </div> </div> </div>';
+                contenu +='<div class="row"><div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"> <div class="panel panel-primary"> <div class="panel-heading"> <h2>Table configuration </h2></div> <div class="panel-body">'+
+                    '<table  id="table_auto1" class="table table-striped" cellspacing="0" width="100%"> <thead> <tr> <th width="2%">Primary key</th> <th width="15%">column</th> <th width="15%">Type</th> <th width="10%">Size</th> <th width="2%"> Not null</th> <th width="20%">Default</th> <th width="36%">Commentaire</th> </tr> </thead><tbody>';
+                console.log("length "+ data.attributes[0].pko);
+                for(var i = 0;i<data.attributes.length;i++) {
+                    var qq,ss,object,sizeo,defaut,commentaires;
+                    if(data.attributes[i].pko == true){
+                        console.log("TRUE");
+                        qq= "<input type='checkbox'  checked='checked' disabled>";
+                    }else{
+                        console.log("FALSEE");
+                        qq = "<input type='checkbox'  disabled>";
+                    }
+                    if(data.attributes[i].nonNull == true){
+                        ss= "<input type='checkbox'  checked='checked' disabled>";
+                    }else{
+                        ss = "<input type='checkbox'  disabled>";
+                    }
+                    if(data.attributes[i].type == "object"){
+                        object = "Non Sélectionné";
+                    }else{
+                        object = data.attributes[i].type;
+                    }
+                    if(data.attributes[i].sizeo == null){
+                        sizeo="";
+                    }else{
+                        sizeo = data.attributes[i].sizeo;
+                    }
+                    if(data.attributes[i].defaut == null){
+                        defaut = "";
+                    }else{
+                        defaut=data.attributes[i].defaut;
+                    }
+                    if(data.attributes[i].commentaires==null){
+                        commentaires = "";
+                    }else{
+                        commentaires = data.attributes[i].commentaires;
+                    }
+                    contenu += '<tr> <td>'+qq+'</td><td>'+data.attributes[i].nameo+'</td><td>'+object+'</td><td>'+sizeo+'</td><td>'+ss+'</td><td>'+defaut+'</td><td>'+commentaires+'</td></tr>';
+                }
+
+                if(data.reader.executed == true) {
+                contenu+='</tbody></table> </div> </div> </div></div><div class="row"> <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"><div class="panel panel-primary"> <div class="panel-heading"> <h2>Batch Report</h2></div> <div class="panel-body">'+
+                    '<table class="table table-bordered table-hover" id="table_auto"><thead> <tr> <th width="2%">Job Id</th> <th width="4%">Type de Job</th> <th width="10%">Start time</th> <th width="10%">End time </th> <th width="10%">status</th> <th width="10%">Read count</th> <th width="10%">Filter count</th> <th width="10%">Write count</th> <th width="10%">Read skip count</th> <th width="10%">Write skip count</th> <th width="10%">Process skip count</th> <th width="4%">Rollback count</th> </tr> </thead>'+
+                    '<tbody> <tr> <td>'+data.batchStepExecution.job_execution_id+'</td> <td>'+data.batchStepExecution.step_name+'</td> <td>'+moment(data.batchStepExecution.start_time).format("DD/MM/YYYY HH:mm:ss")+'</td> <td>'+moment(data.batchStepExecution.end_time).format("DD/MM/YYYY HH:mm:ss")+'</td> <td>'+data.batchStepExecution.status+'</td> <td>'+data.batchStepExecution.read_count+'</td> <td>'+data.batchStepExecution.filter_count+'</td> <td>'+data.batchStepExecution.write_count+'</td> <td>'+data.batchStepExecution.read_skip_count+'</td> <td>'+data.batchStepExecution.write_skip_count+'</td> <td>'+data.batchStepExecution.process_skip_count+'</td> <td>'+data.batchStepExecution.rollback_count+'</td> </tr> </tbody> </table> </div> </div> </div> </div>';
+
+
+
+                    if (data.inputError.length > 0) {
+                        contenu += '<div class="row"> <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"><div class="panel panel-danger"> <div class="panel-heading"><h2> Error input : </h2></div> <div class="panel-body"> <table class="table table-bordered table-hover" id="table_auto"> <thead> <tr> <th width="5%">Line Number</th> <th width="35%">Line</th> <th width="60%">Messages</th> </tr> </thead><tbody>';
+
+                        for (var jj = 0; jj < data.inputError.length; jj++) {
+                            contenu += '<tr> <td>' + data.inputError[jj].lineNumber + '</td><td>' + data.inputError[jj].line + '</td> <td>' + data.inputError[jj].messages + '</td> </tr>';
+                        }
+                        contenu += '</tbody> </table> </div> </div> </div> </div></div></div>';
+                    } else {
+                        contenu += '<div class="row"> <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"><div class="panel panel-success"> <div class="panel-heading"><h2> Success : </h2></div> <div class="panel-body"> Toutes les lines ont été ajoutés</div></div>';
+                    }
+                }
+                $("#resume").html("");
+                $('#resume').append(contenu);
+                $("#myModalx").modal().show();
+
+            },
+            error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
+                console.log("error");
+            }
+        });
+    });
+
+    $("#allJobs").on('click', function (e) {
+        e.preventDefault();
+        $.ajax({
+            type: "GET",//la method à utiliser soit POST ou GET
+            url: "/allMyJobs", //lien de la servlet qui exerce le traitement sur les données
+            success: function (data) {// le cas ou la requete est bien execute en reçoi les données serialiser par JSON dans la variable msg
+                //recuperation de la valeur stock dans l'attribut desactive
+                var contenu = '<div class="container-fluid"><div class="row"> <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"> <div class="panel panel-primary"> <div class="panel-heading"><h2>Configuration Fichier</h2></div>'+
+                    '<div class="panel-body"><table id="table_resume" class="table table-striped" cellspacing="0" width="100%">'+
+                '<thead> <tr> <th width="2%">Job Id</th><th width="1%">Date Création</th><th width="1%">Created by</th> <th width="8%">File</th> <th width="30%"> Nb line skiped</th> <th width="10%">Table</th> <th width="10%">Date Lancement</th><th width="10%">Exectued</th><th width="10%">Resultat</th><th width="10%">Nombre de lines ajouter</th><th width="10%">Nombre de lines ajouter</th><th width="10%"> Nombre de lines Non ajouter</th><th width="10%"> Nombre de lines Non ajouter</th> <th width="">More Détail</th></tr></thead><tbody>';
+                var executedBy;
+                var executed;
+                var resultat;
+                var lancement;
+                var path;
+                for (var i = 0; i < data.length; i++) {
+                    if(data[i].executed_by == null){
+                        executedBy = "<span class='label label-danger'> Not Executed yet </span>";
+                    }else{
+                        executedBy = "<span class='label label-success'>"+data[i].executed_by+"</span>";
+                    }
+                    if(data[i].executed  == false){
+                        executed = "<span class='label label-danger'> Not Executed yet </span>";
+                    }else{
+                        executed = "<span class='label label-success'> True </span>";
+                    }
+                    if(data[i].resultat   == false){
+                        resultat = "<span class='label label-danger'> Not disponible </span>";
+                    }else{
+                        resultat = "<span class='label label-success'>Success</span>";
+                    }
+                    if(data[i].dateLancement == null){
+                        lancement = "<span class='label label-danger'> Pas encore lancer </span>";
+                    }else{
+                        lancement = "<span class='label label-success'> "+moment(data[i].dateLancement).format("DD/MM/YYYY HH:mm:ss") +" </span>";
+                    }
+                    if(data[i].filePath.split("/")[data[i].filePath.split("/").length-1].length > 20){
+                        path = data[i].filePath.split("\\")[data[i].filePath.split("\\").length-1];
+                    }else{
+                        path = data[i].filePath.split("/")[data[i].filePath.split("/").length-1];
+                    }
+                    contenu += "<tr id='"+i+"' value='"+data[i].id+"'>" +
+                        "<td >" + i + "</td>" +
+                        "<td ><span class='label label-info'>" + moment(data[i].dateCreation).format("DD/MM/YYYY HH:mm:ss") + "</span></td>" +
+                        "<td >" + data[i].emailUser.split("@")[0] + "</td>" +
+                        "<td >" + path+ "</td>" +
+                        "<td >" + data[i].nbLineToSkip + "</td>" +
+                        "<td >" + data[i].classeName + "</td>" +
+                        "<td >" + lancement+ "</td>" +
+                        "<td >" + executed+ "</td>" +
+                        "<td >" + resultat+ "</td>" +
+                        "<td> "+ data[i].nbLinesSuccess+"</td>"+
+                        "<td> "+ data[i].nbLinesFailed+"</td>"+
+                        "<td><button id='btn-success' class='btn btn-success' value='" + data[i].id + "'><span class='glyphicon glyphicon glyphicon-play'></span></button></td>" +
+                        "<td><button id='btn-danger' class='btn btn-danger' value='" + data[i].id + "'><span class='glyphicon glyphicon-remove-sign'></span></button></td>" +
+                        "<td><button  id='submit_btn' class='btn btn-primary' value='" + data[i].classeName+ "'><span class='glyphicon glyphicon-eye-open'></span></button></td></tr>";
+                }
+                contenu += "</tbody></<table></div></div>";
+                $("#resume").html("");
+                $('#resume').append(contenu);
+                $("#myModalx").modal().show();
+                allTables = $('#table_resume').DataTable({
+                    "order": [[ 1, "desc" ]],
+                    'fnClearTable': true,
+                    "scrollY": "500px",
+                    "scrollCollapse": true
+                });
+            },
+            error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
+                console.log("error");
+            }
+        });
+    });
+
+    $("#allMyJobCompleted").on('click', function (e) {
+        e.preventDefault();
+        $.ajax({
+            type: "GET",//la method à utiliser soit POST ou GET
+            url: "/allMyJobCompleted", //lien de la servlet qui exerce le traitement sur les données
+            success: function (data) {// le cas ou la requete est bien execute en reçoi les données serialiser par JSON dans la variable msg
+                //recuperation de la valeur stock dans l'attribut desactive
+                var contenu = '<div class="container-fluid"><div class="row"> <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"> <div class="panel panel-primary"> <div class="panel-heading"><h2>Configuration Fichier</h2></div>'+
+                    '<div class="panel-body"><table id="table_resume" class="table table-striped" cellspacing="0" width="100%">'+
+                    '<thead> <tr> <th width="2%">Job Id</th><th width="1%%">Date Création</th><th width="1%">Created by</th> <th width="8%">File</th> <th width="30%"> Nb line skiped</th> <th width="10%">Table</th> <th width="10%">Date Lancement</th><th width="10%">Exectued</th><th width="10%">Resultat</th><th width="10%">Nombre de lines ajouter</th><th width="10%">Nombre de lines ajouter</th><th width="10%"> Nombre de lines Non ajouter</th><th width="10%"> Nombre de lines Non ajouter</th> <th width="">More Détail</th></tr></thead><tbody>';
+                var executedBy;
+                var executed;
+                var resultat;
+                var lancement;
+                var path;
+                for (var i = 0; i < data.length; i++) {
+                    if(data[i].executed_by == null){
+                        executedBy = "<span class='label label-danger'> Not Executed yet </span>";
+                    }else{
+                        executedBy = "<span class='label label-success'>"+data[i].executed_by+"</span>";
+                    }
+                    if(data[i].executed  == false){
+                        executed = "<span class='label label-danger'> Not Executed yet </span>";
+                    }else{
+                        executed = "<span class='label label-success'> True </span>";
+                    }
+                    if(data[i].resultat   == false){
+                        resultat = "<span class='label label-danger'> Not disponible </span>";
+                    }else{
+                        resultat = "<span class='label label-success'>Success</span>";
+                    }
+                    if(data[i].dateLancement == null){
+                        lancement = "<span class='label label-danger'> Pas encore lancer </span>";
+                    }else{
+                        lancement = "<span class='label label-success'> "+moment(data[i].dateLancement).format("DD/MM/YYYY HH:mm:ss") +" </span>";
+                    }
+                    if(data[i].filePath.split("/")[data[i].filePath.split("/").length-1].length > 20){
+                        path = data[i].filePath.split("\\")[data[i].filePath.split("\\").length-1];
+                    }else{
+                        path = data[i].filePath.split("/")[data[i].filePath.split("/").length-1];
+                    }
+                    contenu += "<tr id='"+i+"' value='"+data[i].id+"'>" +
+                        "<td >" + i + "</td>" +
+                        "<td ><span class='label label-info'>" + moment(data[i].dateCreation).format("DD/MM/YYYY HH:mm:ss") + "</span></td>" +
+                        "<td >" + data[i].emailUser.split("@")[0] + "</td>" +
+                        "<td >" + path+ "</td>" +
+                        "<td >" + data[i].nbLineToSkip + "</td>" +
+                        "<td >" + data[i].classeName + "</td>" +
+                        "<td >" + lancement+ "</td>" +
+                        "<td >" + executed+ "</td>" +
+                        "<td >" + resultat+ "</td>" +
+                        "<td> "+ data[i].nbLinesSuccess+"</td>"+
+                        "<td> "+ data[i].nbLinesFailed+"</td>"+
+                        "<td><button id='btn-success' class='btn btn-success' value='" + data[i].id + "'><span class='glyphicon glyphicon glyphicon-play'></span></button></td>" +
+                        "<td><button id='btn-danger' class='btn btn-danger' value='" + data[i].id + "'><span class='glyphicon glyphicon-remove-sign'></span></button></td>" +
+                        "<td><button  id='submit_btn' class='btn btn-primary' value='" + data[i].classeName+ "'><span class='glyphicon glyphicon-eye-open'></span></button></td></tr>";
+                }
+                contenu += "</tbody></<table></div></div>";
+                $("#resume").html("");
+                $('#resume').append(contenu);
+                $("#myModalx").modal().show();
+                allTables = $('#table_resume').DataTable({
+                    "order": [[ 1, "desc" ]],
+                    'fnClearTable': true,
+                    "scrollY": "500px",
+                    "scrollCollapse": true
+                });
+            },
+            error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
+                console.log("error");
+            }
+        });
+    });
+
+    $(document).on("click", "#submit_btn", function(event){
+        event.preventDefault();
+        console.log('true');
+        var table = $('#table_resume').DataTable();
+        $.ajax({
+            type:'GET',
+            url:'/resume/'+$(this).val(),
+            dataType:'json',
+            success: function (data) {// le cas ou la requete est bien execute en reçoi les données serialiser par JSON dans la variable msg
+                //recuperation de la valeur stock dans l'attribut desactive
+                var contenu = '<div class="container-fluid"><div class="row"> <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"> <div class="panel panel-primary"> <div class="panel-heading"><h2>Configuration Fichier</h2></div>'+
+                    '<div class="panel-body"><div class="row">'+
+                    '<table id="table_resume" class="table table-striped" cellspacing="0" width="100%">'+
+                    '<thead> <tr> <th width="52%">File Path</th> <th width="1%%">Type</th> <th width="1%">Séparateur</th> <th width="8%">Nombre de ligne skipped</th> <th width="30%"> header</th> <th width="10%">Date de création</th> </tr> </thead><tbody>'+
+                    '<tr><td>'+data.reader.filePath+'</td> <td>'+data.reader.filePath.split(".")[1]+'</td> <td>'+data.reader.separator+'</td><td>'+data.reader.nbLineToSkip+'</td> <td>'+data.reader.columns+'</td> <td>'+moment(data.reader.dateCreation).format("DD/MM/YYYY HH:mm:ss")+'</td></tr></tbody> </table> </div> </div> </div> </div> </div>';
+                contenu +='<div class="row"><div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"> <div class="panel panel-primary"> <div class="panel-heading"> <h2>Table configuration </h2></div> <div class="panel-body">'+
+                    '<table class="table table-bordered table-hover" id="table_auto"> <thead> <tr> <th width="2%">Primary key</th> <th width="15%">column</th> <th width="15%">Type</th> <th width="10%">Size</th> <th width="2%"> Not null</th> <th width="20%">Default</th> <th width="36%">Commentaire</th> </tr> </thead><tbody>';
+                console.log("length "+ data.attributes[0].pko);
+                for(var i = 0;i<data.attributes.length;i++) {
+                    var qq,ss;
+                    if(data.attributes[i].pko == true){
+                        console.log("TRUE");
+                        qq= "<input type='checkbox'  checked='checked' disabled>";
+                    }else{
+                        console.log("FALSEE");
+                        qq = "<input type='checkbox'  disabled>";
+                    }
+                    if(data.attributes[i].nonNull == true){
+                        ss= "<input type='checkbox'  checked='checked' disabled>";
+                    }else{
+                        ss = "<input type='checkbox'  disabled>";
+                    }
+                    contenu += '<tr> <td>'+qq+'</td><td>'+data.attributes[i].nameo+'</td><td>'+data.attributes[i].type+'</td><td>'+data.attributes[i].sizeo+'</td><td>'+ss+'</td><td> </td><td>'+data.attributes[i].commentaires+'</td></tr>';
+                }
+                if(data.reader.executed == true) {
+                contenu+='</tbody></table> </div> </div> </div></div><div class="row"> <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"><div class="panel panel-primary"> <div class="panel-heading"> <h2>Batch Report</h2></div> <div class="panel-body">'+
+                    '<table class="table table-bordered table-hover" id="table_auto"><thead> <tr> <th width="2%">Job Id</th> <th width="4%">Type de Job</th> <th width="10%">Start time</th> <th width="10%">End time </th> <th width="10%">status</th> <th width="10%">Read count</th> <th width="10%">Filter count</th> <th width="10%">Write count</th> <th width="10%">Read skip count</th> <th width="10%">Write skip count</th> <th width="10%">Process skip count</th> <th width="4%">Rollback count</th> </tr> </thead>'+
+                    '<tbody> <tr> <td>'+data.batchStepExecution.job_execution_id+'</td> <td>'+data.batchStepExecution.step_name+'</td> <td>'+moment(data.batchStepExecution.start_time).format("DD/MM/YYYY HH:mm:ss")+'</td> <td>'+moment(data.batchStepExecution.end_time).format("DD/MM/YYYY HH:mm:ss")+'</td> <td>'+data.batchStepExecution.status+'</td> <td>'+data.batchStepExecution.read_count+'</td> <td>'+data.batchStepExecution.filter_count+'</td> <td>'+data.batchStepExecution.write_count+'</td> <td>'+data.batchStepExecution.read_skip_count+'</td> <td>'+data.batchStepExecution.write_skip_count+'</td> <td>'+data.batchStepExecution.process_skip_count+'</td> <td>'+data.batchStepExecution.rollback_count+'</td> </tr> </tbody> </table> </div> </div> </div> </div>';
+
+                    if (data.inputError.length > 0) {
+                        contenu += '<div class="row"> <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"><div class="panel panel-danger"> <div class="panel-heading"><h2> Error input : </h2></div> <div class="panel-body"> <table class="table table-bordered table-hover" id="table_auto"> <thead> <tr> <th width="5%">Line Number</th> <th width="35%">Line</th> <th width="60%">Messages</th> </tr> </thead><tbody>';
+
+                        for (var jj = 0; jj < data.inputError.length; jj++) {
+                            contenu += '<tr> <td>' + data.inputError[jj].lineNumber + '</td><td>' + data.inputError[jj].line + '</td> <td>' + data.inputError[jj].messages + '</td> </tr>';
+                        }
+                        contenu += '</tbody> </table> </div> </div> </div> </div></div></div>';
+                    } else {
+                        contenu += '<div class="row"> <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"><div class="panel panel-success"> <div class="panel-heading"><h2> Success : </h2></div> <div class="panel-body"> Toutes les lines ont été ajoutés</div></div>';
+                    }
+                }
+                $("#resume1").html("");
+                $('#resume1').append(contenu);
+                $("#myModalxy").modal().show();
+            },
+            error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
+                console.log("error");
+            }
+        });
+    });
+
+
+
+
+    
+
+
+    $('#latestTabId').on('click', '.btn-success', function (e) {
+        e.preventDefault();
+        var table = $('#latestTabId').DataTable();
+        var data = "id="+$(this).val();
+        var r = confirm("Voulez vous vraiement lancer ce job ?");
+        if(r){
+        $.ajax({
+            type:'POST',
+            data: data,
+            url:'/runJob',
+            dataType:'json',
             xhr: function () {
                 var xhr = new window.XMLHttpRequest();
                 //Download progress
@@ -137,7 +630,7 @@ $(document).ready(function() {
                         "<h4><i class='fa fa-info'></i> ALERT :</h4>This JOB HAS ERROR INPUT... </div>"+
                         "</div></div>"
                     contenu += "<div class='panel-body'><div class='row'><div class='col-xs-12'>" +
-                        "<table id='myInputErrors' width='100%' class='table .table-bordered'>" +
+                        "<table id='myInputErrors' width='100%' class='table table-striped' cellspacing='0' width='100%'>" +
                         "<thead><tr><th><b>Line Number</b></th><th ><b>Line</b></th><th><b>Message</b></th></thead><tbody>";
                     for (var i = 0; i < data.inputError.length; i++) {
                         contenu += "<tr><td>" + data.inputError[i].lineNumber + "</td><td>" + data.inputError[i].line + "</td><td>" + data.inputError[i].messages + "</td></tr>";
@@ -150,7 +643,7 @@ $(document).ready(function() {
                 contenu += "<tr><td>" + data.batchStepExecution.job_execution_id + "</td><td>" + moment(data.batchStepExecution.start_time).format("DD/MM HH:mm:ss") + "</td><td>" + moment(data.batchStepExecution.end_time).format("DD/MM HH:mm:ss") + "</td><td>" + data.batchStepExecution.status + "</td><td>" + data.batchStepExecution.commit_count + "</td><td>" + data.batchStepExecution.read_count + "</td><td>" + data.batchStepExecution.write_count + "</td><td>" + data.batchStepExecution.process_skip_count + "</td><td>" + data.batchStepExecution.exit_code + "</td></tr>";
                 contenu += "</tbody></table>" +
                     "</div></div></div></div></fieldset>";
-
+                $('#modal-body').html("");
                 $('#modal-body').append(contenu);
                 $('#modal-success').modal('show');
 
@@ -158,8 +651,89 @@ $(document).ready(function() {
             error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
                 console.log("error");
             }
+
         });
+        }
     });
+
+
+    $(document).on("click", "#btn-success", function(event){
+        event.preventDefault();
+        var table = $('#latestTabId').DataTable();
+        var data = "id="+$(this).val();
+        var r = confirm("Voulez vous vraiement lancer ce job ?");
+        if(r){
+            $.ajax({
+                type:'POST',
+                data: data,
+                url:'/runJob',
+                dataType:'json',
+                xhr: function () {
+                    var xhr = new window.XMLHttpRequest();
+                    //Download progress
+                    xhr.addEventListener("progress", function (evt) {
+                        console.log(evt.lengthComputable);
+                        if (evt.lengthComputable) {
+                            var percentComplete = evt.loaded / evt.total;
+                        }
+                    }, false);
+                    return xhr;
+                },
+                beforeSend: function () {
+                    var progressbar = $( "#progressbar" ),
+                        progressLabel = $( ".progress-label" );
+                    progressbar.progressbar({
+                        value: false,
+                    });
+                    $('#pleaseWaitDialog').modal('show');
+                },
+                complete: function () {
+                    $('#pleaseWaitDialog').modal('hide');
+                },
+                success: function (data) {// le cas ou la requete est bien execute en reçoi les données serialiser par JSON dans la variable msg
+                    $("#contenu").html("");
+                    var contenu = "";
+                    console.log("data.length" + data.inputError.length);
+                    if ((data.inputError.length) == 0) {
+                        contenu += "<fieldset><div class='panel panel-success'><div class='panel-heading'><div class='pad margin no-print'>"+
+                            "<div class='callout callout-success' style='margin-bottom: 0!important;'>"+
+                            "<h4><i class='fa fa-info'></i> SUCCESS:</h4>This JOB HAS NO ERROR INPUT DUE TO EXCEPTIONS... </div>"+
+                            "</div></div><div class='panel-body'>"
+                    } else {
+                        contenu += "<fieldset><div class='panel panel-danger'><div class='panel-heading'><div class='pad margin no-print'>"+
+                            "<div class='callout callout-danger' style='margin-bottom: 0!important;'>"+
+                            "<h4><i class='fa fa-info'></i> ALERT :</h4>This JOB HAS ERROR INPUT... </div>"+
+                            "</div></div>"
+                        contenu += "<div class='panel-body'><div class='row'><div class='col-xs-12'>" +
+                            "<table id='myInputErrors' class='table table-striped' cellspacing='0' width='100%'>" +
+                            "<thead><tr><th><b>Line Number</b></th><th ><b>Line</b></th><th><b>Message</b></th></thead><tbody>";
+                        for (var i = 0; i < data.inputError.length; i++) {
+                            contenu += "<tr><td>" + data.inputError[i].lineNumber + "</td><td>" + data.inputError[i].line + "</td><td>" + data.inputError[i].messages + "</td></tr>";
+                        }
+                        contenu += "</tbody></table>" +
+                            "</div></div>";
+                    }
+                    contenu += "<div class='row'><div class='col-xs-12'><table id='resume' width='100%' class='table .table-bordered'>" +
+                        "<thead><tr><th><b>Job ID</b></th><th ><b>Start time</b></th><th><b>End time</b></th><th><b>Status </b></th><th><b>commit_count</b></th><th><b>read_count</b></th><th>write_count</th><th>process_skip_count</th><th>exit_code</th></thead><tbody>";
+                    contenu += "<tr><td>" + data.batchStepExecution.job_execution_id + "</td><td>" + moment(data.batchStepExecution.start_time).format("DD/MM HH:mm:ss") + "</td><td>" + moment(data.batchStepExecution.end_time).format("DD/MM HH:mm:ss") + "</td><td>" + data.batchStepExecution.status + "</td><td>" + data.batchStepExecution.commit_count + "</td><td>" + data.batchStepExecution.read_count + "</td><td>" + data.batchStepExecution.write_count + "</td><td>" + data.batchStepExecution.process_skip_count + "</td><td>" + data.batchStepExecution.exit_code + "</td></tr>";
+                    contenu += "</tbody></table>" +
+                        "</div></div></div></div></fieldset>";
+                    $('#modal-body').html("");
+                    $('#modal-body').append(contenu);
+                    $('#modal-success').modal('show');
+
+                },
+                error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
+                    console.log("error");
+                }
+            });
+        }
+    });
+    
+    
+
+
+    
 
 
     $("#existeXml").on('click',function (e) {
@@ -208,7 +782,7 @@ $(document).ready(function() {
                         "<h4><i class='fa fa-info'></i> ALERT :</h4>This JOB HAS ERROR INPUT... </div>"+
                         "</div></div>"
                     contenu += "<div class='panel-body'><div class='row'><div class='col-xs-12'>" +
-                        "<table id='myInputErrors' width='100%' class='table .table-bordered'>" +
+                        "<table id='myInputErrors' class='table table-striped' cellspacing='0' width='100%'>" +
                         "<thead><tr><th><b>Line Number</b></th><th ><b>Line</b></th><th><b>Message</b></th></thead><tbody>";
                     for (var i = 0; i < data.inputError.length; i++) {
                         contenu += "<tr><td>" + data.inputError[i].lineNumber + "</td><td>" + data.inputError[i].line + "</td><td>" + data.inputError[i].messages + "</td></tr>";
@@ -237,67 +811,9 @@ $(document).ready(function() {
 
 
 
-    $('#latestTabId').on('click', '.btn-danger', function (e) {
-        e.preventDefault();
-        var table = $('#latestTabId').DataTable();
-        table
-            .row( $(this).parents('tr') )
-            .remove()
-            .draw();
-        $.ajax({
-            type:'GET',
-            url:'/deleteClasse/'+$(this).val(),
-            dataType:'json',
-            sucess:function (data) {
-                console.log("deleted");
-            },
-            error:function () {
-                console.log("not deleted");
-            }
-        });
-    });
+   
 
-    $('#latestTabId').on('click', '.attribute', function (e)
-    {
-        e.preventDefault();
-        $.ajax({
-            type: "GET",//la method à utiliser soit POST ou GET
-            url: "/attributes/" + $(this).val(), //lien de la servlet qui exerce le traitement sur les données
-            dataType: 'json',
-            success: function (data) {// le cas ou la requete est bien execute en reçoi les données serialiser par JSON dans la variable msg
-                //recuperation de la valeur stock dans l'attribut desactive
-                $("#contenus").html("");
-                var contenu ="";
-                contenu += "<fieldset>" +
-                    "<table id='infoClasse' width='100%' class='table .table-bordered'>" +
-                    "<thead><tr><th><b> Attribute </b></th><th ><b>Classe Type</b></th></thead><tbody>";
-                var type="";
-                for (var i = 0; i < data.length; i++) {
-                    if(data[i].type == "NUMBER"){
-                        type = "INTEGER";
-                    }else{
-                        if(data[i].type == "VARCHAR2"){
-                            type = "STRING";
-                        }else{
-                            if(data[i].type = "DATE"){
-                                type = "DATE";
-                            }else {
-                                type = "Object";
-                            }
-                        }
-                    }
-                    contenu += "<tr><td>" + data[i].nameo + "</td><td>" + type + "</td></tr>";
-                }
-                contenu += "</tbody></table></fieldset>";
-                $("#contenus").append(contenu);
-                $("#Modalx").modal("show");
 
-            },
-            error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
-                console.log("error");
-            }
-        });
-    });
 
     $("#showAllTables").on('click', function (e) {
         if (i == 0) {
@@ -319,71 +835,8 @@ $(document).ready(function() {
 
     });
 
-    $("#allJobs").on('click', function (e) {
-        e.preventDefault();
-        $.ajax({
-            type: "GET",//la method à utiliser soit POST ou GET
-            url: "/allMyJobs", //lien de la servlet qui exerce le traitement sur les données
-            success: function (data) {// le cas ou la requete est bien execute en reçoi les données serialiser par JSON dans la variable msg
-                //recuperation de la valeur stock dans l'attribut desactive
-                $("#contenus").html("");
-                var contenu = "<div class='panel panel-primary'><div class='panel-heading'>  ALL JOB Done</div>";
-                if (data.length != 0) {
-                    contenu += "<div class='panel-body'><fieldset>" +
-                        "<table id='myjobs' width='100%' class='table .table-bordered'>" +
-                        "<thead><tr><th><b>JOB ID</b></th><th ><b>Create time</b></th><th><b>Start time</b></th><th><b>End time</b></th><th><b>Status</b></th><th><b>Exit code</b></th><th>Exit message</th><th>Last Updated</th></thead><tbody>";
-                    for (var i = 0; i < data.length; i++) {
-                        contenu += "<tr><td>" + data[i].job_execution_id + "</td><td>" + moment(data[i].create_time).format("DD/MM HH:mm:ss") + "</td><td>" + moment(data[i].start_time).format("DD/MM HH:mm:ss") + "</td><td>" + moment(data[i].end_time).format("DD/MM HH:mm:ss") + "</td><td>" + data[i].status + "</td><td>" + data[i].exit_code + "</td><td>" + data[i].exit_message + "</td><td>" + moment(data[i].last_updated).format("DD/MM HH:mm:ss") + "</td></tr>";
-                    }
-                    contenu += "</tbody></table>" +
-                        "</fieldset></div></div>";
-                } else {
-                    contenu = "We are waiting your first job :D ";
-                }
-                $("#contenus").append(contenu);
-                $("#Modalx").modal("show");
-
-            },
-            error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
-                console.log("error");
-            }
-        });
-    });
-
-    $("#allMyJobCompleted").on('click', function (e) {
-        e.preventDefault();
-        $.ajax({
-            type: "GET",//la method à utiliser soit POST ou GET
-            url: "/allMyJobCompleted", //lien de la servlet qui exerce le traitement sur les données
-            success: function (data) {// le cas ou la requete est bien execute en reçoi les données serialiser par JSON dans la variable msg
-                //recuperation de la valeur stock dans l'attribut desactive
-                $("#contenus").html("");
-                var contenu = "";
-                if (data.length != 0) {
-                    contenu += "<div class='panel panel-success'><div class='panel-heading'>  ALL JOB Done</div><div class='panel-body'><fieldset>" +
-                        "<table id='myjobs' width='100%' class='table .table-bordered'>" +
-                        "<thead><tr><th><b>JOB ID</b></th><th ><b>Create time</b></th><th><b>Start time</b></th><th><b>End time</b></th><th><b>Status</b></th><th><b>Exit code</b></th><th>Exit message</th><th>Last Updated</th></thead><tbody>";
-                    for (var i = 0; i < data.length; i++) {
-                        contenu += "<tr><td>" + data[i].job_execution_id + "</td><td>" + moment(data[i].create_time).format("DD/MM HH:mm:ss") + "</td><td>" + moment(data[i].start_time).format("DD/MM HH:mm:ss") + "</td><td>" + moment(data[i].end_time).format("DD/MM HH:mm:ss") + "</td><td>" + data[i].status + "</td><td>" + data[i].exit_code + "</td><td>" + data[i].exit_message + "</td><td>" + moment(data[i].last_updated).format("DD/MM HH:mm:ss") + "</td></tr>";
-                    }
-                    contenu += "</tbody></table>" +
-                        "</fieldset></div></div>";
-                } else {
-                    contenu = "No Job Completed for you so we suggest to do your first job :)";
-                }
-                $("#contenus").append(contenu);
-                $("#Modalx").modal("show");
-
-            },
-            error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
-                console.log("error");
-            }
-        });
-
-    });
 
     
-
     $("#allMyJobFailed").on('click', function (e) {
         e.preventDefault();
         $.ajax({
@@ -391,22 +844,66 @@ $(document).ready(function() {
             url: "/allMyJobFailed", //lien de la servlet qui exerce le traitement sur les données
             success: function (data) {// le cas ou la requete est bien execute en reçoi les données serialiser par JSON dans la variable msg
                 //recuperation de la valeur stock dans l'attribut desactive
-                $("#contenus").html("");
-                var contenu = "";
-                if (data.length != 0) {
-                    contenu += "<div class='panel panel-danger'><div class='panel-heading'>  ALL JOBS Failed</div><div class='panel-body'><fieldset>" +
-                        "<table id='myjobs' width='100%' class='table .table-bordered'>" +
-                        "<thead><tr><th><b>JOB ID</b></th><th ><b>Create time</b></th><th><b>Start time</b></th><th><b>End time</b></th><th><b>Status</b></th><th><b>Exit code</b></th><th>Exit message</th><th>Last Updated</th></thead><tbody>";
-                    for (var i = 0; i < data.length; i++) {
-                        contenu += "<tr><td>" + data[i].job_execution_id + "</td><td>" + moment(data[i].create_time).format("DD/MM HH:mm:ss") + "</td><td>" + moment(data[i].start_time).format("DD/MM HH:mm:ss") + "</td><td>" + moment(data[i].end_time).format("DD/MM HH:mm:ss") + "</td><td>" + data[i].status + "</td><td>" + data[i].exit_code + "</td><td>" + data[i].exit_message + "</td><td>" + moment(data[i].last_updated).format("DD/MM HH:mm:ss") + "</td></tr>";
+                var contenu = '<div class="container-fluid"><div class="row"> <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"> <div class="panel panel-primary"> <div class="panel-heading"><h2>Configuration Fichier</h2></div>'+
+                    '<div class="panel-body"><table class="table table-bordered table-hover" id="table_resume">'+
+                    '<thead> <tr> <th width="2%">Job Id</th><th width="1%%">Date Création</th><th width="1%">Created by</th> <th width="8%">File</th> <th width="30%"> Nb line skiped</th> <th width="10%">Table</th> <th width="10%">Date Lancement</th><th width="10%">Exectued</th><th width="10%">Resultat</th><th width="10%">Nombre de lines ajouter</th><th width="10%">Nombre de lines ajouter</th><th width="10%"> Nombre de lines Non ajouter</th><th width="10%"> Nombre de lines Non ajouter</th> <th width="">More Détail</th></tr></thead><tbody>';
+                var executedBy;
+                var executed;
+                var resultat;
+                var lancement;
+                var path;
+                for (var i = 0; i < data.length; i++) {
+                    if(data[i].executed_by == null){
+                        executedBy = "<span class='label label-danger'> Not Executed yet </span>";
+                    }else{
+                        executedBy = "<span class='label label-success'>"+data[i].executed_by+"</span>";
                     }
-                    contenu += "</tbody></table>" +
-                        "</fieldset></div></div>";
-                } else {
-                    var contenu = "No Job with status Failed for you :D ";
+                    if(data[i].executed  == false){
+                        executed = "<span class='label label-danger'> Not Executed yet </span>";
+                    }else{
+                        executed = "<span class='label label-success'> True </span>";
+                    }
+                    if(data[i].resultat   == false){
+                        resultat = "<span class='label label-danger'> Not disponible </span>";
+                    }else{
+                        resultat = "<span class='label label-success'>Success</span>";
+                    }
+                    if(data[i].dateLancement == null){
+                        lancement = "<span class='label label-danger'> Pas encore lancer </span>";
+                    }else{
+                        lancement = "<span class='label label-success'> "+moment(data[i].dateLancement).format("DD/MM/YYYY HH:mm:ss") +" </span>";
+                    }
+                    if(data[i].filePath.split("/")[data[i].filePath.split("/").length-1].length > 20){
+                        path = data[i].filePath.split("\\")[data[i].filePath.split("\\").length-1];
+                    }else{
+                        path = data[i].filePath.split("/")[data[i].filePath.split("/").length-1];
+                    }
+                    contenu += "<tr id='"+i+"' value='"+data[i].id+"'>" +
+                        "<td >" + i + "</td>" +
+                        "<td >" + moment(data[i].dateCreation).format("DD/MM/YYYY HH:mm:ss") + "</td>" +
+                        "<td >" + data[i].emailUser.split("@")[0] + "</td>" +
+                        "<td >" + path+ "</td>" +
+                        "<td >" + data[i].nbLineToSkip + "</td>" +
+                        "<td >" + data[i].classeName + "</td>" +
+                        "<td >" + lancement+ "</td>" +
+                        "<td >" + executed+ "</td>" +
+                        "<td >" + resultat+ "</td>" +
+                        "<td> "+ data[i].nbLinesSuccess+"</td>"+
+                        "<td> "+ data[i].nbLinesFailed+"</td>"+
+                        "<td><button id='btn-success' class='btn btn-success' value='" + data[i].id + "'><span class='glyphicon glyphicon glyphicon-play'></span></button></td>" +
+                        "<td><button id='btn-danger' class='btn btn-danger' value='" + data[i].id + "'><span class='glyphicon glyphicon-remove-sign'></span></button></td>" +
+                        "<td><button  id='submit_btn' class='btn btn-primary' value='" + data[i].classeName+ "'><span class='glyphicon glyphicon-eye-open'></span></button></td></tr>";
                 }
-                $("#contenus").append(contenu);
-                $("#Modalx").modal("show");
+                contenu += "</tbody></<table></div></div>";
+                $("#resume").html("");
+                $('#resume').append(contenu);
+                $("#myModalx").modal().show();
+                allTables = $('#table_resume').DataTable({
+                    "order": [[ 1, "desc" ]],
+                    'fnClearTable': true,
+                    "scrollY": "500px",
+                    "scrollCollapse": true
+                });
             },
             error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
                 console.log("error");
@@ -429,7 +926,7 @@ $(document).ready(function() {
                         "<table id='myjobs' width='100%' class='table .table-bordered'>" +
                         "<thead><tr><th><b>JOB ID</b></th><th ><b>Create time</b></th><th><b>Start time</b></th><th><b>End time</b></th><th><b>Status</b></th><th><b>Exit code</b></th><th>Exit message</th><th>Last Updated</th></thead><tbody>";
                     for (var i = 0; i < data.length; i++) {
-                        contenu += "<tr><td>" + data[i].job_execution_id + "</td><td>" + moment(data[i].create_time).format("DD/MM HH:mm:ss") + "</td><td>" + moment(data[i].start_time).format("DD/MM HH:mm:ss") + "</td><td>" + moment(data[i].end_time).format("DD/MM HH:mm:ss") + "</td><td>" + data[i].status + "</td><td>" + data[i].exit_code + "</td><td>" + data[i].exit_message + "</td><td>" + moment(data[i].last_updated).format("DD/MM HH:mm:ss") + "</td></tr>";
+                        contenu += "<tr><td>" + data[i].job_execution_id + "</td><td>" + moment(data[i].create_time).format("DD/MM/YYYY HH:mm:ss") + "</td><td>" + moment(data[i].start_time).format("DD/MM/YYYY HH:mm:ss") + "</td><td>" + moment(data[i].end_time).format("DD/MM/YYYY HH:mm:ss") + "</td><td>" + data[i].status + "</td><td>" + data[i].exit_code + "</td><td>" + data[i].exit_message + "</td><td>" + moment(data[i].last_updated).format("DD/MM/YYYY HH:mm:ss") + "</td></tr>";
                     }
                     contenu += "</tbody></table>" +
                         "</fieldset></div></div>";
@@ -446,6 +943,9 @@ $(document).ready(function() {
         });
 
     });
+
+
+    
 
 
     });

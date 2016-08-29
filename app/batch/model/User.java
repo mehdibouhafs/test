@@ -87,6 +87,13 @@ public class User extends Model {
         }
     }
 
+    public String validate() {
+        if(User.find.byId(email)!=null){
+            return  "Un utilisateur est déjà inscrit avec cet email !";
+        }
+        return null;
+    }
+
 
 
     @Override

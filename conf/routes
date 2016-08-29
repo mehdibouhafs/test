@@ -7,13 +7,9 @@ GET     /home                       controllers.Application.index()
 GET   /viewedClasses                controllers.Application.viewedClasses
 POST    /viewedClasse           controllers.Application.viewedClasse
 GET     /csv                   controllers.Application.param()
-GET     /noHeadCsv1                   controllers.Application.param1()
 GET     /xml                   controllers.Application.param2()
 GET     /beanExisteCsv      controllers.Application.param3()
 GET     /BeanExistXml    controllers.Application.param4()
-POST    /existXml       controllers.Application.existXml()
-POST   /csvExistHeader      controllers.Application.csvExistHeader()
-POST   /csvNoHead                       controllers.Application.csvNoHead()
 GET     /                               controllers.Application.login()
 POST    /login                      controllers.Application.authenticate()
 GET     /logout                     controllers.Application.logout()
@@ -24,12 +20,24 @@ GET     /allMyJobAbondonned             controllers.Application.allMyJobAbondonn
 GET     /testJson/:id                   controllers.Application.testJson(id : Long)
 GET     /lockScreen                 controllers.Application.lockScreen()
 POST    /delockScreen               controllers.Application.delockScreen()
+GET     /resume/:id                     controllers.Application.getResume(id)
 
-GET     /classes                    controllers.Application.getClasses()
+POST    /csvExist                   controllers.Application.csvExistConfig()
+
+POST    /xmlExist                   controllers.Application.xmlExistConfig()
+
+
+GET     /readers                    controllers.Application.getReaders()
+
+GET     /readersXml                  controllers.Application.getReadersdXml()
+
+GET     /readersCsv                  controllers.Application.getReadersCsv()
+
+POST    /runJob                     controllers.Application.runjob()
 
 GET     /attributes/:classe                   controllers.Application.getAttributes(classe)
 
-GET     /deleteClasse/:classe               controllers.Application.deleteClasse(classe)
+GET     /deleteReader/:id               controllers.Application.deleteReader(id : Long)
 
 GET     /register                               controllers.Application.register()
 

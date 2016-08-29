@@ -88,10 +88,9 @@ public class Generator {
 		ConstPool constPool = classFile.getConstPool();
 		classFile.setSuperclass(Object.class.getName());
 		AnnotationsAttribute attr = new AnnotationsAttribute(constPool, AnnotationsAttribute.visibleTag);
-		System.out.println("Generator type"+typeXml);
 		if(!typeXml.equals("csv")) {
 			Annotation annot = new Annotation("javax.xml.bind.annotation.XmlRootElement", constPool);
-			annot.addMemberValue("name", new StringMemberValue(reader.fragmentRootName, classFile.getConstPool()));
+			annot.addMemberValue("name", new StringMemberValue(classeName, classFile.getConstPool()));
 			attr.addAnnotation(annot);
 		}
 		Annotation annotation= new Annotation("javax.xml.bind.annotation.XmlAccessorType",constPool);
@@ -132,7 +131,7 @@ public class Generator {
 		}
 		classFile.setVersionToJava5();
 		result.defrost();
-		result.writeFile();
+		//result.writeFile();
 		result.detach();
 		return result.toClass();
 	}

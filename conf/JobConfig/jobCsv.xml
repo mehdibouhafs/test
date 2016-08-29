@@ -113,6 +113,7 @@
 				reader="cvsFileItemReader"
 				processor="processor"
 				writer="cvsFileItemWriter"
+				skip-policy="FileVerificationSkipper"
 				commit-interval="1">
 				</chunk>
 			</tasklet>

@@ -1,6 +1,7 @@
 $(document).ready(function() {
     var table1;
     $('#type3').hide();
+    $("#entete").bootstrapSwitch('state', true);
     $('#columns').hide();
     $('#dropTab').hide();
     $('#csvNoHead').hide();
@@ -10,8 +11,6 @@ $(document).ready(function() {
     $("#all").hide();
     $("#none").hide();
     $('#activate-step-2').hide();
-
-
 
     var tableOpts = {
         "sPaginationType": "full_numbers",
@@ -135,6 +134,10 @@ $(document).ready(function() {
             }
 
         });
+    
+    
+    
+    
     
     
     
@@ -286,29 +289,35 @@ $(document).ready(function() {
             });
         }
     })
-
-    $("#filepath1, #separator1").change(function(e) {
+    
+    $('#entete').on('switchChange.bootstrapSwitch', function(event, state){
         console.log("yeah");
-        e.preventDefault();
-        $.ajax({
-            type: "POST",//la method à utiliser soit POST ou GET
-            url: "/nbColCsvNoHead", //lien de la servlet qui exerce le traitement sur les données
-            data: $("#form00").serialize(),// sign_in c'est l'id du form qui contient le bouton submit et toutes les champs à envoyer
-            success: function (data) {// le cas ou la requete est bien execute en reçoi les données serialiser par JSON dans la variable msg
-                //recuperation de la valeur stock dans l'attribut desactive
-                 data.size;
-                for(var i = 0 ; i<data.size ;i++ ){
-                    var id = '<input type="hidden" class="nami" name="idCol['+i+']" value="'+table1.fnSettings().fnRecordsTotal()+'" readonly/>';
-                    var textbox = '<input type="text" class="txtBox" id="cols['+i+']" placeholder="Column ' + i+1+'" name="cols['+i+']" required  /><input type="hidden" class="nami" name="idCol['+i+']" value="'+table1.fnSettings().fnRecordsTotal()+'" readonly/>';
-                    var button = '<button class="btn btn-danger"><span class="glyphicon glyphicon-remove-sign"></span></button>';
-                    table1.fnAddData([textbox,button]);
+        if(state == false) {
+            $.ajax({
+                type: "POST",//la method à utiliser soit POST ou GET
+                url: "/nbColCsvNoHead", //lien de la servlet qui exerce le traitement sur les données
+                data: $("#form00").serialize(),// sign_in c'est l'id du form qui contient le bouton submit et toutes les champs à envoyer
+                success: function (data) {// le cas ou la requete est bien execute en reçoi les données serialiser par JSON dans la variable msg
+                    //recuperation de la valeur stock dans l'attribut desactive
+                    data.size;
+
+                    for (var i = 0; i < data.size; i++) {
+                        var id = '<input type="hidden" class="nami" name="idCol[' + i + ']" value="' + i + '" readonly/>';
+                        var textbox = '<input type="text" class="txtBox" id="cols[' + i + ']" name="cols[' + i + ']" placeholder="Column ' + i + 1 + '" name="cols[' + i + ']" required  /><input type="hidden" class="nami" name="idCol[' + i + ']" value="' + i+ '" readonly/>';
+                        var button = '<button class="btn btn-danger"><span class="glyphicon glyphicon-remove-sign"></span></button>';
+                        table1.fnAddData([textbox, button]);
+                    }
+                    $("#csvNoHead").show();
+                },
+                error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
+                    console.log("error");
                 }
-                $("#csvNoHead").show();
-            },
-            error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
-                console.log("error");
-            }
-        });
+            });
+        }else{
+            table1.fnClearTable();
+            $("#csvNoHead").hide();
+
+        }
         
     });
     ///PARAM 1 CSV NO HEAD
@@ -546,17 +555,10 @@ $(document).ready(function() {
 
             });
     });
-
-
-
-
+    
     $("#activate-step-3").click(function(e) {
-            e.preventDefault();
-            $('#table2').DataTable().destroy();
-            $("#tableaucontenus2").html("");
-            $("#tableNameValidation").val($("#tableName").val());
-            if($("#form1").valid())
-            {
+        console.log("cclik");
+           e.preventDefault();
                 if ($("#tableaucontenus1").children().length > 0) {
                     var table = $('#table1').DataTable();
                     var data0 = table.$('input, select').serialize();
@@ -564,74 +566,52 @@ $(document).ready(function() {
                     var data2 = data1.concat(data0);
                     var data3=  "dropeTable="+$("#dropTable").bootstrapSwitch('state')+"&";
                     var data4 = data3.concat(data2);
-                   /* var typeXMl;
-                    $('[name="xml[]"]').each( function (){
-                        if($(this).prop('checked') == true){
-                            typeXMl = $(this).val();
-                        }
-                    });*/
-                    //var data3 = "typeXML="+typeXMl+"&";
-                    //var data5 = data3.concat(data4);
-                    //envoyer les donnees avec ajax
                     $.ajax({
                         type: "POST",//la method à utiliser soit POST ou GET
                         url: "/getTypes", //lien de la servlet qui exerce le traitement sur les données
-                        dataType: 'json',
                         data: data4,// sign_in c'est l'id du form qui contient le bouton submit et toutes les champs à envoyer
-                        xhr: function () {
-                            var xhr = new window.XMLHttpRequest();
-                            //Download progress
-                            xhr.addEventListener("progress", function (evt) {
-                                console.log(evt.lengthComputable);
-                                if (evt.lengthComputable) {
-                                    var percentComplete = evt.loaded / evt.total;
-                                }
-                            }, false);
-                            return xhr;
-                        },
-                        beforeSend: function () {
-                            var progressbar = $( "#progressbar" ),
-                                progressLabel = $( ".progress-label" );
-                            progressbar.progressbar({
-                                value: false,
-                            });
-                            $('#pleaseWaitDialog').modal('show');
-                        },
-                        complete: function () {
-                            $('#pleaseWaitDialog').modal('hide');
-                        },
                         success: function (data) {// le cas ou la requete est bien execute en reçoi les données serialiser par JSON dans la variable msg
-                                $("#contenu").html("");
-                                var contenu = "";
-                            console.log("data.length" + data.inputError.length);
-                                if ((data.inputError.length) == 0) {
-                                    contenu += "<fieldset><div class='panel panel-success'><div class='panel-heading'><div class='pad margin no-print'>"+
-                                        "<div class='callout callout-success' style='margin-bottom: 0!important;'>"+
-                                        "<h4><i class='fa fa-info'></i> SUCCESS:</h4>This JOB HAS NO ERROR INPUT DUE TO EXCEPTIONS... </div>"+
-                                        "</div></div><div class='panel-body'>"
-                                } else {
-                                    contenu += "<fieldset><div class='panel panel-danger'><div class='panel-heading'><div class='pad margin no-print'>"+
-                                        "<div class='callout callout-danger' style='margin-bottom: 0!important;'>"+
-                                        "<h4><i class='fa fa-info'></i> ALERT :</h4>This JOB HAS ERROR INPUT... </div>"+
-                                        "</div></div>"
-                                    contenu += "<div class='panel-body'><div class='row'><div class='col-xs-12'>" +
-                                        "<table id='myInputErrors' width='100%' class='table .table-bordered'>" +
-                                        "<thead><tr><th><b>Line Number</b></th><th ><b>Line</b></th><th><b>Message</b></th></thead><tbody>";
-                                    for (var i = 0; i < data.inputError.length; i++) {
-                                        contenu += "<tr><td>" + data.inputError[i].lineNumber + "</td><td>" + data.inputError[i].line + "</td><td>" + data.inputError[i].messages + "</td></tr>";
-                                    }
-                                    contenu += "</tbody></table>" +
-                                        "</div></div>";
+                                $("#contenus").html("");
+                            var currentDate = moment().format("DD-MM-YYYY");
+                                var contenu = "<div class='panel panel-success'><div class='panel-heading'><div class='pad margin no-print'>"
+                                    + "<div class='callout callout-success' style='margin-bottom: 0!important;'>"+
+                            "<h4><i class='fa fa-info'></i> SUCCESS:</h4> <span class='label label-info'> Table   :  "+$('#tableName').val()+"</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class='label label-info'>  Date        :        "+currentDate+"</span></div></div><div class='panel-body'><fieldset>" +
+                                    "<table id='myInputErrors' width='100%' class='table .table-bordered'>" +
+                                    "<thead><tr><th><b>Path File</b></th><th ><b>Separator</b></th><th><b>lineSkipped </b></th></thead><tbody>"+
+                                    "<tr><td><span class='label label-primary'>"+$('#filePath').val()+"</span></td><td><span class='label label-danger'>"+$('#separator').val()+"</span></td><td><span class='label label-danger'>"+$('#nbLineToSkip').val()+"</span></td></tr></tbody></table></fieldset>"+
+                                        "<fieldset>"+
+                                    "<table class='table table-bordered' id='table2' name='table2'> <thead style='background: #3c8dbc'><tr> " +
+                                    "<th style='color: beige; width: 26px;'>Id</th>"+
+                                    "<th style='color: beige; width: 72px;'> PK</th>"+
+                                    "<th style='color: beige; width: 72px;'> Name</th>"+
+                                    "<th style='color: beige; width: 72px;'> Type </th>"+
+                                     "<th style='color: beige; width: 205px;'> Taille</th>"+
+                                     "<th style='color: beige; width: 72px;'> !NULL</th>"+
+                                     "<th style='color: beige; width: 72px;'>  Défault</th>"+
+                                     "<th style='color: beige; width: 72px;'>Commentaire</th></tr> </thead><tbody id='tableaucontenus2'>";
+                            var q,s;
+                            for(var i = 0 ; i< data.length ; i++){
+                                if(data[i].pko == true){
+                                    console.log("TRUE");
+                                    q= "<td><span class='label label-primary'><input type='checkbox'  checked='checked' disabled></span></td>";
+                                }else{
+                                    console.log("FALSEE");
+                                    q = "<td><input type='checkbox'  disabled></td>";
                                 }
-                                contenu += "<div class='row'><div class='col-xs-12'><table id='resume' width='100%' class='table .table-bordered'>" +
-                                    "<thead><tr><th><b>Job ID</b></th><th ><b>Start time</b></th><th><b>End time</b></th><th><b>Status </b></th><th><b>Number rows Added</b></th><th>Number rows Skiped</th></tr></thead><tbody>";
-                                contenu += "<tr><td>" + data.batchStepExecution.job_execution_id + "</td><td>" + moment(data.batchStepExecution.start_time).format("DD/MM HH:mm:ss") + "</td><td>" + moment(data.batchStepExecution.end_time).format("DD/MM HH:mm:ss") + "</td><td>" + data.batchStepExecution.status + "</td><td>" + data.batchStepExecution.write_count + "</td><td>" + data.batchStepExecution.process_skip_count + "</td></tr>";
-                                contenu += "</tbody></table>" +
-                                    "</div></div></div></div></fieldset>";
-
-                                $('#modal-body').append(contenu);
-                                $('#modal-success').modal('show');
-
+                                if(data[i].nonNull == true){
+                                    s= "<td><input type='checkbox'  checked='checked' disabled></td>";
+                                }else{
+                                    s = "<td><input type='checkbox'  disabled></td>";
+                                }
+                                contenu += "<tr><td><span class='label label-danger'>"+i+"</span></td>"+q+"<td><span class='label label-info'>"+data[i].nameo+"</span></td><td><span class='label label-info'>"+data[i].type+"</span></td><td><span class='label label-success'>"+data[i].sizeo+"</span></td>"+s+"<td>"+data[i].defaut+"</td><td>"+data[i].commentaires+"</td></td></tr>";
+                            }
+                            contenu+="</tbody></table></fieldset>";
+                            $('#table2').DataTable({
+                                "scrollY":        "500px",
+                                "scrollCollapse": true
+                            });
+                                $('#contenus').append(contenu);
+                                $('#Modalx').modal('show');
                         },
                         error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
                             console.log("error");
@@ -643,95 +623,18 @@ $(document).ready(function() {
                         $('ul.setup-panel li a[href="#step-1"]').trigger('click');
                     }
                 }
-            }
+
         });
 
-    $("#activate-step-4").click(function(e) {
-            //envoyer les donnees avec ajax
-        e.preventDefault();
-            if($("#tableaucontenus2").children().length>0) {//&& $("#form1").valid() && ($("#form0").valid() && ($("#form01").valid()||$("#form02").valid()))) {
-                var data0=  "dropeTable="+$("#dropTable").bootstrapSwitch('state');
-                $.ajax({
-                    type: "POST",//la method à utiliser soit POST ou GET
-                    url: "/validate", //lien de la servlet qui exerce le traitement sur les données// sign_in c'est l'id du form qui contient le bouton submit et toutes les champs à envoyer
-                    data:data0,
-                    xhr: function () {
-                        var xhr = new window.XMLHttpRequest();
-                        //Download progress
-                        xhr.addEventListener("progress", function (evt) {
-                            console.log(evt.lengthComputable);
-                            if (evt.lengthComputable) {
-                                var percentComplete = evt.loaded / evt.total;
-                            }
-                        }, false);
-                        return xhr;
-                    },
-                    beforeSend: function () {
-                        var progressbar = $( "#progressbar" ),
-                            progressLabel = $( ".progress-label" );
-                        progressbar.progressbar({
-                            value: false,
-                        });
-                        $('#pleaseWaitDialog').modal('show');
-                    },
-                    complete: function () {
-                        $('#pleaseWaitDialog').modal('hide');
-                    },
-                    success: function (data) {// le cas ou la requete est bien execute en reçoi les données serialiser par JSON dans la variable msg
-                        //recuperation de la valeur stock dans l'attribut desactive
-                        console.log("sucess");
-                        if (data.time > 0) {
-                            $("#contenu").html("");
-                            var contenu = "";
-                            if ((data.inputError.length) == 0) {
-                                contenu += "<fieldset><div class='panel panel-success'><div class='panel-heading'><div class='pad margin no-print'>"+
-                                "<div class='callout callout-success' style='margin-bottom: 0!important;'>"+
-                                    "<h4><i class='fa fa-info'></i> SUCCESS:</h4>This JOB HAS NO ERROR INPUT DUE TO EXCEPTIONS... </div>"+
-                                "</div></div><div class='panel-body'>"
-                            } else {
-                                contenu += "<fieldset><div class='panel panel-danger'><div class='panel-heading'><div class='pad margin no-print'>"+
-                                    "<div class='callout callout-danger' style='margin-bottom: 0!important;'>"+
-                                "<h4><i class='fa fa-info'></i> ALERT :</h4>This JOB HAS ERROR INPUT... </div>"+
-                                "</div></div>"
-                                contenu += "<div class='panel-body'><div class='row'><div class='col-xs-12'>" +
-                                    "<table id='myInputErrors' width='100%' class='table .table-bordered'>" +
-                                    "<thead><tr><th><b>Line Number</b></th><th ><b>Line</b></th><th><b>Message</b></th></thead><tbody>";
-                                for (var i = 0; i < data.inputError.length; i++) {
-                                    contenu += "<tr><td>" + data.inputError[i].lineNumber + "</td><td>" + data.inputError[i].line + "</td><td>" + data.inputError[i].messages + "</td></tr>";
-                                }
-                                contenu += "</tbody></table>" +
-                                    "</div></div>";
-                            }
-                            contenu += "<div class='row'><div class='col-xs-12'><table id='resume' width='100%' class='table .table-bordered'>" +
-                             "<thead><tr><th><b>Job ID</b></th><th ><b>Start time</b></th><th><b>End time</b></th><th><b>Status </b></th><th><b>commit_count</b></th><th><b>read_count</b></th><th>write_count</th><th>process_skip_count</th><th>exit_code</th><th>time</th></thead><tbody>";
-                                contenu += "<tr><td>" + data.batchStepExecution.job_execution_id + "</td><td>" + moment(data.batchStepExecution.start_time).format("DD/MM HH:mm:ss") + "</td><td>" + moment(data.batchStepExecution.end_time).format("DD/MM HH:mm:ss") + "</td><td>" + data.batchStepExecution.status + "</td><td>" + data.batchStepExecution.commit_count + "</td><td>" + data.batchStepExecution.read_count + "</td><td>" + data.batchStepExecution.write_count + "</td><td>" + data.batchStepExecution.process_skip_count + "</td><td>" + data.batchStepExecution.exit_code + "</td><td>" + data.time + "</td></tr>";
-                            contenu += "</tbody></table>" +
-                                "</div></div></div></div></fieldset>";
 
-                            $('#modal-body').append(contenu);
-                            $('#modal-success').modal('show');
-                        }
-                        else {
-                            var errors;
-                            for (var i = 0; i < data.length; i++) {
-                                errors = errors + data[i].erreur + "=> " + data[i].value;
-                            }
-                            $('#modal-body-danger').append("job Failed try again resolve this " + errors);
-                            $('#modal-danger').modal('show');
-                        }
-                    },
-                error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
-                    $('#modal-danger').modal('show');
-                    }
-                });
-            }else{
-                //alert("Veuillez ajouter une column");
-                var r = confirm("Vous devez séléctionner au moins une colonne ! voulez vous vous diriger vers Config Columns ?");
-                if(r == true) {
-                    $('ul.setup-panel li a[href="#step-1"]').trigger('click');
-                }
-            }
-        });
+    $(".close").on('click',function () {
+        window.location.replace("/home");
+    });
+
+
+
+
+
 
     $("#cols").change(function(e){
         e.preventDefault();
@@ -771,7 +674,7 @@ $(document).ready(function() {
             $("#dropTable1").bootstrapSwitch('state',false);
             $('#dropTable1').bootstrapSwitch('disabled',true);
         }
-    })
+    });
 
     $('#precedent').click(function (e) {
         e.preventDefault();

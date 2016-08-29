@@ -17,7 +17,7 @@
 
 		<property name="resource" value="file:#{jobParameters['input.file.name']}" />
 
-		<property name="fragmentRootElementName" value="#{reader.fragmentRootName}" />
+		<property name="fragmentRootElementName" value="#{jobParameters['fragmentRoot']}" />
 
 		<property name="unmarshaller">
 			<bean class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
@@ -27,9 +27,8 @@
 		</property>
 	</bean>
 
-
-	<batch:job id="importXML">
-		<batch:step id="step2">
+	<batch:job id="xmlJob">
+		<batch:step id="xml">
 			<tasklet>
 				<chunk
 						reader="xmlItemReader"

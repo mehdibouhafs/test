@@ -17,7 +17,6 @@ import java.util.Map;
 public class FieldSetItemPreparedStatementSetter implements ItemPreparedStatementSetter<Object> {
     @Override
     public void setValues(Object item, PreparedStatement ps) throws SQLException {
-
         ApplicationContext context = Global.getApplicationContext();
         try {
             System.out.println("FIELDSET"+ Generator.reflectToString(item));

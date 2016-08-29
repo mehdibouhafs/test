@@ -11,14 +11,16 @@ import java.util.List;
 @Entity
 @Table(name="A_MBS3_Attribute")
 public class Attribute extends Model {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
     public String type;
     public String nameo;
     public String sizeo;
     public boolean pko;
     public boolean nonNull;
-    public String defautlVal;
-    public String commentaire;
+    public String commentaires;
+    public String defaut;
     public String classe;
 
     public Attribute() {
@@ -30,6 +32,12 @@ public class Attribute extends Model {
         //return find.fetch("project").where().eq("done", false).eq("project.members.email", classe).findList();
         return  find.where().eq("classe",classe).findList();
     }
+
+    public static List<Attribute> findInvolvingNotEqual(String classe) {
+        //return find.fetch("project").where().eq("done", false).eq("project.members.email", classe).findList();
+        return  find.where().eq("classe",classe).ne("type","OBJECT").findList();
+    }
+
 
     public static void dropInvolving(String classe){
         List<Attribute> attributes = findInvolving(classe);
@@ -92,20 +100,21 @@ public class Attribute extends Model {
         this.nonNull = nonNull;
     }
 
-    public String getDefautlVal() {
-        return defautlVal;
+
+    public String getDefaut() {
+        return defaut;
     }
 
-    public void setDefautlVal(String defautlVal) {
-        this.defautlVal = defautlVal;
+    public void setDefaut(String defaut) {
+        this.defaut = defaut;
     }
 
-    public String getCommentaire() {
-        return commentaire;
+    public String getCommentaires() {
+        return commentaires;
     }
 
-    public void setCommentaire(String commentaire) {
-        this.commentaire = commentaire;
+    public void setCommentaires(String commentaires) {
+        this.commentaires = commentaires;
     }
 
     public String getClasse() {
@@ -120,14 +129,13 @@ public class Attribute extends Model {
     public String toString() {
         return "Attribute{" +
                 "id=" + id +
-                ", classe=" + classe +
                 ", type='" + type + '\'' +
                 ", nameo='" + nameo + '\'' +
                 ", sizeo='" + sizeo + '\'' +
                 ", pko=" + pko +
                 ", nonNull=" + nonNull +
-                ", defautlVal='" + defautlVal + '\'' +
-                ", commentaire='" + commentaire + '\'' +
+                ", commentaires='" + commentaires + '\'' +
+                ", classe='" + classe + '\'' +
                 '}';
     }
 }

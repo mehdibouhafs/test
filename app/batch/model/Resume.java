@@ -15,10 +15,12 @@ public class Resume extends Model {
     private List<InputError> inputError;
     private BatchStepExecution batchStepExecution;
     private User user;
+    private Reader reader;
+    private List<Attribute> attributes;
 
     public Resume() {
-
     }
+
 
 
     public BatchStepExecution getBatchStepExecution() {
@@ -37,4 +39,27 @@ public class Resume extends Model {
         this.inputError = inputError;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Reader getReader() {
+        return reader;
+    }
+
+    public void setReader(Reader reader) {
+        this.reader = reader;
+    }
+
+    public List<Attribute> getAttributes() {
+        return attributes;
+    }
+
+    public void setAttributes(List<Attribute> attributes) {
+        this.attributes = attributes;
+    }
 }
