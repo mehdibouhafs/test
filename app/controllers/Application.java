@@ -56,6 +56,7 @@ public class Application extends Controller {
         List<String> s;
         if(entete != null){
             s = batchJobService.firstLineCsvFile(new File(reader.filePath),reader.separator) ;
+            System.out.println("on s" + s);
         }else{
             int i = 0;
             List<String> colss = new ArrayList<>();
@@ -90,11 +91,11 @@ public class Application extends Controller {
         reader.emailUser = session("email");
         reader.tableName = form.field("tableName").value();
         reader.classeName = form.field("tableName").value();
-        reader.dateCreation = new Date();
         String entete = form.field("entete").value();
         StringBuffer cols = new StringBuffer();
         List<String> s;
         if(entete != null){
+            System.out.println("on");
             s = batchJobService.firstLineCsvFile(new File(reader.filePath),reader.separator) ;
         }else{
             int i = 0;
@@ -145,7 +146,6 @@ public class Application extends Controller {
         Reader reader = new Reader();
         reader.filePath = form.get().filePath;
         reader.emailUser = session("email");
-        reader.dateCreation = new Date();
         reader.save();
         String[] s = batchJobService.getElementAndAttributesFileXml(reader);
         StringBuffer cols = new StringBuffer();
@@ -289,6 +289,29 @@ public class Application extends Controller {
     }
 
 
+    public Result programJob(){
+        DynamicForm form  = Form.form().bindFromRequest();
+        String classe = form.field("classe").value();
+        Long date = Long.parseLong(form.field("date").value());
+        System.out.println(date);
+        ApplicationContext context = Global.getApplicationContext();
+        Programing programing = (Programing) context.getBean("programming");
+        Reader reader = Reader.getbyClasse(classe);
+        reader.executed = false;
+        reader.resultat = false;
+        reader.executed_by = session("email");
+        reader.dateLancement = new Date(date);
+        reader.nbLinesFailed = 0L;
+        reader.nbLinesSuccess = 0L;
+        reader.update();
+        programing.setReader(reader);
+        programing.setDate(new Date(date));
+        programing.executeTaskT();
+        System.out.println("Classe = "+ classe );
+        return ok("ok");
+    }
+
+
 
 
 
@@ -350,6 +373,8 @@ public class Application extends Controller {
 
     @Security.Authenticated(Secured.class)
     public Result index() {
+
+
         return ok(index.render(batch.model.User.find.byId(request().username())));
     }
     @Security.Authenticated(Secured.class)

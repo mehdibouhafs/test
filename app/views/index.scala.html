@@ -42,10 +42,10 @@
    <div class="small-box bg-yellow">
     <div class="inner">
      <h3>@user.job_abondonned</h3>
-     <p>JOB ABONDONNED</p>
+     <p>JOB Failed</p>
     </div>
     <div class="icon">
-     <i class="ion ion-sad-outline"></i>
+     <i class="ion ion-social-freebsd-devil"></i>
     </div>
     <a id="allMyJobAbondonned" class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></a>
    </div>
@@ -56,10 +56,10 @@
     <div class="small-box bg-red">
      <div class="inner">
       <h3>@user.job_failed</h3>
-      <p>Job Failed</p>
+      <p>Job Not Started</p>
      </div>
      <div class="icon">
-      <i class="ion ion-social-freebsd-devil"></i>
+      <i class="ion ion-sad-outline"></i>
      </div>
      <a id="allMyJobFailed" class="small-box-footer">More info<i class="fa fa-arrow-circle-right"></i></a>
     </div>
@@ -81,21 +81,21 @@
     <!-- /.box-header -->
    <div class="box-body">
 
-     <table id="latestTabId" class="table table-striped" cellspacing="0" width="100%" style="font-size:15px;">
+     <table id="latestTabId" class="table table-bordered"  width="100%" style="font-size:15px;">
       <thead>
        <tr>
         <th > Date Création</th>
-        <th > File </th>
-        <th>Nb line skiped</th>
-        <th > Table </th>
-        <th > Date Lancement</th>
-        <th > Executed by </th>
+        <th > Nom du fichier </th>
+        <th > Nom de table </th>
+        <th > Date de Lancement</th>
+        <th > Executé par </th>
         <th >  Resultat </th>
         <th >Nombre de lines ajouter</th>
         <th >Nombre de lines Non ajouter </th>
         <th > Lancer  </th>
+        <th > Programmer  </th>
         <th > Supprimer  </th>
-        <th > More Détail  </th>
+        <th > Plus de Détails  </th>
        </tr>
       </thead>
       <tbody id="latestTab">
@@ -154,6 +154,36 @@
     </div>
     <div class="modal-body" id="resume1">
 
+    </div>
+   </div>
+   <div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+   </div>
+  </div>
+ </div>
+
+ <div id="myModalxya" class="modal modal-fullscreen fade"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog ">
+   <div class="modal-content">
+    <div class="modal-header">
+     <h4 class="modal-title" id="myModalLabel">Programmer votre batch  </h4>
+    </div>
+    <div class="modal-body" id="resume11">
+          <div class="container">
+           <div class="row">
+            <div class='col-sm-6'>
+             <div class="form-group">
+              <div class='input-group date' id='datetimepicker1' >
+               <input type='text' data-format="yyyy-MM-dd hh:mm:ss" class="form-control" />
+               <span class="input-group-addon">
+                <span class="glyphicon glyphicon-calendar"></span>
+               </span>
+              </div>
+             </div>
+            </div>
+           </div>
+           <div id="program"></div>
+          </div>
     </div>
    </div>
    <div class="modal-footer">

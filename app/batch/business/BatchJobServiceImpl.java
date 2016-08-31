@@ -210,7 +210,36 @@ public class BatchJobServiceImpl implements BatchJobService {
 
 
 
-
+    public Map<String, String> columnsWithTypeAndSize(List<Attribute> attributes){
+       /* Map<String, String> columnTable = new LinkedHashMap<>();
+        StringBuffer typeSizes;
+        for (int i = 0; i < attributes.size(); i++) {
+            typeSizes = new StringBuffer(attributes.get(i).getType()+"-"+attributes.get(i).getSizeo());
+            if(attributes.get(i).isNonNull()== true){
+                typeSizes.append("- NOT NULL");
+            }else {
+                typeSizes.append("-");
+            }
+            if(attributes.get(i).isPko()== true){
+                typeSizes.append("PrimaryKey");
+            }else{
+                typeSizes.append("-");
+            }
+            if(attributes.get(i).getDatac() != null) {
+                typeSizes.append("- DEFAULT '" + attributes.get(i).getDatac() + "'");
+            }else{
+                typeSizes.append("- DEFAULT ''");
+            }
+            if(attributes.get(i).getCommentaires() !=null) {
+                typeSizes.append("- " + attributes.get(i).getCommentaires());
+            }else{
+                typeSizes.append("- ");
+            }
+            columnTable.put(attributes.get(i).getNameo(), typeSizes.toString());
+        }
+            */
+        return  null;
+    }
 
     @Override
     public Map<String, String> dataTable(String table) {
@@ -237,16 +266,21 @@ public class BatchJobServiceImpl implements BatchJobService {
         if(reader.executed == true){
             System.out.println("reader true");
             batchJobDao.executer("truncate table " + reader.classeName);
-        }else{
+        }
+        else{
         batchJobDao.executer(cData[1]);
-            List<String> comments = batchJobDao.getCommentaires(reader.classeName,Attribute.findInvolving(reader.classeName));
+            /*List<String> comments = batchJobDao.getCommentaires(reader.classeName,Attribute.findInvolving(reader.classeName));
             if(comments.size()>1){
             for (String com :comments){
-                batchJobDao.executer(com);
+                if(!com.contains("nul")) {
+                    batchJobDao.executer(com);
+                }
             }
             reader.executed = true;
-            }
+            }*/
         }
+        System.out.println("his");
+        System.out.println("reader " + reader );
         File destination = new File(reader.filePath);
         JobParameters param = new JobParametersBuilder()
                 .addString("input.file.name", destination.getPath())
@@ -260,6 +294,7 @@ public class BatchJobServiceImpl implements BatchJobService {
         JobLauncher jobLauncher = (JobLauncher) context.getBean("jobLauncher");
         JobCompletionNotificationListener listener = context.getBean("listener", JobCompletionNotificationListener.class);
         listener.setUser(User.find.byId(reader.executed_by));
+        System.out.println("hisssss");
         try {
             if(getExtension(reader.filePath).equals("xml")){
                 getElementAndAttributesFileXml(reader);

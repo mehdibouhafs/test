@@ -95,6 +95,14 @@ create table a_mbs_input_errors (
 );
 create sequence A_MBS_INPUT_ERRORS_seq;
 
+create table a_mbs_programing (
+  id                            number(19) not null,
+  reader_id                     number(19),
+  datee                         timestamp,
+  constraint pk_a_mbs_programing primary key (id)
+);
+create sequence A_MBS_Programing_seq;
+
 create table a_mbs3_reader (
   id                            number(19) not null,
   file_path                     varchar2(255),
@@ -151,6 +159,9 @@ drop table a_mbs3_classe cascade constraints purge;
 
 drop table a_mbs_input_errors cascade constraints purge;
 drop sequence A_MBS_INPUT_ERRORS_seq;
+
+drop table a_mbs_programing cascade constraints purge;
+drop sequence A_MBS_Programing_seq;
 
 drop table a_mbs3_reader cascade constraints purge;
 drop sequence a_mbs3_reader_seq;

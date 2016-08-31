@@ -13,9 +13,14 @@ import java.util.Map;
  */
 public interface BatchJobDao {
     public boolean createTableOracle(Reader reader, List<Attribute> attributes);
-    public List<String> getCommentaires(String table,List<Attribute> attributes);
-    public String buildCdata(Reader reader,List<Attribute> attributes);
+
+    public List<String> getCommentaires(String table, List<Attribute> attributes);
+
+    public String buildCdata(Reader reader, List<Attribute> attributes);
+
     public boolean dropTable(String tableName);
-    public Map<String,String > dataTable(String table);
+
+    public Map<String, String> dataTable(String table);
+
     public Boolean executer(String query);
 }

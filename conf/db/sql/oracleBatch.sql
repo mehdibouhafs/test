@@ -9,6 +9,12 @@ DROP SEQUENCE  BATCH_STEP_EXECUTION_SEQ ;
 DROP SEQUENCE  BATCH_JOB_EXECUTION_SEQ ;
 DROP SEQUENCE  BATCH_JOB_SEQ ;
 
+
+
+
+
+
+
 drop table a_mbs3_attribute cascade constraints purge;
 drop sequence A_MBS3_Attribute_seq
 

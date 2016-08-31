@@ -60,8 +60,6 @@ public class Reader extends Model  {
     }
 
 
-
-
     public static Reader getbyClasse(String classeName){
         return find.where().eq("classeName",classeName).findUnique();
     }
@@ -123,11 +121,14 @@ public class Reader extends Model  {
         }
     }
 
-
     @Override
     public String toString() {
         return "Reader{" +
-                "dateCreation=" + dateCreation +
+                "executed=" + executed +
+                ", id=" + id +
+                ", filePath='" + filePath + '\'' +
+                ", classeName='" + classeName + '\'' +
+                ", jobId=" + jobId +
                 '}';
     }
 }

@@ -118,13 +118,13 @@ $.ajax({
                     }else{
                         commentaires = data.attributes[i].commentaires;
                     }
-                    contenu += '<tr> <td>'+qq+'</td><td>'+data.attributes[i].nameo+'</td><td>'+object+'</td><td>'+sizeo+'</td><td>'+ss+'</td><td>'+defaut+'</td><td>'+commentaires+'</td></tr>';
+                    contenu += '<tr> <td align="center">'+qq+'</td><td align="center">'+data.attributes[i].nameo+'</td><td align="center">'+object+'</td><td align="center">'+sizeo+'</td><td align="center">'+ss+'</td><td align="center">'+defaut+'</td><td align="center">'+commentaires+'</td></tr>';
                 }
 
                 if(data.reader.executed == true) {
                     contenu+='</tbody></table> </div> </div> </div></div><div class="row"> <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"><div class="panel panel-primary"> <div class="panel-heading"> <h2>Batch Report</h2></div> <div class="panel-body">'+
                         '<table class="table table-bordered table-hover" id="table_auto"><thead> <tr> <th width="2%">Job Id</th> <th width="4%">Type de Job</th> <th width="10%">Start time</th> <th width="10%">End time </th> <th width="10%">status</th> <th width="10%">Read count</th> <th width="10%">Filter count</th> <th width="10%">Write count</th> <th width="10%">Read skip count</th> <th width="10%">Write skip count</th> <th width="10%">Process skip count</th> <th width="4%">Rollback count</th> </tr> </thead>'+
-                        '<tbody> <tr> <td>'+data.batchStepExecution.job_execution_id+'</td> <td>'+data.batchStepExecution.step_name+'</td> <td>'+moment(data.batchStepExecution.start_time).format("DD/MM/YYYY HH:mm:ss")+'</td> <td>'+moment(data.batchStepExecution.end_time).format("DD/MM/YYYY HH:mm:ss")+'</td> <td>'+data.batchStepExecution.status+'</td> <td>'+data.batchStepExecution.read_count+'</td> <td>'+data.batchStepExecution.filter_count+'</td> <td>'+data.batchStepExecution.write_count+'</td> <td>'+data.batchStepExecution.read_skip_count+'</td> <td>'+data.batchStepExecution.write_skip_count+'</td> <td>'+data.batchStepExecution.process_skip_count+'</td> <td>'+data.batchStepExecution.rollback_count+'</td> </tr> </tbody> </table> </div> </div> </div> </div>';
+                        '<tbody> <tr> <td align="center">'+data.batchStepExecution.job_execution_id+'</td> <td align="center">'+data.batchStepExecution.step_name+'</td> <td align="center">'+moment(data.batchStepExecution.start_time).format("DD/MM/YYYY HH:mm:ss")+'</td> <td align="center">'+moment(data.batchStepExecution.end_time).format("DD/MM/YYYY HH:mm:ss")+'</td> <td align="center">'+data.batchStepExecution.status+'</td> <td align="center">'+data.batchStepExecution.read_count+'</td> <td align="center">'+data.batchStepExecution.filter_count+'</td> <td align="center">'+data.batchStepExecution.write_count+'</td> <td align="center">'+data.batchStepExecution.read_skip_count+'</td> <td align="center">'+data.batchStepExecution.write_skip_count+'</td> <td align="center">'+data.batchStepExecution.process_skip_count+'</td> <td align="center">'+data.batchStepExecution.rollback_count+'</td> </tr> </tbody> </table> </div> </div> </div> </div>';
 
 
 
@@ -132,7 +132,7 @@ $.ajax({
                         contenu += '<div class="row"> <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"><div class="panel panel-danger"> <div class="panel-heading"><h2> Error input : </h2></div> <div class="panel-body"> <table class="table table-bordered table-hover" id="table_auto"> <thead> <tr> <th width="5%">Line Number</th> <th width="35%">Line</th> <th width="60%">Messages</th> </tr> </thead><tbody>';
 
                         for (var jj = 0; jj < data.inputError.length; jj++) {
-                            contenu += '<tr> <td>' + data.inputError[jj].lineNumber + '</td><td>' + data.inputError[jj].line + '</td> <td>' + data.inputError[jj].messages + '</td> </tr>';
+                            contenu += '<tr> <td align="center">' + data.inputError[jj].lineNumber + '</td><td align="center">' + data.inputError[jj].line + '</td> <td>' + data.inputError[jj].messages + '</td> </tr>';
                         }
                         contenu += '</tbody> </table> </div> </div> </div> </div></div></div>';
                     } else {
@@ -200,17 +200,17 @@ $.ajax({
                 for(var i = 0 ; i< data.length ; i++){
                     if(data[i].pko == true){
                         console.log("TRUE");
-                        q= "<td><span class='label label-primary'><input type='checkbox'  checked='checked' disabled></span></td>";
+                        q= "<td align='center'><span class='label label-primary'><input type='checkbox'  checked='checked' disabled></span></td>";
                     }else{
                         console.log("FALSEE");
-                        q = "<td><input type='checkbox'  disabled></td>";
+                        q = "<td align='center'><input type='checkbox'  disabled></td>";
                     }
                     if(data[i].nonNull == true){
-                        s= "<td><input type='checkbox'  checked='checked' disabled></td>";
+                        s= "<td align='center'><input type='checkbox'  checked='checked' disabled></td>";
                     }else{
-                        s = "<td><input type='checkbox'  disabled></td>";
+                        s = "<td align='center'><input type='checkbox'  disabled></td>";
                     }
-                    contenu += "<tr><td><span class='label label-danger'>"+i+"</span></td>"+q+"<td><span class='label label-info'>"+data[i].nameo+"</span></td><td><span class='label label-info'>"+data[i].type+"</span></td><td><span class='label label-success'>"+data[i].sizeo+"</span></td>"+s+"<td>"+data[i].datac+"</td><td>"+data[i].commentaires+"</td></td></tr>";
+                    contenu += "<tr><td align='center'><span class='label label-danger'>"+i+"</span></td>"+q+"<td align='center'><span class='label label-info'>"+data[i].nameo+"</span></td><td><span class='label label-info'>"+data[i].type+"</span></td><td align='center'><span class='label label-success'>"+data[i].sizeo+"</span></td>"+s+"<td align='center'>"+data[i].datac+"</td><td align='center'>"+data[i].commentaires+"</td></td></tr>";
                 }
                 contenu+="</tbody></table></fieldset>";
                 $('#table2').DataTable({

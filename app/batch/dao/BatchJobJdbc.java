@@ -208,7 +208,6 @@ public class BatchJobJdbc extends JdbcTemplate implements BatchJobDao {
         query.append(")");
         query2.append(") VALUES ");
         query3.append(")");
-
         System.out.println("Query 1 : " + query.toString());
         System.out.println("Query2 :" + query2.toString());
         System.out.println("Query 3: " + query3.toString());
@@ -222,12 +221,14 @@ public class BatchJobJdbc extends JdbcTemplate implements BatchJobDao {
         Map<String,String> columnTable = generatedColumnsTable(attributes);
         for (Map.Entry<String,String> entry : columnTable.entrySet()) {
             String[] typeSize = entry.getValue().split("-");
-
-            if(!typeSize[5].equals("")){
-                commentaire="COMMENT ON COLUMN "+table+"."+entry.getKey()+" IS '"+typeSize[5]+"'";
-                comments.add(commentaire);
+            if (typeSize[5] != null) {
+                if (!typeSize[5].equals("")) {
+                    commentaire = "COMMENT ON COLUMN " + table + "." + entry.getKey() + " IS '" + typeSize[5] + "'";
+                    comments.add(commentaire);
+                }
             }
         }
+        System.out.println("yeaaaaaaaaaaah");
         return  comments;
 
     }

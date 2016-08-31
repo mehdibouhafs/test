@@ -26,6 +26,7 @@ POST    /csvExist                   controllers.Application.csvExistConfig()
 
 POST    /xmlExist                   controllers.Application.xmlExistConfig()
 
+POST    /programJob                 controllers.Application.programJob()
 
 GET     /readers                    controllers.Application.getReaders()
 

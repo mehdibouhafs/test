@@ -18,6 +18,11 @@
 
 
 
+
+
+	<bean id="programming" class="batch.model.Programing"/>
+
+
 	<!--<bean id="dataSource"
 		  class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 

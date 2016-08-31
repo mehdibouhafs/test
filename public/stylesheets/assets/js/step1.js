@@ -7,6 +7,10 @@ $(document).ready(function() {
         callAjax();
     });
 
+
+
+    var datetime = $('#datetimepicker1').datetimepicker();
+
 // function that processes your ajax calls...
     var nb;
     function callAjax() {
@@ -89,32 +93,32 @@ $(document).ready(function() {
                 }
                 if (data[i].executed == true) {
                     $("#latestTab").append("<tr  class='success' id='" + i + "' value='" + data[i].id + "'>" +
-                        "<td ><span class='label label-default'>" + moment(data[i].dateCreation).format("DD/MM/YYYY HH:mm:ss") + "</span></td>" +
-                        "<td ><span class='label label-default'>" + path + "</span></td>" +
-                        "<td ><span class='label label-default'>" + data[i].nbLineToSkip + "</span></td>" +
-                        "<td ><span class='label label-default'>" + data[i].classeName + "</span></td>" +
-                        "<td >" + lancement + "</td>" +
-                        "<td >" + executedBy.split("@")[0] + "</td>" +
-                        "<td >" + resultat + "</td>" +
-                        "<td><span class='label label-default'>" + data[i].nbLinesSuccess + "</span></td>" +
-                        "<td> <span class='label label-default'>" + data[i].nbLinesFailed + "</span></td>" +
-                        "<td><button  class='btn btn-success' value='" + data[i].id + "'><span class='glyphicon glyphicon glyphicon-play'></span></button></td>" +
-                        "<td><button  class='btn btn-danger' value='" + data[i].id + "'><span class='glyphicon glyphicon-remove-sign'></span></button></td>" +
-                        "<td><button  class='btn btn-primary' value='" + data[i].classeName + "'><span class='glyphicon glyphicon-eye-open'></span></button></td></tr>");
+                        "<td align='center'><span class='label label-default'>" + moment(data[i].dateCreation).format("DD/MM/YYYY HH:mm:ss") + "</span></td>" +
+                        "<td align='center'><span class='label label-default'>" + path + "</span></td>" +
+                        "<td align='center'><span class='label label-default'>" + data[i].classeName + "</span></td>" +
+                        "<td align='center'>" + lancement + "</td>" +
+                        "<td align='center'>" + executedBy.split("@")[0] + "</td>" +
+                        "<td align='center'>" + resultat + "</td>" +
+                        "<td align='center'><span class='label label-default'>" + data[i].nbLinesSuccess + "</span></td>" +
+                        "<td align='center'> <span class='label label-default'>" + data[i].nbLinesFailed + "</span></td>" +
+                        "<td align='center'><button  class='btn btn-success' value='" + data[i].id + "'><span class='glyphicon glyphicon glyphicon-play'></span></button></td>" +
+                        "<td align='center'><button  class='time' style='background-color: #3c8dbc;' value='" + data[i].classeName + "'><span class='glyphicon glyphicon glyphicon-time'></span></button></td>" +
+                        "<td align='center'><button  class='btn btn-danger'  value='" + data[i].id + "'><span class='glyphicon glyphicon-remove-sign'></span></button></td>" +
+                        "<td align='center'><button  class='btn btn-primary' value='" + data[i].classeName + "'><span class='glyphicon glyphicon-eye-open'></span></button></td></tr>");
                 } else {
                     $("#latestTab").append("<tr  id='" + i + "' value='" + data[i].id + "'>" +
-                        "<td ><span class='label label-default'>" + moment(data[i].dateCreation).format("DD/MM/YYYY HH:mm:ss") + "</span></td>" +
-                        "<td ><span class='label label-default'>" + path + "</span></td>" +
-                        "<td ><span class='label label-default'>" + data[i].nbLineToSkip + "</span></td>" +
-                        "<td ><span class='label label-default'>" + data[i].classeName + "</span></td>" +
-                        "<td >" + lancement + "</td>" +
-                        "<td >" + executedBy.split("@")[0] + "</td>" +
-                        "<td >" + resultat + "</td>" +
-                        "<td><span class='label label-default'> " + data[i].nbLinesSuccess + "</span></td>" +
-                        "<td><span class='label label-default'>" + data[i].nbLinesFailed + "</span></td>" +
-                        "<td><button  class='btn btn-success' value='" + data[i].id + "'><span class='glyphicon glyphicon glyphicon-play'></span></button></td>" +
-                        "<td><button  class='btn btn-danger' value='" + data[i].id + "'><span class='glyphicon glyphicon-remove-sign'></span></button></td>" +
-                        "<td><button  class='btn btn-primary' value='" + data[i].classeName + "'><span class='glyphicon glyphicon-eye-open'></span></button></td></tr>");
+                        "<td align='center'><span class='label label-default'>" + moment(data[i].dateCreation).format("DD/MM/YYYY HH:mm:ss") + "</span></td>" +
+                        "<td align='center'><span class='label label-default'>" + path + "</span></td>" +
+                        "<td align='center'><span class='label label-default'>" + data[i].classeName + "</span></td>" +
+                        "<td align='center'>" + lancement + "</td>" +
+                        "<td align='center'>" + executedBy.split("@")[0] + "</td>" +
+                        "<td align='center'>" + resultat + "</td>" +
+                        "<td align='center'><span class='label label-default'> " + data[i].nbLinesSuccess + "</span></td>" +
+                        "<td align='center'><span class='label label-default'>" + data[i].nbLinesFailed + "</span></td>" +
+                        "<td align='center'><button  class='btn btn-success' value='" + data[i].id + "'><span class='glyphicon glyphicon glyphicon-play'></span></button></td>" +
+                        "<td align='center'><button  class='time' style='background-color: #3c8dbc;' value='" + data[i].classeName + "'><span class='glyphicon glyphicon glyphicon-time'></span></button></td>" +
+                        "<td align='center'><button  class='btn btn-danger' value='" + data[i].id + "'><span class='glyphicon glyphicon-remove-sign'></span></button></td>" +
+                        "<td align='center'><button  class='btn btn-primary' value='" + data[i].classeName + "'><span class='glyphicon glyphicon-eye-open'></span></button></td></tr>");
                 }
             }
 
@@ -176,6 +180,49 @@ $(document).ready(function() {
             }
         });
     });
+
+
+
+    $('#latestTabId').on('click', '.time', function (e) {
+        e.preventDefault();
+        //var table = $('#latestTabId').DataTable();
+        console.log('show mod');
+        $("#program").html("");
+        $("#program").append('<button class="programation" name="'+$(this).val()+'" type="button"  >Valider</button>');
+        $("#myModalxya").modal().show();
+
+    });
+
+
+    $(document).on("click", ".programation", function(event){
+        event.preventDefault();
+        $("#myModalxya").modal("hide");
+        console.log("lol "+  $(this).attr("name"));
+        console.log("date1 "+ $("#datetimepicker1").data("DateTimePicker").date());
+        var data2 = "classe="+$(this).attr("name")+"&";
+        var data3 = "date="+$("#datetimepicker1").data("DateTimePicker").date();
+        var data = data2.concat(data3);
+        $.ajax({
+            type:'POST',
+            data:data,
+            url:'/programJob',
+            sucess:function (data) {
+
+                console.log("Job Programmed with success");
+            },
+            error:function () {
+                console.log("not deleted");
+            }
+        });
+
+
+
+       // console.log("date2 "+$("#datetimepicker1").find("input").val());
+
+
+
+    });
+
 
 
 
@@ -259,7 +306,7 @@ $(document).ready(function() {
                     if(data.reader.executed == true) {
                     contenu+='</tbody></table> </div> </div> </div></div><div class="row"> <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"><div class="panel panel-primary"> <div class="panel-heading"> <h2>Batch Report</h2></div> <div class="panel-body">'+
                         '<table class="table table-bordered table-hover" id="table_auto"><thead> <tr> <th width="2%">Job Id</th> <th width="4%">Type de Job</th> <th width="10%">Start time</th> <th width="10%">End time </th> <th width="10%">status</th> <th width="10%">Read count</th> <th width="10%">Filter count</th> <th width="10%">Write count</th> <th width="10%">Read skip count</th> <th width="10%">Write skip count</th> <th width="10%">Process skip count</th> <th width="4%">Rollback count</th> </tr> </thead>'+
-                    '<tbody> <tr> <td>'+data.batchStepExecution.job_execution_id+'</td> <td>'+data.batchStepExecution.step_name+'</td> <td>'+moment(data.batchStepExecution.start_time).format("DD/MM/YYYY HH:mm:ss")+'</td> <td>'+moment(data.batchStepExecution.end_time).format("DD/MM/YYYY HH:mm:ss")+'</td> <td>'+data.batchStepExecution.status+'</td> <td>'+data.batchStepExecution.read_count+'</td> <td>'+data.batchStepExecution.filter_count+'</td> <td>'+data.batchStepExecution.write_count+'</td> <td>'+data.batchStepExecution.read_skip_count+'</td> <td>'+data.batchStepExecution.write_skip_count+'</td> <td>'+data.batchStepExecution.process_skip_count+'</td> <td>'+data.batchStepExecution.rollback_count+'</td> </tr> </tbody> </table> </div> </div> </div> </div>';
+                    '<tbody> <tr> <td align="center">'+data.batchStepExecution.job_execution_id+'</td> <td align="center">'+data.batchStepExecution.step_name+'</td> <td align="center">'+moment(data.batchStepExecution.start_time).format("DD/MM/YYYY HH:mm:ss")+'</td> <td align="center">'+moment(data.batchStepExecution.end_time).format("DD/MM/YYYY HH:mm:ss")+'</td> <td align="center">'+data.batchStepExecution.status+'</td> <td>'+data.batchStepExecution.read_count+'</td> <td align="center">'+data.batchStepExecution.filter_count+'</td> <td align="center">'+data.batchStepExecution.write_count+'</td> <td align="center">'+data.batchStepExecution.read_skip_count+'</td> <td align="center">'+data.batchStepExecution.write_skip_count+'</td> <td align="center">'+data.batchStepExecution.process_skip_count+'</td> <td align="center">'+data.batchStepExecution.rollback_count+'</td> </tr> </tbody> </table> </div> </div> </div> </div>';
 
                         if (data.inputError.length > 0) {
                             contenu += '<div class="row"> <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"><div class="panel panel-danger"> <div class="panel-heading"><h2> Error input : </h2></div> <div class="panel-body"> <table class="table table-bordered table-hover" id="table_auto"> <thead> <tr> <th width="5%">Line Number</th> <th width="35%">Line</th> <th width="60%">Messages</th> </tr> </thead><tbody>';
@@ -336,7 +383,7 @@ $(document).ready(function() {
                     }else{
                         commentaires = data.attributes[i].commentaires;
                     }
-                    contenu += '<tr> <td>'+qq+'</td><td>'+data.attributes[i].nameo+'</td><td>'+object+'</td><td>'+sizeo+'</td><td>'+ss+'</td><td>'+defaut+'</td><td>'+commentaires+'</td></tr>';
+                    contenu += '<tr> <td align="center">'+qq+'</td><td align="center">'+data.attributes[i].nameo+'</td><td align="center">'+object+'</td><td align="center">'+sizeo+'</td><td align="center">'+ss+'</td><td align="center">'+defaut+'</td><td align="center">'+commentaires+'</td></tr>';
                 }
 
                 if(data.reader.executed == true) {
@@ -350,7 +397,7 @@ $(document).ready(function() {
                         contenu += '<div class="row"> <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"><div class="panel panel-danger"> <div class="panel-heading"><h2> Error input : </h2></div> <div class="panel-body"> <table class="table table-bordered table-hover" id="table_auto"> <thead> <tr> <th width="5%">Line Number</th> <th width="35%">Line</th> <th width="60%">Messages</th> </tr> </thead><tbody>';
 
                         for (var jj = 0; jj < data.inputError.length; jj++) {
-                            contenu += '<tr> <td>' + data.inputError[jj].lineNumber + '</td><td>' + data.inputError[jj].line + '</td> <td>' + data.inputError[jj].messages + '</td> </tr>';
+                            contenu += '<tr> <td align="center">' + data.inputError[jj].lineNumber + '</td><td align="center">' + data.inputError[jj].line + '</td> <td>' + data.inputError[jj].messages + '</td> </tr>';
                         }
                         contenu += '</tbody> </table> </div> </div> </div> </div></div></div>';
                     } else {
@@ -410,20 +457,20 @@ $(document).ready(function() {
                         path = data[i].filePath.split("/")[data[i].filePath.split("/").length-1];
                     }
                     contenu += "<tr id='"+i+"' value='"+data[i].id+"'>" +
-                        "<td >" + i + "</td>" +
-                        "<td ><span class='label label-info'>" + moment(data[i].dateCreation).format("DD/MM/YYYY HH:mm:ss") + "</span></td>" +
-                        "<td >" + data[i].emailUser.split("@")[0] + "</td>" +
-                        "<td >" + path+ "</td>" +
-                        "<td >" + data[i].nbLineToSkip + "</td>" +
-                        "<td >" + data[i].classeName + "</td>" +
-                        "<td >" + lancement+ "</td>" +
-                        "<td >" + executed+ "</td>" +
-                        "<td >" + resultat+ "</td>" +
-                        "<td> "+ data[i].nbLinesSuccess+"</td>"+
-                        "<td> "+ data[i].nbLinesFailed+"</td>"+
-                        "<td><button id='btn-success' class='btn btn-success' value='" + data[i].id + "'><span class='glyphicon glyphicon glyphicon-play'></span></button></td>" +
-                        "<td><button id='btn-danger' class='btn btn-danger' value='" + data[i].id + "'><span class='glyphicon glyphicon-remove-sign'></span></button></td>" +
-                        "<td><button  id='submit_btn' class='btn btn-primary' value='" + data[i].classeName+ "'><span class='glyphicon glyphicon-eye-open'></span></button></td></tr>";
+                        "<td align='center'>" + i + "</td>" +
+                        "<td align='center'><span class='label label-info'>" + moment(data[i].dateCreation).format("DD/MM/YYYY HH:mm:ss") + "</span></td>" +
+                        "<td align='center'>" + data[i].emailUser.split("@")[0] + "</td>" +
+                        "<td align='center'>" + path+ "</td>" +
+                        "<td align='center'>" + data[i].nbLineToSkip + "</td>" +
+                        "<td align='center'>" + data[i].classeName + "</td>" +
+                        "<td align='center'>" + lancement+ "</td>" +
+                        "<td align='center'>" + executed+ "</td>" +
+                        "<td align='center'>" + resultat+ "</td>" +
+                        "<td align='center'> "+ data[i].nbLinesSuccess+"</td>"+
+                        "<td align='center'> "+ data[i].nbLinesFailed+"</td>"+
+                        "<td align='center'><button id='btn-success' class='btn btn-success' value='" + data[i].id + "'><span class='glyphicon glyphicon glyphicon-play'></span></button></td>" +
+                        "<td align='center'><button id='btn-danger' class='btn btn-danger' value='" + data[i].id + "'><span class='glyphicon glyphicon-remove-sign'></span></button></td>" +
+                        "<td align='center'><button  id='submit_btn' class='btn btn-primary' value='" + data[i].classeName+ "'><span class='glyphicon glyphicon-eye-open'></span></button></td></tr>";
                 }
                 contenu += "</tbody></<table></div></div>";
                 $("#resume").html("");
@@ -484,20 +531,20 @@ $(document).ready(function() {
                         path = data[i].filePath.split("/")[data[i].filePath.split("/").length-1];
                     }
                     contenu += "<tr id='"+i+"' value='"+data[i].id+"'>" +
-                        "<td >" + i + "</td>" +
-                        "<td ><span class='label label-info'>" + moment(data[i].dateCreation).format("DD/MM/YYYY HH:mm:ss") + "</span></td>" +
-                        "<td >" + data[i].emailUser.split("@")[0] + "</td>" +
-                        "<td >" + path+ "</td>" +
-                        "<td >" + data[i].nbLineToSkip + "</td>" +
-                        "<td >" + data[i].classeName + "</td>" +
-                        "<td >" + lancement+ "</td>" +
-                        "<td >" + executed+ "</td>" +
-                        "<td >" + resultat+ "</td>" +
-                        "<td> "+ data[i].nbLinesSuccess+"</td>"+
-                        "<td> "+ data[i].nbLinesFailed+"</td>"+
-                        "<td><button id='btn-success' class='btn btn-success' value='" + data[i].id + "'><span class='glyphicon glyphicon glyphicon-play'></span></button></td>" +
-                        "<td><button id='btn-danger' class='btn btn-danger' value='" + data[i].id + "'><span class='glyphicon glyphicon-remove-sign'></span></button></td>" +
-                        "<td><button  id='submit_btn' class='btn btn-primary' value='" + data[i].classeName+ "'><span class='glyphicon glyphicon-eye-open'></span></button></td></tr>";
+                        "<td align='center'>" + i + "</td>" +
+                        "<td align='center'><span class='label label-info'>" + moment(data[i].dateCreation).format("DD/MM/YYYY HH:mm:ss") + "</span></td>" +
+                        "<td align='center'>" + data[i].emailUser.split("@")[0] + "</td>" +
+                        "<td align='center'>" + path+ "</td>" +
+                        "<td align='center'>" + data[i].nbLineToSkip + "</td>" +
+                        "<td align='center'>" + data[i].classeName + "</td>" +
+                        "<td align='center'>" + lancement+ "</td>" +
+                        "<td align='center'>" + executed+ "</td>" +
+                        "<td align='center'>" + resultat+ "</td>" +
+                        "<td align='center'> "+ data[i].nbLinesSuccess+"</td>"+
+                        "<td align='center'> "+ data[i].nbLinesFailed+"</td>"+
+                        "<td align='center' ><button id='btn-success' class='btn btn-success' value='" + data[i].id + "'><span class='glyphicon glyphicon glyphicon-play'></span></button></td>" +
+                        "<td align='center'><button id='btn-danger' class='btn btn-danger' value='" + data[i].id + "'><span class='glyphicon glyphicon-remove-sign'></span></button></td>" +
+                        "<td align='center'><button  id='submit_btn' class='btn btn-primary' value='" + data[i].classeName+ "'><span class='glyphicon glyphicon-eye-open'></span></button></td></tr>";
                 }
                 contenu += "</tbody></<table></div></div>";
                 $("#resume").html("");
@@ -548,7 +595,7 @@ $(document).ready(function() {
                     }else{
                         ss = "<input type='checkbox'  disabled>";
                     }
-                    contenu += '<tr> <td>'+qq+'</td><td>'+data.attributes[i].nameo+'</td><td>'+data.attributes[i].type+'</td><td>'+data.attributes[i].sizeo+'</td><td>'+ss+'</td><td> </td><td>'+data.attributes[i].commentaires+'</td></tr>';
+                    contenu += '<tr> <td align="center">'+qq+'</td><td align="center">'+data.attributes[i].nameo+'</td><td align="center">'+data.attributes[i].type+'</td><td align="center">'+data.attributes[i].sizeo+'</td><td align="center">'+ss+'</td><td align="center">'+data.attributes[i].defaut+'</td><td>'+data.attributes[i].commentaires+'</td></tr>';
                 }
                 if(data.reader.executed == true) {
                 contenu+='</tbody></table> </div> </div> </div></div><div class="row"> <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"><div class="panel panel-primary"> <div class="panel-heading"> <h2>Batch Report</h2></div> <div class="panel-body">'+
@@ -559,7 +606,7 @@ $(document).ready(function() {
                         contenu += '<div class="row"> <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"><div class="panel panel-danger"> <div class="panel-heading"><h2> Error input : </h2></div> <div class="panel-body"> <table class="table table-bordered table-hover" id="table_auto"> <thead> <tr> <th width="5%">Line Number</th> <th width="35%">Line</th> <th width="60%">Messages</th> </tr> </thead><tbody>';
 
                         for (var jj = 0; jj < data.inputError.length; jj++) {
-                            contenu += '<tr> <td>' + data.inputError[jj].lineNumber + '</td><td>' + data.inputError[jj].line + '</td> <td>' + data.inputError[jj].messages + '</td> </tr>';
+                            contenu += '<tr> <td align="center">' + data.inputError[jj].lineNumber + '</td><td align="center">' + data.inputError[jj].line + '</td> <td>' + data.inputError[jj].messages + '</td> </tr>';
                         }
                         contenu += '</tbody> </table> </div> </div> </div> </div></div></div>';
                     } else {
@@ -633,14 +680,14 @@ $(document).ready(function() {
                         "<table id='myInputErrors' width='100%' class='table table-striped' cellspacing='0' width='100%'>" +
                         "<thead><tr><th><b>Line Number</b></th><th ><b>Line</b></th><th><b>Message</b></th></thead><tbody>";
                     for (var i = 0; i < data.inputError.length; i++) {
-                        contenu += "<tr><td>" + data.inputError[i].lineNumber + "</td><td>" + data.inputError[i].line + "</td><td>" + data.inputError[i].messages + "</td></tr>";
+                        contenu += "<tr><td align='center'>" + data.inputError[i].lineNumber + "</td><td align='center'>" + data.inputError[i].line + "</td><td>" + data.inputError[i].messages + "</td></tr>";
                     }
                     contenu += "</tbody></table>" +
                         "</div></div>";
                 }
                 contenu += "<div class='row'><div class='col-xs-12'><table id='resume' width='100%' class='table .table-bordered'>" +
                     "<thead><tr><th><b>Job ID</b></th><th ><b>Start time</b></th><th><b>End time</b></th><th><b>Status </b></th><th><b>commit_count</b></th><th><b>read_count</b></th><th>write_count</th><th>process_skip_count</th><th>exit_code</th></thead><tbody>";
-                contenu += "<tr><td>" + data.batchStepExecution.job_execution_id + "</td><td>" + moment(data.batchStepExecution.start_time).format("DD/MM HH:mm:ss") + "</td><td>" + moment(data.batchStepExecution.end_time).format("DD/MM HH:mm:ss") + "</td><td>" + data.batchStepExecution.status + "</td><td>" + data.batchStepExecution.commit_count + "</td><td>" + data.batchStepExecution.read_count + "</td><td>" + data.batchStepExecution.write_count + "</td><td>" + data.batchStepExecution.process_skip_count + "</td><td>" + data.batchStepExecution.exit_code + "</td></tr>";
+                contenu += "<tr><td align='center'>" + data.batchStepExecution.job_execution_id + "</td><td align='center'>" + moment(data.batchStepExecution.start_time).format("DD/MM HH:mm:ss") + "</td><td align='center'>" + moment(data.batchStepExecution.end_time).format("DD/MM HH:mm:ss") + "</td><td align='center'>" + data.batchStepExecution.status + "</td><td align='center'>" + data.batchStepExecution.commit_count + "</td><td align='center'>" + data.batchStepExecution.read_count + "</td><td align='center'>" + data.batchStepExecution.write_count + "</td><td align='center'>" + data.batchStepExecution.process_skip_count + "</td><td align='center'>" + data.batchStepExecution.exit_code + "</td></tr>";
                 contenu += "</tbody></table>" +
                     "</div></div></div></div></fieldset>";
                 $('#modal-body').html("");
@@ -708,20 +755,19 @@ $(document).ready(function() {
                             "<table id='myInputErrors' class='table table-striped' cellspacing='0' width='100%'>" +
                             "<thead><tr><th><b>Line Number</b></th><th ><b>Line</b></th><th><b>Message</b></th></thead><tbody>";
                         for (var i = 0; i < data.inputError.length; i++) {
-                            contenu += "<tr><td>" + data.inputError[i].lineNumber + "</td><td>" + data.inputError[i].line + "</td><td>" + data.inputError[i].messages + "</td></tr>";
+                            contenu += "<tr><td align='center'>" + data.inputError[i].lineNumber + "</td><td align='center'>" + data.inputError[i].line + "</td><td>" + data.inputError[i].messages + "</td></tr>";
                         }
                         contenu += "</tbody></table>" +
                             "</div></div>";
                     }
                     contenu += "<div class='row'><div class='col-xs-12'><table id='resume' width='100%' class='table .table-bordered'>" +
                         "<thead><tr><th><b>Job ID</b></th><th ><b>Start time</b></th><th><b>End time</b></th><th><b>Status </b></th><th><b>commit_count</b></th><th><b>read_count</b></th><th>write_count</th><th>process_skip_count</th><th>exit_code</th></thead><tbody>";
-                    contenu += "<tr><td>" + data.batchStepExecution.job_execution_id + "</td><td>" + moment(data.batchStepExecution.start_time).format("DD/MM HH:mm:ss") + "</td><td>" + moment(data.batchStepExecution.end_time).format("DD/MM HH:mm:ss") + "</td><td>" + data.batchStepExecution.status + "</td><td>" + data.batchStepExecution.commit_count + "</td><td>" + data.batchStepExecution.read_count + "</td><td>" + data.batchStepExecution.write_count + "</td><td>" + data.batchStepExecution.process_skip_count + "</td><td>" + data.batchStepExecution.exit_code + "</td></tr>";
+                    contenu += "<tr><td align='center'>" + data.batchStepExecution.job_execution_id + "</td><td align='center'>" + moment(data.batchStepExecution.start_time).format("DD/MM HH:mm:ss") + "</td><td align='center'>" + moment(data.batchStepExecution.end_time).format("DD/MM HH:mm:ss") + "</td><td align='center'>" + data.batchStepExecution.status + "</td><td align='center'>" + data.batchStepExecution.commit_count + "</td><td align='center'>" + data.batchStepExecution.read_count + "</td><td align='center'>" + data.batchStepExecution.write_count + "</td><td align='center'>" + data.batchStepExecution.process_skip_count + "</td><td align='center'>" + data.batchStepExecution.exit_code + "</td></tr>";
                     contenu += "</tbody></table>" +
                         "</div></div></div></div></fieldset>";
                     $('#modal-body').html("");
                     $('#modal-body').append(contenu);
                     $('#modal-success').modal('show');
-
                 },
                 error: function () { //erreur dans le cas les données ne sont pas envoyer on affiche un message qui indique l'erreur
                     console.log("error");

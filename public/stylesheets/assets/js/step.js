@@ -288,7 +288,7 @@ $(document).ready(function() {
                 }
             });
         }
-    })
+    });
     
     $('#entete').on('switchChange.bootstrapSwitch', function(event, state){
         console.log("yeah");
@@ -303,7 +303,7 @@ $(document).ready(function() {
 
                     for (var i = 0; i < data.size; i++) {
                         var id = '<input type="hidden" class="nami" name="idCol[' + i + ']" value="' + i + '" readonly/>';
-                        var textbox = '<input type="text" class="txtBox" id="cols[' + i + ']" name="cols[' + i + ']" placeholder="Column ' + i + 1 + '" name="cols[' + i + ']" required  /><input type="hidden" class="nami" name="idCol[' + i + ']" value="' + i+ '" readonly/>';
+                        var textbox = '<input type="text" class="txtBox" id="cols[' + i + ']" name="cols[' + i + ']" placeholder="Column ' + i + '" name="cols[' + i + ']" required  /><input type="hidden" class="nami" name="idCol[' + i + ']" value="' + i+ '" readonly/>';
                         var button = '<button class="btn btn-danger"><span class="glyphicon glyphicon-remove-sign"></span></button>';
                         table1.fnAddData([textbox, button]);
                     }
@@ -687,7 +687,7 @@ $(document).ready(function() {
 
     $("#thanks").click(function (e) {
         location.reload();
-    })
+    });
 
 
     $("#all").click(function (e) {
@@ -845,8 +845,7 @@ $(document).ready(function() {
         });
 
     });
-
-
+    
     /*$('#table2').on('click', '.glyphicon-pencil', function(e){
         //var id = $(this).closest('tr').data('id');
         //$('#md\\['+id+'\\]').click(function(e) {

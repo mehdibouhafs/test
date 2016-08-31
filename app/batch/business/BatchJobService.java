@@ -23,6 +23,4 @@ public interface BatchJobService {
     public Map<String, Class<?>> typeAttributes(List<Attribute> attributes,Reader reader);
     public Map<String,String > dataTable(String table);
     public String getExtension(String fileName);
-
-
 }
