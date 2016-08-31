@@ -102,7 +102,7 @@ $(document).ready(function() {
                         "<td align='center'><span class='label label-default'>" + data[i].nbLinesSuccess + "</span></td>" +
                         "<td align='center'> <span class='label label-default'>" + data[i].nbLinesFailed + "</span></td>" +
                         "<td align='center'><button  class='btn btn-success' value='" + data[i].id + "'><span class='glyphicon glyphicon glyphicon-play'></span></button></td>" +
-                        "<td align='center'><button  class='time' style='background-color: #3c8dbc;' value='" + data[i].classeName + "'><span class='glyphicon glyphicon glyphicon-time'></span></button></td>" +
+                        "<td align='center'><button  class='time' style='background-color: #00c0ef;' value='" + data[i].classeName + "'><span class='glyphicon glyphicon glyphicon-time'></span></button></td>" +
                         "<td align='center'><button  class='btn btn-danger'  value='" + data[i].id + "'><span class='glyphicon glyphicon-remove-sign'></span></button></td>" +
                         "<td align='center'><button  class='btn btn-primary' value='" + data[i].classeName + "'><span class='glyphicon glyphicon-eye-open'></span></button></td></tr>");
                 } else {
@@ -116,7 +116,7 @@ $(document).ready(function() {
                         "<td align='center'><span class='label label-default'> " + data[i].nbLinesSuccess + "</span></td>" +
                         "<td align='center'><span class='label label-default'>" + data[i].nbLinesFailed + "</span></td>" +
                         "<td align='center'><button  class='btn btn-success' value='" + data[i].id + "'><span class='glyphicon glyphicon glyphicon-play'></span></button></td>" +
-                        "<td align='center'><button  class='time' style='background-color: #3c8dbc;' value='" + data[i].classeName + "'><span class='glyphicon glyphicon glyphicon-time'></span></button></td>" +
+                        "<td align='center'><button  class='time' style='background-color: #00c0ef;' value='" + data[i].classeName + "'><span class='glyphicon glyphicon glyphicon-time'></span></button></td>" +
                         "<td align='center'><button  class='btn btn-danger' value='" + data[i].id + "'><span class='glyphicon glyphicon-remove-sign'></span></button></td>" +
                         "<td align='center'><button  class='btn btn-primary' value='" + data[i].classeName + "'><span class='glyphicon glyphicon-eye-open'></span></button></td></tr>");
                 }
