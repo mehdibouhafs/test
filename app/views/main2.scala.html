@@ -15,6 +15,7 @@
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
   <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/bootstrap.min.css")">
   <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/dataTables.jqueryui.css")"/>
+  <link rel="stylesheet" href="http://cdn.datatables.net/plug-ins/28e7751dbec/integration/jqueryui/dataTables.jqueryui.css"/>
   <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/jquery-ui.css")"/>
 
   <link rel="stylesheet" href="http://code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
@@ -177,7 +178,7 @@ desired effect
             <li class="active treeview">
               <a href="#">
                 <i class="fa fa-recycle"></i>
-                <span>Use bean already exist </span>
+                <span>Batch sans paramétrages</span>
                 <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
               </a>
               <ul class="treeview-menu">
@@ -188,11 +189,11 @@ desired effect
             <li class="active treeview">
               <a href="#">
                 <i class="fa fa-plug"></i>
-                <span>New Batch with new bean</span>
+                <span>Batch avec paramétrages</span>
                 <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
             </a>
               <ul class="treeview-menu">
-                <li><a href="@routes.Application.param()"><i class="fa fa-file-excel-o"></i>CSV FILE WITH HEADER</a></li>
+                <li><a href="@routes.Application.param()"><i class="fa fa-file-excel-o"></i>CSV FILE </a></li>
                 <li><a href="@routes.Application.param2()"><i class="fa fa-file-code-o"></i>XML FILE </a></li>
               </ul>
             </li>

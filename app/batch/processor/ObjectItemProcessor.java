@@ -1,6 +1,8 @@
 package batch.processor;
+import batch.model.InputError;
 import batch.util.Generator;
 import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.item.ParseException;
 import org.springframework.context.ApplicationContext;
 import running.Global;
 
@@ -16,25 +18,47 @@ public class ObjectItemProcessor implements ItemProcessor<Object,Object> {
 
         ApplicationContext context = Global.getApplicationContext();
         Generator generator = (Generator) context.getBean("generator");
+        InputError inputError = (InputError) context.getBean("InputError");
         for (Map.Entry<String, Class<?>> entry : generator.getProperties().entrySet()) {
             try {
                 Field f = item.getClass().getDeclaredField(entry.getKey());
                 f.setAccessible(true);
                 switch (entry.getValue().getSimpleName()){
                     case "Integer":
-                        int p =Integer.parseInt(f.get(item).toString());
+                        try {
+                            int p = Integer.parseInt(f.get(item).toString());
+                        }catch (ParseException e){
+                            e.printStackTrace();
+                        }
                         break;
                     case "String":
-                        String s = f.get(item)+"";
+                        try {
+                            String s = f.get(item) + "";
+                        }catch (ParseException e){
+                            e.printStackTrace();
+                        }
                         break;
                     case "Boolean":
-                        Boolean b = (Boolean) f.get(item);
+                        try {
+                            Boolean b = (Boolean) f.get(item);
+                        }catch (ParseException e){
+                            e.printStackTrace();
+                        }
                         break;
                     case "Double":
-                        Double b1 =  Double.parseDouble(f.get(item).toString());
+                        try {
+                            Double b1 = Double.parseDouble(f.get(item).toString());
+                        }catch (ParseException e){
+                            e.printStackTrace();
+                        }
                         break;
                     case "Float":
-                        Float f1 =  Float.parseFloat(f.get(item).toString());
+                        try {
+                            Float f1 =  Float.parseFloat(f.get(item).toString());
+                        }catch (ParseException e){
+                            e.printStackTrace();
+                        }
+
                         break;
                     case "Long":
                         Long l = Long.parseLong(f.get(item).toString());

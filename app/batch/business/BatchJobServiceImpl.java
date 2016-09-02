@@ -31,6 +31,7 @@ import java.util.*;
 /**
  * Created by MBS on 08/08/2016.
  */
+
 public class BatchJobServiceImpl implements BatchJobService {
 
     private Reader reader;
@@ -269,7 +270,7 @@ public class BatchJobServiceImpl implements BatchJobService {
         }
         else{
         batchJobDao.executer(cData[1]);
-            /*List<String> comments = batchJobDao.getCommentaires(reader.classeName,Attribute.findInvolving(reader.classeName));
+            List<String> comments = batchJobDao.getCommentaires(reader.classeName,Attribute.findInvolving(reader.classeName));
             if(comments.size()>1){
             for (String com :comments){
                 if(!com.contains("nul")) {
@@ -277,7 +278,7 @@ public class BatchJobServiceImpl implements BatchJobService {
                 }
             }
             reader.executed = true;
-            }*/
+            }
         }
         System.out.println("his");
         System.out.println("reader " + reader );
@@ -294,16 +295,14 @@ public class BatchJobServiceImpl implements BatchJobService {
         JobLauncher jobLauncher = (JobLauncher) context.getBean("jobLauncher");
         JobCompletionNotificationListener listener = context.getBean("listener", JobCompletionNotificationListener.class);
         listener.setUser(User.find.byId(reader.executed_by));
-        System.out.println("hisssss");
+        listener.setReader(reader);
         try {
             if(getExtension(reader.filePath).equals("xml")){
                 getElementAndAttributesFileXml(reader);
             }
             Generator c = context.getBean("generator", Generator.class);
             List<Attribute> attributes = Reader.getAttributeByReader(reader.id);
-            System.out.println("Attributes jjob " + attributes);
             c.setProperties(typeAttributes1(attributes,reader));
-            System.out.println("Properties " + c.getProperties());
             Reader reader1 = context.getBean("reader",Reader.class);
             Class<?> classNew = null;
                 if(getExtension(reader.filePath).equals("csv")){

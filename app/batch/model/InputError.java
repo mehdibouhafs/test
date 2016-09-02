@@ -5,10 +5,7 @@ import com.avaje.ebean.Model;
 import play.data.format.Formats;
 import play.data.validation.Constraints;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.Constraint;
 
 import java.util.Date;
@@ -33,7 +30,14 @@ public class InputError extends Model {
 
 
     @Constraints.Required
-    public String messages;
+    public String filee;
+
+    @Constraints.Required
+    public String columne;
+
+    @Constraints.Required
+    public String cause;
+
 
     /*@Formats.DateTime(pattern="dd/MM/yyyy hh:mm:ss")
     public Date datee;*/
@@ -56,5 +60,16 @@ public class InputError extends Model {
         return  find.where().eq("job_execution_id",id).findList();
     }
 
-
+    @Override
+    public String toString() {
+        return "InputError{" +
+                "id=" + id +
+                ", lineNumber=" + lineNumber +
+                ", line='" + line + '\'' +
+                ", file='" + filee + '\'' +
+                ", columne='" + columne + '\'' +
+                ", cause='" + cause + '\'' +
+                ", job_execution_id=" + job_execution_id +
+                '}';
+    }
 }

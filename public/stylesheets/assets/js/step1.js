@@ -9,7 +9,9 @@ $(document).ready(function() {
 
 
 
-    var datetime = $('#datetimepicker1').datetimepicker();
+    var datetime = $('#datetimepicker1').datetimepicker({
+        minDate: moment()
+    });
 
 // function that processes your ajax calls...
     var nb;
@@ -95,38 +97,36 @@ $(document).ready(function() {
                     $("#latestTab").append("<tr  class='success' id='" + i + "' value='" + data[i].id + "'>" +
                         "<td align='center'><span class='label label-default'>" + moment(data[i].dateCreation).format("DD/MM/YYYY HH:mm:ss") + "</span></td>" +
                         "<td align='center'><span class='label label-default'>" + path + "</span></td>" +
+                        "<td align='center'><span class='label label-default'>" + data[i].separator + "</span></td>" +
                         "<td align='center'><span class='label label-default'>" + data[i].classeName + "</span></td>" +
                         "<td align='center'>" + lancement + "</td>" +
                         "<td align='center'>" + executedBy.split("@")[0] + "</td>" +
                         "<td align='center'>" + resultat + "</td>" +
-                        "<td align='center'><span class='label label-default'>" + data[i].nbLinesSuccess + "</span></td>" +
-                        "<td align='center'> <span class='label label-default'>" + data[i].nbLinesFailed + "</span></td>" +
-                        "<td align='center'><button  class='btn btn-success' value='" + data[i].id + "'><span class='glyphicon glyphicon glyphicon-play'></span></button></td>" +
+                        "<td align='center'><button  class='btn btn-primary' value='" + data[i].classeName + "'><span class='glyphicon glyphicon-eye-open'></span></button></td>"+
+                        "<td align='center'><button  class='btn btn-warning'  id='"+data[i].id+"' value='" + data[i].classeName  + "'><span class='glyphicon glyphicon glyphicon-edit'></span></button></td>" +
                         "<td align='center'><button  class='time' style='background-color: #00c0ef;' value='" + data[i].classeName + "'><span class='glyphicon glyphicon glyphicon-time'></span></button></td>" +
                         "<td align='center'><button  class='btn btn-danger'  value='" + data[i].id + "'><span class='glyphicon glyphicon-remove-sign'></span></button></td>" +
-                        "<td align='center'><button  class='btn btn-primary' value='" + data[i].classeName + "'><span class='glyphicon glyphicon-eye-open'></span></button></td></tr>");
+                        "<td align='center'><button  class='btn btn-success' value='" + data[i].id + "'><span class='glyphicon glyphicon glyphicon-play'></span></button></td></tr>");
                 } else {
                     $("#latestTab").append("<tr  id='" + i + "' value='" + data[i].id + "'>" +
                         "<td align='center'><span class='label label-default'>" + moment(data[i].dateCreation).format("DD/MM/YYYY HH:mm:ss") + "</span></td>" +
                         "<td align='center'><span class='label label-default'>" + path + "</span></td>" +
+                        "<td align='center'><span class='label label-default'>" + data[i].separator + "</span></td>" +
                         "<td align='center'><span class='label label-default'>" + data[i].classeName + "</span></td>" +
                         "<td align='center'>" + lancement + "</td>" +
                         "<td align='center'>" + executedBy.split("@")[0] + "</td>" +
                         "<td align='center'>" + resultat + "</td>" +
-                        "<td align='center'><span class='label label-default'> " + data[i].nbLinesSuccess + "</span></td>" +
-                        "<td align='center'><span class='label label-default'>" + data[i].nbLinesFailed + "</span></td>" +
-                        "<td align='center'><button  class='btn btn-success' value='" + data[i].id + "'><span class='glyphicon glyphicon glyphicon-play'></span></button></td>" +
+                        "<td align='center'><button  class='btn btn-primary' value='" + data[i].classeName + "'><span class='glyphicon glyphicon-eye-open'></span></button></td>"+
+                        "<td align='center'><button  class='btn btn-warning' id='"+data[i].id+"' value='" + data[i].classeName + "'><span class='glyphicon glyphicon glyphicon-edit'></span></button></td>" +
                         "<td align='center'><button  class='time' style='background-color: #00c0ef;' value='" + data[i].classeName + "'><span class='glyphicon glyphicon glyphicon-time'></span></button></td>" +
                         "<td align='center'><button  class='btn btn-danger' value='" + data[i].id + "'><span class='glyphicon glyphicon-remove-sign'></span></button></td>" +
-                        "<td align='center'><button  class='btn btn-primary' value='" + data[i].classeName + "'><span class='glyphicon glyphicon-eye-open'></span></button></td></tr>");
+                        "<td align='center'><button  class='btn btn-success' value='" + data[i].id + "'><span class='glyphicon glyphicon glyphicon-play'></span></button></td></tr>");
+
                 }
             }
-
             allTables = $('#latestTabId').DataTable({
-                'fnClearTable': true,
                 "order": [[ 0, "desc" ]],
-                "scrollY":        "500px",
-                "scrollCollapse": true
+                'fnClearTable': true,
             });
             
         },
@@ -181,6 +181,116 @@ $(document).ready(function() {
         });
     });
 
+    $('#latestTabId').on('click', '.btn-warning', function (e) {
+        e.preventDefault();
+        console.log("edit");
+        var par = $(this).parent().parent();
+        var tdFile = par.children("td:nth-child(2)");
+        var tdSep = par.children("td:nth-child(3)");
+        var tdEdit = par.children("td:nth-child(9)");
+        var value1 = $(this).closest("tr").find("td:eq(2)").text();
+        var classe = $(this).attr("value");
+        var value;
+        var id = $(this).attr("id");
+        var data ="id="+id;
+        $.ajax({
+            type:'POST',
+            data:data,
+            url:'/getReader',
+            success:function (data) {
+                console.log("file" + data.filePath);
+                value = data.filePath;
+                console.log('id ' + id);
+                tdEdit.html("");
+                tdFile.html("");
+                tdSep.html("");
+                tdEdit.html("<button  class='btn btn-file' id='"+id+"' value='" + classe + "'><span class='glyphicon glyphicon glyphicon-floppy-save'></span></button>");
+                tdFile.html("<input type='text' id='filePath["+id+"]' value='"+value+"' style='width: 160px;'/>");
+                tdSep.html('<select class="form-control" id="separator['+id+']" name="separator['+id+']" style="width: 70px;"><option class="blank" value="'+value1+'">'+value1+'</option>'+
+                    '<option id="separator[0]" ,name="separator[0]" title="point virgule" value="1">;</option>'+
+                    '<option id="separator[1]" ,name="separator[1]" title="virgule" value="2">,</option>'+
+                    '<option id="separator[2]" ,name="separator[2]" title="deux points" value="3">:</option>'+
+                    '<option id="separator[3]" ,name="separator[3]" title="pipe" value="4">|</option>'+
+                    '</select>');
+            },
+            error:function () {
+                console.log("JobParameter  NOT edited");
+            }
+        });
+
+    });
+
+    $('#latestTabId').on('click', '.btn-file', function (e) {
+        e.preventDefault();
+        console.log("edit");
+        var id = $(this).attr("id");
+        var classe = $(this).attr("value");
+
+        var par = $(this).parent().parent();
+        var path = $('#filePath\\['+id+'\\]').val();
+        var path1;
+        console.log(path);
+
+        $.ajax({
+            type:'POST',
+            data:data,
+            url:'/editReader',
+            success:function (data) {
+                window.location.reload();
+            },
+            error:function () {
+                console.log("JobParameter  NOT edited");
+            }
+        });
+
+
+        var separator = $('#separator\\['+id+'\\] option:selected' ).text();
+        var separator1 = $('#separator\\['+id+'\\] option:selected' ).val();
+        console.log("seâratpr = " + separator);
+
+        var tdFile = par.children("td:nth-child(2)");
+        var tdSep = par.children("td:nth-child(3)");
+        var tdEdit = par.children("td:nth-child(11)");
+
+        tdEdit.html("");
+        tdFile.html("");
+        tdSep.html("");
+
+        if (path.split("/")[path.split("/").length - 1].length > 20) {
+            path1 = path.split("\\")[path.split("\\").length - 1];
+        } else {
+            if( 2 < path.split("/")[path.split("/").length - 1].length < 20 ) {
+                path1 = path.split("/")[path.split("/").length - 1];
+            }else{
+                path1 = path;
+            }
+        }
+
+        tdFile.html("<span class='label label-default'>"+path1+"</span>");
+        tdSep.html("<span class='label label-default'>"+separator+"</span>");
+        tdEdit.html("<button  class='btn btn-warning' id='"+id+"' value='" +classe + "'><span class='glyphicon glyphicon glyphicon-edit'></span></button>");
+
+        var data2 = "id="+id+"&";
+        var data3 = "file="+path;
+        var data4 = "separator="+separator1+"&";
+        var data5 = data2.concat(data4);
+        var data = data5.concat(data3);
+
+        $.ajax({
+            type:'POST',
+            data:data,
+            url:'/editReader',
+            success:function (data) {
+                window.location.reload();
+            },
+            error:function () {
+                console.log("JobParameter  NOT edited");
+            }
+        });
+
+
+
+    });
 
 
     $('#latestTabId').on('click', '.time', function (e) {
@@ -188,7 +298,7 @@ $(document).ready(function() {
         //var table = $('#latestTabId').DataTable();
         console.log('show mod');
         $("#program").html("");
-        $("#program").append('<button class="programation" name="'+$(this).val()+'" type="button"  >Valider</button>');
+        $("#program").append('<button class="programation btn btn-primary" name="'+$(this).val()+'" type="button"  >Valider</button>');
         $("#myModalxya").modal().show();
 
     });
@@ -206,7 +316,7 @@ $(document).ready(function() {
             type:'POST',
             data:data,
             url:'/programJob',
-            sucess:function (data) {
+            success:function (data) {
 
                 console.log("Job Programmed with success");
             },
@@ -238,7 +348,7 @@ $(document).ready(function() {
             type:'GET',
             url:'/deleteReader/'+$(this).val(),
             dataType:'json',
-            sucess:function (data) {
+            success:function (data) {
                 console.log("deleted");
             },
             error:function () {
@@ -263,7 +373,7 @@ $(document).ready(function() {
                         '<table class="table table-bordered table-hover" id="table_resume">'+
                         '<thead> <tr> <th width="52%">File Path</th> <th width="1%%">Type</th> <th width="1%">Séparateur</th> <th width="8%">Nombre de ligne skipped</th> <th width="30%"> header</th> <th width="10%">Date de création</th> </tr> </thead><tbody>'+
                     '<tr><td>'+data.reader.filePath+'</td> <td>'+data.reader.filePath.split(".")[1]+'</td> <td>'+data.reader.separator+'</td><td>'+data.reader.nbLineToSkip+'</td> <td>'+data.reader.columns+'</td> <td>'+moment(data.reader.dateCreation).format("DD/MM/YYYY HH:mm:ss")+'</td></tr></tbody> </table></div> </div> </div> </div> </div>';
-                    contenu +='<div class="row"><div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"> <div class="panel panel-primary"> <div class="panel-heading"> <h2>Table configuration </h2></div> <div class="panel-body">'+
+                    contenu +='<div class="row"><div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"> <div class="panel panel-primary"> <div class="panel-heading"> <h2>Configuration des données </h2></div> <div class="panel-body">'+
                                 '<table id="table_auto" class="table table-striped" cellspacing="0" width="100%"> <thead> <tr> <th width="2%">Primary key</th> <th width="15%">column</th> <th width="15%">Type</th> <th width="10%">Size</th> <th width="2%"> Not null</th> <th width="20%">Default</th> <th width="36%">Commentaire</th> </tr> </thead><tbody>';
                    console.log("length "+ data.attributes[0].pko);
                     for(var i = 0;i<data.attributes.length;i++) {
@@ -302,7 +412,6 @@ $(document).ready(function() {
                         }
                         contenu += '<tr> <td>'+qq+'</td><td>'+data.attributes[i].nameo+'</td><td>'+object+'</td><td>'+sizeo+'</td><td>'+ss+'</td><td>'+defaut+'</td><td>'+commentaires+'</td></tr>';
                     }
-
                     if(data.reader.executed == true) {
                     contenu+='</tbody></table> </div> </div> </div></div><div class="row"> <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"><div class="panel panel-primary"> <div class="panel-heading"> <h2>Batch Report</h2></div> <div class="panel-body">'+
                         '<table class="table table-bordered table-hover" id="table_auto"><thead> <tr> <th width="2%">Job Id</th> <th width="4%">Type de Job</th> <th width="10%">Start time</th> <th width="10%">End time </th> <th width="10%">status</th> <th width="10%">Read count</th> <th width="10%">Filter count</th> <th width="10%">Write count</th> <th width="10%">Read skip count</th> <th width="10%">Write skip count</th> <th width="10%">Process skip count</th> <th width="4%">Rollback count</th> </tr> </thead>'+
@@ -346,7 +455,7 @@ $(document).ready(function() {
                     '<table class="table table-bordered table-hover" id="table_resume">'+
                     '<thead> <tr> <th width="52%">File Path</th> <th width="1%%">Type</th> <th width="1%">Séparateur</th> <th width="8%">Nombre de ligne skipped</th> <th width="30%"> header</th> <th width="10%">Date de création</th> </tr> </thead><tbody>'+
                     '<tr><td>'+data.reader.filePath+'</td> <td>'+data.reader.filePath.split(".")[1]+'</td> <td>'+data.reader.separator+'</td><td>'+data.reader.nbLineToSkip+'</td> <td>'+data.reader.columns+'</td> <td>'+moment(data.reader.dateCreation).format("DD/MM/YYYY HH:mm:ss")+'</td></tr></tbody> </table></div> </div> </div> </div> </div>';
-                contenu +='<div class="row"><div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"> <div class="panel panel-primary"> <div class="panel-heading"> <h2>Table configuration </h2></div> <div class="panel-body">'+
+                contenu +='<div class="row"><div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"> <div class="panel panel-primary"> <div class="panel-heading"> <h2>Configuration des données </h2></div> <div class="panel-body">'+
                     '<table  id="table_auto1" class="table table-striped" cellspacing="0" width="100%"> <thead> <tr> <th width="2%">Primary key</th> <th width="15%">column</th> <th width="15%">Type</th> <th width="10%">Size</th> <th width="2%"> Not null</th> <th width="20%">Default</th> <th width="36%">Commentaire</th> </tr> </thead><tbody>';
                 console.log("length "+ data.attributes[0].pko);
                 for(var i = 0;i<data.attributes.length;i++) {
@@ -477,7 +586,6 @@ $(document).ready(function() {
                 $('#resume').append(contenu);
                 $("#myModalx").modal().show();
                 allTables = $('#table_resume').DataTable({
-                    "order": [[ 1, "desc" ]],
                     'fnClearTable': true,
                     "scrollY": "500px",
                     "scrollCollapse": true
@@ -551,7 +659,6 @@ $(document).ready(function() {
                 $('#resume').append(contenu);
                 $("#myModalx").modal().show();
                 allTables = $('#table_resume').DataTable({
-                    "order": [[ 1, "desc" ]],
                     'fnClearTable': true,
                     "scrollY": "500px",
                     "scrollCollapse": true
@@ -578,7 +685,7 @@ $(document).ready(function() {
                     '<table id="table_resume" class="table table-striped" cellspacing="0" width="100%">'+
                     '<thead> <tr> <th width="52%">File Path</th> <th width="1%%">Type</th> <th width="1%">Séparateur</th> <th width="8%">Nombre de ligne skipped</th> <th width="30%"> header</th> <th width="10%">Date de création</th> </tr> </thead><tbody>'+
                     '<tr><td>'+data.reader.filePath+'</td> <td>'+data.reader.filePath.split(".")[1]+'</td> <td>'+data.reader.separator+'</td><td>'+data.reader.nbLineToSkip+'</td> <td>'+data.reader.columns+'</td> <td>'+moment(data.reader.dateCreation).format("DD/MM/YYYY HH:mm:ss")+'</td></tr></tbody> </table> </div> </div> </div> </div> </div>';
-                contenu +='<div class="row"><div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"> <div class="panel panel-primary"> <div class="panel-heading"> <h2>Table configuration </h2></div> <div class="panel-body">'+
+                contenu +='<div class="row"><div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"> <div class="panel panel-primary"> <div class="panel-heading"> <h2>Configuration des données </h2></div> <div class="panel-body">'+
                     '<table class="table table-bordered table-hover" id="table_auto"> <thead> <tr> <th width="2%">Primary key</th> <th width="15%">column</th> <th width="15%">Type</th> <th width="10%">Size</th> <th width="2%"> Not null</th> <th width="20%">Default</th> <th width="36%">Commentaire</th> </tr> </thead><tbody>';
                 console.log("length "+ data.attributes[0].pko);
                 for(var i = 0;i<data.attributes.length;i++) {
@@ -945,7 +1052,6 @@ $(document).ready(function() {
                 $('#resume').append(contenu);
                 $("#myModalx").modal().show();
                 allTables = $('#table_resume').DataTable({
-                    "order": [[ 1, "desc" ]],
                     'fnClearTable': true,
                     "scrollY": "500px",
                     "scrollCollapse": true

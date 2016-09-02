@@ -124,10 +124,11 @@ public class Reader extends Model  {
     @Override
     public String toString() {
         return "Reader{" +
-                "executed=" + executed +
-                ", id=" + id +
+                "id=" + id +
                 ", filePath='" + filePath + '\'' +
-                ", classeName='" + classeName + '\'' +
+                ", separator='" + separator + '\'' +
+                ", dateCreation=" + dateCreation +
+                ", executed=" + executed +
                 ", jobId=" + jobId +
                 '}';
     }

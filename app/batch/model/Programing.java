@@ -25,16 +25,14 @@ public class Programing extends Model{
 
     @Id
     public Long id;
-
     @Transient
     private TaskScheduler scheduler;
-
     @Transient
     private Reader reader;
 
     private Long readerId;
-    private Date datee;
 
+    private Date datee;
 
     public Programing() {
     }
@@ -43,6 +41,7 @@ public class Programing extends Model{
         this.scheduler = scheduler;
     }
 
+    @Transient
     Runnable exampleRunnable = new Runnable(){
         @Override
         public void run() {
@@ -50,20 +49,14 @@ public class Programing extends Model{
             BatchJobService service = new BatchJobServiceImpl();
             service.doJob(reader);
             System.out.println("Done");
-
         }
     };
 
     @Async
     public void executeTaskT() {
-
-        System.out.println(reader);
-        System.out.println(datee);
-
         ScheduledExecutorService localExecutor = Executors.newSingleThreadScheduledExecutor();
         scheduler = new ConcurrentTaskScheduler(localExecutor);
-
-        scheduler.schedule(exampleRunnable, datee);//today at 8 pm UTC - replace it with any timestamp in miliseconds to text
+        scheduler.schedule(exampleRunnable, datee);
     }
 
 
@@ -80,18 +73,11 @@ public class Programing extends Model{
     }
 
     public void setReader(Reader reader) {
-
         this.reader = reader;
         this.readerId = reader.id;
     }
 
-    public Runnable getExampleRunnable() {
-        return exampleRunnable;
-    }
 
-    public void setExampleRunnable(Runnable exampleRunnable) {
-        this.exampleRunnable = exampleRunnable;
-    }
 
     public Date getDate() {
         return datee;
@@ -99,5 +85,29 @@ public class Programing extends Model{
 
     public void setDate(Date date) {
         this.datee = date;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getReaderId() {
+        return readerId;
+    }
+
+    public void setReaderId(Long readerId) {
+        this.readerId = readerId;
+    }
+
+    public Date getDatee() {
+        return datee;
+    }
+
+    public void setDatee(Date datee) {
+        this.datee = datee;
     }
 }

@@ -285,6 +285,7 @@ public class Application extends Controller {
         reader.update();
         BatchJobService service = new BatchJobServiceImpl();
         Resume resume =  service.doJob(reader);
+
         return ok(Json.toJson(resume));
     }
 
@@ -308,6 +309,39 @@ public class Application extends Controller {
         programing.setDate(new Date(date));
         programing.executeTaskT();
         System.out.println("Classe = "+ classe );
+        return ok("ok");
+    }
+
+
+    public Result editReader(){
+        DynamicForm form  = Form.form().bindFromRequest();
+        System.out.println("form " + form );
+        Long id = Long.parseLong(form.field("id").value());
+        String file = form.field("file").value();
+        String separator = form.field("separator").value();
+        String sep1;
+        switch (separator){
+            case "1" : sep1=";"; break;
+            case "2" : sep1=","; break;
+            case "3" : sep1=":"; break;
+            case "4" : sep1="|"; break;
+            default: sep1=";";break;
+        }
+
+        System.out.println("separator  = " + separator);
+        Reader reader = Reader.find.byId(id);
+        reader.jobId = null;
+        reader.filePath = file;
+        reader.separator = sep1;
+        reader.dateLancement = null;
+        reader.dateCreation = new Date();
+        reader.executed = false;
+        reader.executed_by = null;
+        reader.emailUser = session("email");
+        reader.resultat = false;
+        reader.nbLinesSuccess = 0L;
+        reader.nbLinesFailed = 0L;
+        reader.update();
         return ok("ok");
     }
 
@@ -584,11 +618,19 @@ public class Application extends Controller {
             }
         }
         if(Reader.find.where().orderBy("DATE_CREATION DESC").findList()!=null){
+            System.out.println(Reader.find.where().orderBy("DATE_CREATION DESC").findList());
         return ok(Json.toJson(Reader.find.where().orderBy("DATE_CREATION DESC").findList()));
         }else{
             return ok(Json.toJson(new Reader()));
         }
     }
+
+    public Result getReader(){
+        DynamicForm form = Form.form().bindFromRequest();
+        Long id = Long.parseLong(form.field("id").value());
+        return ok(Json.toJson(Reader.find.byId(id)));
+    }
+
 
 
     public Result getAttributes(String  id){

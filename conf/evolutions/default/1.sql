@@ -89,7 +89,9 @@ create table a_mbs_input_errors (
   id                            number(19) not null,
   line_number                   number(10),
   line                          varchar2(255),
-  messages                      varchar2(255),
+  filee                         varchar2(255),
+  columne                       varchar2(255),
+  cause                         varchar2(255),
   job_execution_id              number(19),
   constraint pk_a_mbs_input_errors primary key (id)
 );

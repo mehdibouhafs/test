@@ -28,7 +28,11 @@ POST    /xmlExist                   controllers.Application.xmlExistConfig()
 
 POST    /programJob                 controllers.Application.programJob()
 
+POST    /editReader                 controllers.Application.editReader
+
 GET     /readers                    controllers.Application.getReaders()
+
+POST    /getReader                  controllers.Application.getReader()
 
 GET     /readersXml                  controllers.Application.getReadersdXml()
 
