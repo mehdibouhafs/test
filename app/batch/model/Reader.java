@@ -89,20 +89,16 @@ public class Reader extends Model  {
 
 
     public static List<Reader> getByUser(String email){
-        return find.where().eq("email_user",email).findList();
+        return find.where().eq("email_user",email).orderBy("DATE_CREATION DESC").findList();
     }
 
     public static List<Reader> getByUserAndCompleted(String email){
-        return find.where().eq("email_user",email).eq("resultat",1).findList();
+        return find.where().eq("email_user",email).eq("resultat",1).orderBy("DATE_CREATION DESC").findList();
     }
 
     public static List<Reader> getByUserAndNotCompleted(String email){
-        return find.where().eq("email_user",email).eq("resultat",0).eq("date_lancement",null).findList();
+        return find.where().eq("email_user",email).eq("resultat",0).eq("date_lancement",null).orderBy("DATE_CREATION DESC").findList();
     }
-
-
-
-
 
 
     public static List<Attribute> getAttributeByReader(Long id){

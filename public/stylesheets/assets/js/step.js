@@ -134,14 +134,6 @@ $(document).ready(function() {
             }
 
         });
-    
-    
-    
-    
-    
-    
-    
-
 
     $("#activate-step-2").click(
         function(e) {

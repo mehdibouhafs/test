@@ -4,6 +4,7 @@ import batch.model.batch.BatchJobExecution;
 import batch.model.batch.BatchStepExecution;
 import com.avaje.ebean.Model;
 
+import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +18,8 @@ public class Resume extends Model {
     private User user;
     private Reader reader;
     private List<Attribute> attributes;
+    @Transient
+   private String error;
 
     public Resume() {
     }
@@ -61,5 +64,13 @@ public class Resume extends Model {
 
     public void setAttributes(List<Attribute> attributes) {
         this.attributes = attributes;
+    }
+
+    public String getError() {
+        return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
     }
 }

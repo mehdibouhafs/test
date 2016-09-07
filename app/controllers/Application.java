@@ -145,6 +145,7 @@ public class Application extends Controller {
         Form<Reader> form = Form.form(Reader.class).bindFromRequest();
         Reader reader = new Reader();
         reader.filePath = form.get().filePath;
+        reader.separator="";
         reader.emailUser = session("email");
         reader.save();
         String[] s = batchJobService.getElementAndAttributesFileXml(reader);
@@ -170,6 +171,7 @@ public class Application extends Controller {
         DynamicForm form = Form.form().bindFromRequest();
         String classe = form.field("classe").value();
         Reader reader = new Reader();
+        reader.separator="";
         reader.filePath = form.field("filePath").value();
         reader.emailUser = session("email");
         String[] s = batchJobService.getElementAndAttributesFileXml(reader);
@@ -285,7 +287,11 @@ public class Application extends Controller {
         reader.update();
         BatchJobService service = new BatchJobServiceImpl();
         Resume resume =  service.doJob(reader);
-
+        ApplicationContext context = Global.getApplicationContext();
+        JobCompletionNotificationListener listener = context.getBean("listener", JobCompletionNotificationListener.class);
+        if(resume==null){
+            resume = listener.getResume();
+        }
         return ok(Json.toJson(resume));
     }
 
@@ -312,37 +318,61 @@ public class Application extends Controller {
         return ok("ok");
     }
 
-
-    public Result editReader(){
-        DynamicForm form  = Form.form().bindFromRequest();
-        System.out.println("form " + form );
+    public Result editReader() {
+        DynamicForm form = Form.form().bindFromRequest();
+        System.out.println("form " + form);
         Long id = Long.parseLong(form.field("id").value());
+        System.out.println("id = " + id);
         String file = form.field("file").value();
-        String separator = form.field("separator").value();
-        String sep1;
-        switch (separator){
-            case "1" : sep1=";"; break;
-            case "2" : sep1=","; break;
-            case "3" : sep1=":"; break;
-            case "4" : sep1="|"; break;
-            default: sep1=";";break;
+        String separator = "";
+        if(form.field("separator").value() != null) {
+             separator = form.field("separator").value();
         }
+        System.out.println("separatorr " + separator);
+        String sep1="";
+            switch (separator) {
+                case "1":
+                    sep1 = ";";
+                    break;
+                case "2":
+                    sep1 = ",";
+                    break;
+                case "3":
+                    sep1 = ":";
+                    break;
+                case "4":
+                    sep1 = "|";
+                    break;
+                default:
+                    sep1 = "";
+                    break;
+            }
 
-        System.out.println("separator  = " + separator);
         Reader reader = Reader.find.byId(id);
-        reader.jobId = null;
-        reader.filePath = file;
-        reader.separator = sep1;
-        reader.dateLancement = null;
-        reader.dateCreation = new Date();
-        reader.executed = false;
-        reader.executed_by = null;
-        reader.emailUser = session("email");
-        reader.resultat = false;
-        reader.nbLinesSuccess = 0L;
-        reader.nbLinesFailed = 0L;
-        reader.update();
-        return ok("ok");
+        System.out.println( "readeres "+reader);
+        BatchJobService batchJobService = new BatchJobServiceImpl();
+        if (batchJobService.getExtension(reader.filePath).equals("csv")) {
+            if(reader.separator!=null) {
+                System.out.println("TEST 1");
+                if (reader.separator.equals(sep1) && reader.filePath.equals(file)) {
+                    System.out.println("TEST 2");
+                    return ok("memememe");
+                }
+            }
+        }
+                reader.jobId = null;
+                reader.filePath = file;
+                reader.separator = sep1;
+                reader.dateLancement = null;
+                reader.dateCreation = new Date();
+                reader.executed = false;
+                reader.executed_by = null;
+                reader.emailUser = session("email");
+                reader.resultat = false;
+                reader.nbLinesSuccess = 0L;
+                reader.nbLinesFailed = 0L;
+                reader.update();
+                return ok("ok");
     }
 
 
@@ -407,8 +437,6 @@ public class Application extends Controller {
 
     @Security.Authenticated(Secured.class)
     public Result index() {
-
-
         return ok(index.render(batch.model.User.find.byId(request().username())));
     }
     @Security.Authenticated(Secured.class)
@@ -617,8 +645,7 @@ public class Application extends Controller {
                 r.delete();
             }
         }
-        if(Reader.find.where().orderBy("DATE_CREATION DESC").findList()!=null){
-            System.out.println(Reader.find.where().orderBy("DATE_CREATION DESC").findList());
+        if(Reader.find.where()!=null){
         return ok(Json.toJson(Reader.find.where().orderBy("DATE_CREATION DESC").findList()));
         }else{
             return ok(Json.toJson(new Reader()));

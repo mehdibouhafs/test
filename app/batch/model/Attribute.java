@@ -30,12 +30,12 @@ public class Attribute extends Model {
 
     public static List<Attribute> findInvolving(String classe) {
         //return find.fetch("project").where().eq("done", false).eq("project.members.email", classe).findList();
-        return  find.where().eq("classe",classe).findList();
+        return  find.where().eq("classe",classe).orderBy("ID ASC").findList();
     }
 
     public static List<Attribute> findInvolvingNotEqual(String classe) {
         //return find.fetch("project").where().eq("done", false).eq("project.members.email", classe).findList();
-        return  find.where().eq("classe",classe).ne("type","OBJECT").findList();
+        return  find.where().eq("classe",classe).ne("type","OBJECT").orderBy("ID ASC").findList();
     }
 
 

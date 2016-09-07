@@ -4,6 +4,7 @@ import java.util.List;
 
 
 import batch.model.Reader;
+import batch.model.Resume;
 import batch.model.User;
 import batch.policy.FileVerificationSkipper;
 import org.joda.time.DateTime;
@@ -25,6 +26,7 @@ public class JobCompletionNotificationListener extends JobExecutionListenerSuppo
 	private final JdbcTemplate jdbcTemplate;
 	private User user;
 	private Reader reader;
+	private Resume resume;
 
 	@Autowired
 	public JobCompletionNotificationListener(JdbcTemplate jdbcTemplate) {
@@ -59,16 +61,16 @@ public class JobCompletionNotificationListener extends JobExecutionListenerSuppo
 		System.out.println("ExamResult job failed with following exceptions ");
 		List<Throwable> exceptionList = jobExecution.getAllFailureExceptions();
 			int i =0;
-		for(Throwable th : exceptionList){
-			System.err.println("exceptionsJOBLISTENER :" +th.getLocalizedMessage());
-			System.err.println("Message :" +th.getMessage());
-		}
+		if(exceptionList.size()>0){
+			    this.resume = new Resume();
+				this.resume.setError("Erreur parsing du fichier on vous suggère de choisir le bon séparateur pour ce fichier et relancer votre batch ! ");
+			}
+
 	}else if(jobExecution.getStatus() == BatchStatus.ABANDONED){
 			user.job_abondonned = user.job_abondonned + 1L;
 		}
 		user.total_jobs = user.job_completed + user.job_failed + user.job_abondonned;
 		user.update();
-		System.out.println("updated user");
 	}
 
 
@@ -106,5 +108,13 @@ public class JobCompletionNotificationListener extends JobExecutionListenerSuppo
 
 	public void setReader(Reader reader) {
 		this.reader = reader;
+	}
+
+	public Resume getResume() {
+		return resume;
+	}
+
+	public void setResume(Resume resume) {
+		this.resume = resume;
 	}
 }

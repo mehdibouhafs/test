@@ -38,7 +38,6 @@ public class BatchJobServiceImpl implements BatchJobService {
     private ApplicationContext context;
     private BatchJobDao batchJobDao;
 
-
     public BatchJobServiceImpl() {
         context = Global.getApplicationContext();
     }
@@ -51,7 +50,6 @@ public class BatchJobServiceImpl implements BatchJobService {
         this.reader = reader;
         context = Global.getApplicationContext();
     }
-
     public Map<String, Class<?>> typeAttributes(List<Attribute> attributes,Reader reader) {
         Map<String, Class<?>> properties = new LinkedHashMap<>();
         String[] cols = reader.columns.split(",");
@@ -136,7 +134,6 @@ public class BatchJobServiceImpl implements BatchJobService {
         return properties;
     }
 
-
     public Map<String, Class<?>> typeAttributes1(List<Attribute> attributes,Reader reader) {
         Map<String, Class<?>> properties = new LinkedHashMap<>();
         String[] cols = reader.columns.split(",");
@@ -209,8 +206,6 @@ public class BatchJobServiceImpl implements BatchJobService {
         return properties;
     }
 
-
-
     public Map<String, String> columnsWithTypeAndSize(List<Attribute> attributes){
        /* Map<String, String> columnTable = new LinkedHashMap<>();
         StringBuffer typeSizes;
@@ -247,7 +242,6 @@ public class BatchJobServiceImpl implements BatchJobService {
         return batchJobDao.dataTable(table);
     }
 
-
     public String getExtension(String fileName) {
         String extension = "";
         int i = fileName.lastIndexOf('.');
@@ -256,7 +250,6 @@ public class BatchJobServiceImpl implements BatchJobService {
         }
         return extension;
     }
-
 
     @Override
     public Resume doJob(Reader reader) {
@@ -277,7 +270,7 @@ public class BatchJobServiceImpl implements BatchJobService {
                     batchJobDao.executer(com);
                 }
             }
-            reader.executed = true;
+
             }
         }
         System.out.println("his");
@@ -322,18 +315,20 @@ public class BatchJobServiceImpl implements BatchJobService {
             }
             JobExecution jobExecution = jobLauncher.run(job, param);
                 if (jobExecution.getStatus().equals(BatchStatus.COMPLETED)) {
+                    Resume resume = new Resume();
                     reader.resultat = true;
                     reader.jobId = jobExecution.getId();
                     reader.nbLinesSuccess = BatchStepExecution.findByJobExecID(jobExecution.getId()).getWrite_count();
                     reader.nbLinesFailed = (BatchStepExecution.findByJobExecID(jobExecution.getId()).getCommit_count()-1) - reader.nbLinesSuccess;
                     List<InputError> inputErros = InputError.find.where().eq("job_execution_id",jobExecution.getId()).findList();
-                    Resume resume = new Resume();
+
                     System.out.println("job ID " + jobExecution.getId());
                     System.out.println("Batch "+ BatchStepExecution.find.byId(jobExecution.getId()));
                     resume.setBatchStepExecution(BatchStepExecution.findByJobExecID(jobExecution.getId()));
                     resume.setInputError(inputErros);
                     Generator c1 = context.getBean("generator", Generator.class);
                     c1.setClassGenerate(null);
+                    reader.executed = true;
                     reader.update();
                     return resume;
                 }else{
