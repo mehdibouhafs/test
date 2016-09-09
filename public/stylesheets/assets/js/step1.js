@@ -369,10 +369,10 @@ $(document).ready(function() {
                     var contenu = '<div class="container-fluid"><div class="row"> <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"> <div class="panel panel-primary"> <div class="panel-heading text-center">Configuration Fichier</div>'+
                     '<div class="panel-body">'+
                         '<table id="table_resume">'+
-                        '<thead> <tr> <th >File Path</th> <th>Type</th> <th>Séparateur</th> <th>Nombre de ligne skipped</th> <th > header</th> <th >Date de création</th> </tr> </thead><tbody>'+
+                        '<thead> <tr> <th >Chemin du Fichier</th> <th>Type</th> <th>Séparateur</th> <th>Nombre de ligne à Sauter</th> <th > header</th> <th >Date de création</th> </tr> </thead><tbody>'+
                     '<tr><td>'+data.reader.filePath+'</td> <td>'+data.reader.filePath.split(".")[1]+'</td> <td>'+data.reader.separator+'</td><td>'+data.reader.nbLineToSkip+'</td> <td>'+data.reader.columns+'</td> <td>'+moment(data.reader.dateCreation).format("DD/MM/YYYY HH:mm:ss")+'</td></tr></tbody> </table></div> </div> </div> </div> </div>';
                     contenu +='<div class="row"><div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"> <div class="panel panel-primary"> <div class="panel-heading text-center"> Configuration des données </div> <div class="panel-body">'+
-                                '<table id="table_auto"> <thead> <tr> <th width="2%">Primary key</th> <th width="15%">column</th> <th width="15%">Type</th> <th width="10%">Size</th> <th width="2%"> Not null</th> <th width="20%">Default</th> <th width="36%">Commentaire</th> </tr> </thead><tbody>';
+                                '<table id="table_auto"> <thead> <tr> <th width="2%">Clé Primaire</th> <th width="15%">colonne</th> <th width="15%">Type</th> <th width="10%">Taille</th> <th width="2%"> Non null</th> <th width="20%">Default</th> <th width="36%">Commentaire</th> </tr> </thead><tbody>';
                    console.log("length "+ data.attributes[0].pko);
                     for(var i = 0;i<data.attributes.length;i++) {
                         var qq,ss,object,sizeo,defaut,commentaires;
@@ -422,7 +422,7 @@ $(document).ready(function() {
                             }
                             contenu += '</tbody> </table> </div> </div> </div> </div></div></div>';
                         } else {
-                            contenu += '<div class="row"> <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"><div class="panel panel-success"> <div class="panel-heading text-center">Success : </div> <div class="panel-body"> Toutes les lines ont été ajoutés</div></div>';
+                            contenu += '<div class="row"> <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"><div class="panel panel-success"> <div class="panel-heading text-center">Success : </div> <div class="panel-body"> Toutes les lignes ont été ajoutés</div></div>';
                         }
                     }
                     $("#resumep").html("");
@@ -450,10 +450,10 @@ $(document).ready(function() {
                 var contenu = '<div class="container-fluid"><div class="row"> <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"> <div class="panel panel-primary"> <div class="panel-heading">Configuration Fichier</div>'+
                     '<div class="panel-body"><div class="row">'+
                     '<table id="table_resume">'+
-                    '<thead> <tr> <th width="52%">File Path</th> <th width="1%%">Type</th> <th width="1%">Séparateur</th> <th width="8%">Nombre de ligne skipped</th> <th width="30%"> header</th> <th width="10%">Date de création</th> </tr> </thead><tbody>'+
+                    '<thead> <tr> <th width="52%">Chemin du Fichier</th> <th width="1%%">Type</th> <th width="1%">Séparateur</th> <th width="8%">Nombre de ligne à sauter</th> <th width="30%"> header</th> <th width="10%">Date de création</th> </tr> </thead><tbody>'+
                     '<tr><td>'+data.reader.filePath+'</td> <td>'+data.reader.filePath.split(".")[1]+'</td> <td>'+data.reader.separator+'</td><td>'+data.reader.nbLineToSkip+'</td> <td>'+data.reader.columns+'</td> <td>'+moment(data.reader.dateCreation).format("DD/MM/YYYY HH:mm:ss")+'</td></tr></tbody> </table></div> </div> </div> </div> </div>';
                 contenu +='<div class="row"><div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"> <div class="panel panel-primary"> <div class="panel-heading text-center"> Configuration des données </div> <div class="panel-body">'+
-                    '<table  id="table_auto1"> <thead> <tr> <th width="2%">Primary key</th> <th width="15%">column</th> <th width="15%">Type</th> <th width="10%">Size</th> <th width="2%"> Not null</th> <th width="20%">Default</th> <th width="36%">Commentaire</th> </tr> </thead><tbody>';
+                    '<table  id="table_auto1"> <thead> <tr> <th width="2%">Clé primaire</th> <th width="15%">colonne</th> <th width="15%">Type</th> <th width="10%">Taille</th> <th width="2%"> Non null</th> <th width="20%">Default</th> <th width="36%">Commentaire</th> </tr> </thead><tbody>';
                 console.log("length "+ data.attributes[0].pko);
                 for(var i = 0;i<data.attributes.length;i++) {
                     var qq,ss,object,sizeo,defaut,commentaires;
@@ -505,7 +505,7 @@ $(document).ready(function() {
                         }
                         contenu += '</tbody> </table> </div> </div> </div> </div></div></div>';
                     } else {
-                        contenu += '<div class="row"> <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"><div class="panel panel-success"> <div class="panel-heading text-center"> Success : </div> <div class="panel-body"> Toutes les lines ont été ajoutés</div></div>';
+                        contenu += '<div class="row"> <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"><div class="panel panel-success"> <div class="panel-heading text-center"> Success : </div> <div class="panel-body"> Toutes les lignes ont été ajoutés avec succès</div></div>';
                     }
                 }
                 $("#resume").html("");
@@ -599,7 +599,7 @@ $(document).ready(function() {
                 //recuperation de la valeur stock dans l'attribut desactive
                 var contenu = '<div class="container-fluid"><div class="row"> <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"> <div class="panel panel-primary"> <div class="panel-heading text-center">Configuration Fichier</div>'+
                     '<div class="panel-body"><div style="overflow-x:auto;"><table id="table_resume">'+
-                    '<thead> <tr><th>Date Création</th><th >Created by</th> <th>File</th> <th> Nb line skiped</th> <th>Table</th> <th>Date Lancement</th><th width="10%">Resultat</th><th>Nombre de lines ajouter</th><th >Nombre de lines ajouter</th><th> Nombre de lines Non ajouter</th><th> Nombre de lines Non ajouter</th> <th>More Détail</th></tr></thead><tbody>';
+                    '<thead> <tr><th>Date Création</th><th >Crée par</th> <th>Fichier</th> <th> Nb line à sauter</th> <th>Table</th> <th>Date de Lancement</th><th width="10%">Resultat</th><th>Nombre de lines ajouter</th><th >Nombre de lines ajouter</th><th> Nombre de lines Non ajouter</th><th> Nombre de lines Non ajouter</th> <th>More Détail</th></tr></thead><tbody>';
                 var executedBy;
                 var executed;
                 var resultat;
@@ -674,10 +674,10 @@ $(document).ready(function() {
                 var contenu = '<div class="container-fluid"><div class="row"> <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"> <div class="panel panel-primary"> <div class="panel-heading text-center">Configuration Fichier</div>'+
                     '<div class="panel-body"><div class="row">'+
                     '<table id="table_resume">'+
-                    '<thead> <tr> <th>File Path</th> <th >Type</th> <th width="1%">Séparateur</th> <th>Nombre de ligne skipped</th> <th> header</th> <th >Date de création</th> </tr> </thead><tbody>'+
+                    '<thead> <tr> <th>Chemin du Fichier</th> <th >Type</th> <th width="1%">Séparateur</th> <th>Nombre de ligne à sauter</th> <th> header</th> <th >Date de création</th> </tr> </thead><tbody>'+
                     '<tr><td>'+data.reader.filePath+'</td> <td>'+data.reader.filePath.split(".")[1]+'</td> <td>'+data.reader.separator+'</td><td>'+data.reader.nbLineToSkip+'</td> <td>'+data.reader.columns+'</td> <td>'+moment(data.reader.dateCreation).format("DD/MM/YYYY HH:mm:ss")+'</td></tr></tbody> </table> </div> </div> </div> </div> </div>';
                 contenu +='<div class="row"><div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"> <div class="panel panel-primary"> <div class="panel-heading text-center">Configuration des données </div> <div class="panel-body">'+
-                    '<table id="table_auto"> <thead> <tr> <th width="2%">Primary key</th> <th>column</th> <th>Type</th> <th>Size</th> <th> Not null</th> <th>Default</th> <th>Commentaire</th> </tr> </thead><tbody>';
+                    '<table id="table_auto"> <thead> <tr> <th width="2%">Clé primaire</th> <th>colonne</th> <th>Type</th> <th>Taille</th> <th> Non null</th> <th>Default</th> <th>Commentaire</th> </tr> </thead><tbody>';
                 console.log("length "+ data.attributes[0].pko);
                 for(var i = 0;i<data.attributes.length;i++) {
                     var qq,ss;
@@ -697,7 +697,7 @@ $(document).ready(function() {
                 }
                 if(data.reader.executed == true) {
                 contenu+='</tbody></table> </div> </div> </div></div><div class="row"> <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"><div class="panel panel-primary"> <div class="panel-heading text-center"> Batch Report</div> <div class="panel-body">'+
-                    '<table id="table_auto"><thead> <tr> <th>Job Id</th> <th>Type de Job</th> <th>Start time</th> <th>End time </th> <th >status</th> <th>Read count</th> <th>Filter count</th> <th>Write count</th> <th>Read skip count</th> <th>Write skip count</th> <th>Process skip count</th> <th>Rollback count</th> </tr> </thead>'+
+                    '<table id="table_auto"><thead> <tr> <th>Job Id</th> <th>Type de tache</th> <th>Débute à</th> <th>Termine à </th> <th >Statut</th> <th>Read count</th> <th>Filter count</th> <th>Write count</th> <th>Read skip count</th> <th>Write skip count</th> <th>Process skip count</th> <th>Rollback count</th> </tr> </thead>'+
                     '<tbody> <tr> <td>'+data.batchStepExecution.job_execution_id+'</td> <td>'+data.batchStepExecution.step_name+'</td> <td>'+moment(data.batchStepExecution.start_time).format("DD/MM/YYYY HH:mm:ss")+'</td> <td>'+moment(data.batchStepExecution.end_time).format("DD/MM/YYYY HH:mm:ss")+'</td> <td>'+data.batchStepExecution.status+'</td> <td>'+data.batchStepExecution.read_count+'</td> <td>'+data.batchStepExecution.filter_count+'</td> <td>'+data.batchStepExecution.write_count+'</td> <td>'+data.batchStepExecution.read_skip_count+'</td> <td>'+data.batchStepExecution.write_skip_count+'</td> <td>'+data.batchStepExecution.process_skip_count+'</td> <td>'+data.batchStepExecution.rollback_count+'</td> </tr> </tbody> </table> </div> </div> </div> </div>';
 
                     if (data.inputError.length > 0) {
@@ -708,7 +708,7 @@ $(document).ready(function() {
                         }
                         contenu += '</tbody> </table> </div> </div> </div> </div></div></div>';
                     } else {
-                        contenu += '<div class="row"> <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"><div class="panel panel-success"> <div class="panel-heading text-center">Success :</div> <div class="panel-body"> Toutes les lines ont été ajoutés</div></div>';
+                        contenu += '<div class="row"> <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"><div class="panel panel-success"> <div class="panel-heading text-center">Success :</div> <div class="panel-body"> Toutes les lignes ont été ajoutés avec succès</div></div>';
                     }
                 }
                 $("#resume1").html("");
@@ -767,7 +767,7 @@ $(document).ready(function() {
                 if(data.error != null){
                     contenu += "<fieldset><div class='panel panel-danger'><div class='panel-heading text-center' ><div class='pad margin no-print'>"+
                         "<div class='callout callout-danger' style='margin-bottom: 0!important;'>"+
-                        "<h4><i class='fa fa-info'></i> ALERT :</h4>This JOB HAS ERROR INPUT... </div>"+
+                        "<h4><i class='fa fa-info'></i> ALERT :</h4>Ce batch à un Probléme de parsing du fichier ... </div>"+
                         "</div></div>"
                     contenu += "<div class='panel-body'><div class='row'><div class='col-xs-12'>" +data.error +"</div></div></div></div>";
                 }
@@ -775,16 +775,16 @@ $(document).ready(function() {
                     if ((data.inputError.length) == 0) {
                         contenu += "<fieldset><div class='panel panel-success'><div class='panel-heading text-center'><div class='pad margin no-print'>" +
                             "<div class='callout callout-success' style='margin-bottom: 0!important;'>" +
-                            "<h4><i class='fa fa-info'></i> SUCCESS:</h4>This JOB HAS NO ERROR INPUT DUE TO EXCEPTIONS... </div>" +
+                            "<h4><i class='fa fa-info'></i> SUCCESS:</h4> Batch terminer avec succès... </div>" +
                             "</div></div><div class='panel-body'>"
                     } else {
                         contenu += "<fieldset><div class='panel panel-danger'><div class='panel-heading text-center' ><div class='pad margin no-print'>" +
                             "<div class='callout callout-danger' style='margin-bottom: 0!important;'>" +
-                            "<h4><i class='fa fa-info'></i> ALERT :</h4>This JOB HAS ERROR INPUT... </div>" +
+                            "<h4><i class='fa fa-info'></i> ALERT :</h4>Ce Batch à de problèmes de parsing... </div>" +
                             "</div></div>"
                         contenu += "<div class='panel-body'><div class='row'><div class='col-xs-12'>" +
                             "<table id='myInputErrors' >" +
-                            "<thead><tr><th><b>Line Number</b></th><th ><b>Line</b></th><th><b>Error in</b></th><th><b>Cause</b></th></thead><tbody>";
+                            "<thead><tr><th><b>Nb de ligne</b></th><th ><b>Ligne</b></th><th><b>Erreur à</b></th><th><b>Cause</b></th></thead><tbody>";
                         for (var i = 0; i < data.inputError.length; i++) {
                             contenu += "<tr><td align='center'>" + data.inputError[i].lineNumber + "</td><td align='center'>" + data.inputError[i].line + "</td><td>" + data.inputError[i].columne + "</td><td>" + data.inputError[i].cause + "</td></tr>";
                         }
@@ -792,8 +792,8 @@ $(document).ready(function() {
                             "</div></div>";
                     }
                     contenu += "<div class='row'><div class='col-xs-12'><table id='resume'>" +
-                        "<thead><tr><th><b>Job ID</b></th><th ><b>Start time</b></th><th><b>End time</b></th><th><b>Status </b></th><th><b>commit_count</b></th><th><b>read_count</b></th><th>write_count</th><th>process_skip_count</th><th>exit_code</th></thead><tbody>";
-                    contenu += "<tr><td align='center'>" + data.batchStepExecution.job_execution_id + "</td><td align='center'>" + moment(data.batchStepExecution.start_time).format("DD/MM HH:mm:ss") + "</td><td align='center'>" + moment(data.batchStepExecution.end_time).format("DD/MM HH:mm:ss") + "</td><td align='center'>" + data.batchStepExecution.status + "</td><td align='center'>" + data.batchStepExecution.commit_count + "</td><td align='center'>" + data.batchStepExecution.read_count + "</td><td align='center'>" + data.batchStepExecution.write_count + "</td><td align='center'>" + data.batchStepExecution.process_skip_count + "</td><td align='center'>" + data.batchStepExecution.exit_code + "</td></tr>";
+                        "<thead><tr><th><b>Batch id</b></th><th ><b>Débute à</b></th><th><b>Termine à</b></th><th><b>Statut </b></th><th><b>Read count</b></th><th>Write count</th><th>Process skip count</th><th>Exit_code</th></thead><tbody>";
+                    contenu += "<tr><td align='center'>" + data.batchStepExecution.job_execution_id + "</td><td align='center'>" + moment(data.batchStepExecution.start_time).format("DD/MM HH:mm:ss") + "</td><td align='center'>" + moment(data.batchStepExecution.end_time).format("DD/MM HH:mm:ss") + "</td><td align='center'>" + data.batchStepExecution.status + "</td><td align='center'>" + data.batchStepExecution.read_count + "</td><td align='center'>" + data.batchStepExecution.write_count + "</td><td align='center'>" + data.batchStepExecution.process_skip_count + "</td><td align='center'>" + data.batchStepExecution.exit_code + "</td></tr>";
                     contenu += "</tbody></table>" +
                         "</div></div></div></div></fieldset>";
                 }
@@ -810,8 +810,7 @@ $(document).ready(function() {
         });
         }
     });
-
-
+    
     $(document).on("click", "#btn-success", function(event){
         event.preventDefault();
         var table = $('#latestTabId').DataTable();
@@ -852,16 +851,16 @@ $(document).ready(function() {
                     if ((data.inputError.length) == 0) {
                         contenu += "<fieldset><div class='panel panel-success'><div class='panel-heading text-center'><div class='pad margin no-print'>"+
                             "<div class='callout callout-success' style='margin-bottom: 0!important;'>"+
-                            "<h4><i class='fa fa-info'></i> SUCCESS:</h4>This JOB HAS NO ERROR INPUT DUE TO EXCEPTIONS... </div>"+
+                            "<h4><i class='fa fa-info'></i> SUCCESS:</h4>Batch terminé avec succès... </div>"+
                             "</div></div><div class='panel-body'>"
                     } else {
                         contenu += "<fieldset><div class='panel panel-danger'><div class='panel-heading text-center'><div class='pad margin no-print'>"+
                             "<div class='callout callout-danger' style='margin-bottom: 0!important;'>"+
-                            "<h4><i class='fa fa-info'></i> ALERT :</h4>This JOB HAS ERROR INPUT... </div>"+
+                            "<h4><i class='fa fa-info'></i> ALERT :</h4>Ce Batch à des erreur de parsing du fichier... </div>"+
                             "</div></div>"
                         contenu += "<div class='panel-body'><div class='row'><div class='col-xs-12'>" +
                             "<table id='myInputErrors'>" +
-                            "<thead><tr><th><b>Line Number</b></th><th ><b>Line</b></th><th><b>Error in</b></th><th>Cause</th></thead><tbody>";
+                            "<thead><tr><th><b>Numero de Ligne</b></th><th ><b>Ligne</b></th><th><b>Erreur à</b></th><th>Cause</th></thead><tbody>";
                         for (var i = 0; i < data.inputError.length; i++) {
                             contenu += "<tr><td align='center'>" + data.inputError[i].lineNumber + "</td><td align='center'>" + data.inputError[i].line + "</td><td>" + data.inputError[i].columne + "</td><td>" + data.inputError[i].cause + "</td></tr>";
                         }
@@ -869,8 +868,8 @@ $(document).ready(function() {
                             "</div></div>";
                     }
                     contenu += "<div class='row'><div class='col-xs-12'><table id='resume'>" +
-                        "<thead><tr><th><b>Job ID</b></th><th ><b>Start time</b></th><th><b>End time</b></th><th><b>Status </b></th><th><b>commit_count</b></th><th><b>read_count</b></th><th>write_count</th><th>process_skip_count</th><th>exit_code</th></thead><tbody>";
-                    contenu += "<tr><td align='center'>" + data.batchStepExecution.job_execution_id + "</td><td align='center'>" + moment(data.batchStepExecution.start_time).format("DD/MM HH:mm:ss") + "</td><td align='center'>" + moment(data.batchStepExecution.end_time).format("DD/MM HH:mm:ss") + "</td><td align='center'>" + data.batchStepExecution.status + "</td><td align='center'>" + data.batchStepExecution.commit_count + "</td><td align='center'>" + data.batchStepExecution.read_count + "</td><td align='center'>" + data.batchStepExecution.write_count + "</td><td align='center'>" + data.batchStepExecution.process_skip_count + "</td><td align='center'>" + data.batchStepExecution.exit_code + "</td></tr>";
+                        "<thead><tr><th><b>Batch id</b></th><th ><b>Débute à</b></th><th><b>Termine à</b></th><th><b>Status </b></th><th><b>read_count</b></th><th>write_count</th><th>process_skip_count</th><th>exit_code</th></thead><tbody>";
+                    contenu += "<tr><td align='center'>" + data.batchStepExecution.job_execution_id + "</td><td align='center'>" + moment(data.batchStepExecution.start_time).format("DD/MM HH:mm:ss") + "</td><td align='center'>" + moment(data.batchStepExecution.end_time).format("DD/MM HH:mm:ss") + "</td><td align='center'>" + data.batchStepExecution.status + "</td><td align='center'>" + data.batchStepExecution.read_count + "</td><td align='center'>" + data.batchStepExecution.write_count + "</td><td align='center'>" + data.batchStepExecution.process_skip_count + "</td><td align='center'>" + data.batchStepExecution.exit_code + "</td></tr>";
                     contenu += "</tbody></table>" +
                         "</div></div></div></div></fieldset>";
                     $('#modal-body').html("");

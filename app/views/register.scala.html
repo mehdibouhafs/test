@@ -6,7 +6,7 @@
     </div>
 
     <div class="register-box-body">
-      <p class="login-box-msg">Register a new membership</p>
+      <p class="login-box-msg">Création d'un Nouveau Compte</p>
 
       @helper.form(routes.Application.addUser,'enctype -> "multipart/form-data") {
         @if(form.hasGlobalErrors) {
@@ -63,13 +63,13 @@
           </div>
             <!-- /.col -->
           <div class="col-xs-4">
-            <button id="register" type="submit" class="btn btn-primary btn-block btn-flat">Register</button>
+            <button id="register" type="submit" class="btn btn-primary btn-block btn-flat">Créer mon compte</button>
           </div>
             <!-- /.col -->
         </div>
       }
 
-      <a href="@routes.Application.login()" class="text-center">I already have a membership</a>
+      <a href="@routes.Application.login()" class="text-center">j'ai déjà un compte !</a>
     </div>
       <!-- /.form-box -->
   </div>

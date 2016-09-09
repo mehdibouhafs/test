@@ -14,17 +14,17 @@
 
     <div class="container">
         <div class="panel panel-primary">
-            <div class="panel-heading" style="background-color: #3c8dbc;"> <h1 style="margin: 1px;margin-left: 350px;">CSV FILE WITH HEADER </h1> </div>
+            <div class="panel-heading" style="background-color: #3c8dbc;"> <h1 style="margin: 1px;margin-left: 350px;">Fichier CSV </h1> </div>
 <div class="panel-body">
         <div class="row form-group">
             <div class="col-xs-12 col-sm-12 col-md-12">
                 <ul class="nav nav-pills nav-justified thumbnail setup-panel" style="rgb(255, 255, 255);">
                     <li class="active first_element_to_target"><a   id="step111" href="#step-1" >
-                        <h4 class="list-group-item-heading"> Tache N° 1 </h4>
+                        <h4 class="list-group-item-heading"> Première étape </h4>
                         <p class="list-group-item-text">Configuration du fichier</p>
                     </a></li>
                     <li id="step22" class="disabled "><a  id="step222" href="#step-2" >
-                        <h4 class="list-group-item-heading"> Tache N° 2</h4>
+                        <h4 class="list-group-item-heading"> Deuxième étape </h4>
                         <p class="list-group-item-text">Configuration des données</p>
                     </a></li>
                         <!--<li id="step33" class="disabled"><a id="step33" href="#step-3" >
@@ -38,11 +38,11 @@
             <div class="col-xs-12 col-sm-12 col-md-12">
                 <div class="col-md-12 well" style="background-color: #ffffff;">
                     <div class="text-center data-block" style="padding-bottom: 25px">
-                    <h1> Configuration File </h1>
+                    <h1> Configuration du Fichier </h1>
                      </div>
                     <form class="form-horizontal" id="form00" name="form00" action="@routes.Application.csvHeader()" method="POST">
                         <div class="form-group">
-                            <label class="control-label col-xs-12 col-sm-2" style="color: black;" for="filePath">File Path</label>
+                            <label class="control-label col-xs-12 col-sm-2" style="color: black;" for="filePath">Chemin du fichier</label>
                             <div class="col-xs-12 col-sm-7">
                                 <div class='input-group'>
                                     <span class='input-group-addon'> <i class="fa fa-file"></i></span>
@@ -50,7 +50,7 @@
                                 </div>
                             </div>
                             <div class="col-sm-offset-0  col-sm-3">
-                                <span class="help-block" style="color:#ffffff;" > Please enter the File Path . (required)</span>
+                                <span class="help-block" style="color:#ffffff;" > Veuillez entrer le chemin du fichier</span>
                             </div>
                         </div>
                         <div class="form-group" id="separatorForm">
@@ -71,14 +71,14 @@
                                 </div>
                             </div>
                             <div class="col-xs-12 col-sm-4">
-                                <span class="help-block" style="color:#ffffff;">Please select Séparator requiered !</span>
+                                <span class="help-block" style="color:#ffffff;">Veuillez séléctionner un séparateur !</span>
                             </div>
                             <div class="col-xs-12 col-sm-4">
                                 <span class="help-block" style="color:red;"></span>
                             </div>
                         </div>
                         <div class="form-group" id="numberlineForm">
-                            <label  class="control-label col-xs-12 col-sm-2"    style="color: black;" for="numberLine">Number Line to Skipe :</label>
+                            <label  class="control-label col-xs-12 col-sm-2"    style="color: black;" for="numberLine">Nombre de ligne à Sauter :</label>
                             <div class="col-xs-12 col-sm-2">
                                 <div class='input-group'>
                                     <span class='input-group-addon'> <i class="fa fa-scissors" aria-hidden="true"></i></span>
@@ -106,7 +106,7 @@
                             <div class="col-xs-12">
                                 <div class="col-xs-2"></div>
                                 <div class="col-xs-5">
-                                <label style="color: black;margin-right: 20px;"> Est ce que votre fichier contient une entete ? </label>
+                                <label style="color: black;margin-right: 20px;"> Est ce que votre fichier contient un entete ? </label>
                                     <input id="entete" name="entete" type="checkbox" checked=""  data-on-text="Yes"  data-off-text="No">
                                     </div>
                             </div>
@@ -117,7 +117,7 @@
                                 <table class="stripe row-border order-column" cellspacing="0" width="100%" id="csvTableNoHead" name="csvTableNoHead">
                                     <thead style="background: #3c8dbc;">
                                         <tr>
-                                            <th> Column Name</th>
+                                            <th> Nom de la Colonne </th>
                                             <th>Options</th>
                                         </tr>
                                     </thead>
@@ -140,14 +140,14 @@
                                 <div class="col-sm-8 ">
                                     <div class="col-sm-offset-3 col-sm-4">
                                         <button id="all" class="button btn-success" style="background-color: #3c8dbc;" ><span class="fa fa-exchange" aria-hidden="true"></span>
-                                            <span class="sr-only">Select All:</span>Select all</button>
+                                            <span class="sr-only">Selectioner tout:</span>Selectioner tout</button>
                                     </div>
                                     <div class="col-sm-offset-1 col-sm-3">
                                     </div>
                                 </div>
                                 <div class="col-sm-3 ">
                                     <button id="none" class="button btn-danger" ><span class="fa fa-exchange" aria-hidden="true"></span>
-                                        Deselect all</button>
+                                        Deselectionnez Tout</button>
                                 </div>
                             </div>
                             <div class="row">
@@ -199,7 +199,7 @@
 
                                         <div class="col-sm-offset-0  col-sm-3" id="dropTab">
                                             <span class="">
-                                                <label style="color: black;margin-right: 20px;">Drop Table</label>
+                                                <label style="color: black;margin-right: 20px;">Supprimer Table</label>
                                                 <input id="dropTable" type="checkbox" checked="">
                                             </span>
                                         </div>
@@ -266,11 +266,11 @@
                 <div class="modal-header">
                     <i class="glyphicon glyphicon-exclamation-sign"></i>
                 </div>
-                <div class="modal-title">ERROR</div>
+                <div class="modal-title">ERREUR</div>
                 <div id="modal-body-danger" class="modal-body">
                 </div>
                 <div class="modal-footer">
-                    <button id="thanks" type="button" class="btn btn-danger" data-dismiss="modal">Try Again</button>
+                    <button id="thanks" type="button" class="btn btn-danger" data-dismiss="modal">Recommencer</button>
                 </div>
             </div> <!-- / .modal-content -->
         </div> <!-- / .modal-dialog -->
