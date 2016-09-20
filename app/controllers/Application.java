@@ -618,6 +618,21 @@ public class Application extends Controller {
     }
 
 
+    public Result authenticate2() {
+        Form<Login> loginForm = Form.form(Login.class).bindFromRequest();
+        if (loginForm.hasErrors()) {
+            return badRequest(login.render(loginForm));
+        } else {
+            batch.model.User user = batch.model.User.authenticate(loginForm.get().email,loginForm.get().password);
+            if(user!=null){
+                return ok(Json.toJson(user));
+            }  else{
+                return null;
+            }
+        }
+    }
+
+
     public Result lockScreen(){
         batch.model.User user = batch.model.User.find.byId(session(("email")));
         return  ok(lockscreen.render(user));
@@ -674,8 +689,10 @@ public class Application extends Controller {
         resume.setAttributes(attributes);
         List<InputError> inputErrors = InputError.findByJobExecutionId(reader.jobId);
         resume.setInputError(inputErrors);
-        User user = User.find.byId(session("email"));
-        resume.setUser(user);
+        if(session("email")!=null) {
+            User user = User.find.byId(session("email"));
+            resume.setUser(user);
+        }
 
         return ok(Json.toJson(resume));
     }
@@ -695,6 +712,9 @@ public class Application extends Controller {
         Form form = Form.form(batch.model.User.class);
         return ok(register.render(form));
     }
+
+
+
 
 
 
@@ -724,7 +744,7 @@ public class Application extends Controller {
                         out.write(bytes, 0, read);
                     }
                     batch.model.User user1 = batch.model.User.create(user.email, user.password, user.first_name, user.last_name, "assets/template/dist/img/" + fileName);
-                    user1.save();
+
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
@@ -751,6 +771,25 @@ public class Application extends Controller {
             }
             return redirect(routes.Application.login());
         }
+    }
+
+    public Result addUserMobile(){
+            DynamicForm form = Form.form().bindFromRequest();
+            String nom = form.field("nom").value();
+            String prenom = form.field("prenom").value();
+            String email = form.field("email").value();
+            String password = form.field("password").value();
+            String password1 = form.field("password1").value();
+             if(!password.equals(password1)){
+            return ok(Json.toJson("Password not the same"));
+            }
+            batch.model.User user1 = batch.model.User.createMobile(email, password, prenom, nom);
+            if(user1!=null){
+                return ok(Json.toJson(user1));
+            }else {
+                return ok(Json.toJson("false"));
+            }
+
     }
 
 

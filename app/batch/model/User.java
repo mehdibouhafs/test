@@ -70,6 +70,29 @@ public class User extends Model {
         return user;
     }
 
+    public static User createMobile(String email,String password,String first_name,String last_name) {
+        User user = new User();
+        user.email = email;
+        user.last_name=last_name;
+        user.first_name=first_name;
+        user.password = BCrypt.hashpw(password, BCrypt.gensalt());
+        user.imagePath = "assets/template/dist/img/avatar.png";
+        user.job_abondonned = 0L;
+        user.job_completed = 0L;
+        user.job_failed = 0L;
+        user.total_jobs = 0L;
+        try {
+            user.save();
+            return user;
+        }catch (Exception e){
+            return null;
+        }
+
+    }
+
+
+
+
     public static List<User> findAll(){
         return find.all();
     }

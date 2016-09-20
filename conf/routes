@@ -12,6 +12,7 @@ GET     /beanExisteCsv      controllers.Application.param3()
 GET     /BeanExistXml    controllers.Application.param4()
 GET     /                               controllers.Application.login()
 POST    /login                      controllers.Application.authenticate()
+POST    /login2                      controllers.Application.authenticate2()
 GET     /logout                     controllers.Application.logout()
 GET     /allMyJobs                  controllers.Application.allMyJobs()
 GET     /allMyJobCompleted          controllers.Application.allMyJobCompleted()
@@ -47,6 +48,8 @@ GET     /deleteReader/:id               controllers.Application.deleteReader(id 
 GET     /register                               controllers.Application.register()
 
 POST    /register                   controllers.Application.addUser()
+
+POST    /registerMobile             controllers.Application.addUserMobile()
 
 POST    /editUser                       controllers.Application.editUser
 
