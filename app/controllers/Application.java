@@ -619,17 +619,13 @@ public class Application extends Controller {
 
 
     public Result authenticate2() {
-        Form<Login> loginForm = Form.form(Login.class).bindFromRequest();
-        if (loginForm.hasErrors()) {
-            return badRequest(login.render(loginForm));
-        } else {
-            batch.model.User user = batch.model.User.authenticate(loginForm.get().email,loginForm.get().password);
+        DynamicForm form = Form.form().bindFromRequest();
+            batch.model.User user = batch.model.User.authenticate(form.field("email").value(),form.field("password").value());
             if(user!=null){
                 return ok(Json.toJson(user));
             }  else{
-                return null;
+                return ok(Json.toJson(new User()));
             }
-        }
     }
 
 
